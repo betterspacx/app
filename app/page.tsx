@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { EditorLayout } from "@/components/editor/EditorLayout";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Suspense } from "react";
+import LoadingScreen from "@/components/LoadingScreen";
 
 export const metadata: Metadata = {
   title: "Better Flow - Free Screenshot Editor & Mockup Maker",
@@ -38,7 +40,9 @@ export const metadata: Metadata = {
 export default async function EditorPage() {
   return (
     <ErrorBoundary>
-      <EditorLayout />
+      <Suspense fallback={<LoadingScreen />}>
+        <EditorLayout />
+      </Suspense>
     </ErrorBoundary>
   );
 }
