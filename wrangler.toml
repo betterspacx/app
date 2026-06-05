@@ -1,13 +1,19 @@
+# Modified by konlyzx (2026) - Configured for Cloudflare Pages deployment
+# Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
+
 name = "better-flow"
 compatibility_date = "2024-01-01"
 
+# Cloudflare Pages configuration
 pages_build_output_dir = ".vercel/output/static"
 
+# Cloudflare D1 Database bindings
 [[d1_databases]]
 binding = "DB"
 database_name = "better-flow-db"
 migrations_dir = "drizzle/migrations"
 
+# Cloudflare R2 Storage bindings
 [[r2_buckets]]
 binding = "MY_BUCKET"
 bucket_name = "betterflow-storage"
