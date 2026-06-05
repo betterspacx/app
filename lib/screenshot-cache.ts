@@ -174,3 +174,37 @@ export async function invalidateCache(url: string): Promise<void> {
     console.warn('Error invalidating screenshot cache:', error);
   }
 }
+
+/**
+ * Invalidate cache entries for multiple URLs
+ * @param urls - Array of URLs to invalidate
+ */
+export async function invalidateCacheBatch(urls: string[]): Promise<void> {
+  await Promise.all(urls.map(url => invalidateCache(url)));
+}
+
+/**
+ * Clear old cache entries older than TTL
+ */
+export async function clearOldCache(): Promise<void> {
+  const bucket = getBucket();
+  if (!bucket) {
+    return;
+  }
+
+  try {
+    const listed = await bucket.list({ prefix: SCREENSHOT_CACHE_PREFIX });
+    
+    for (const object of listed.objects) {
+      const uploaded = object.uploaded;
+      if (uploaded) {
+        const age = Date.now() - uploaded.getTime();
+        if (age > CACHE_TTL_MS) {
+          await deleteFromR2(bucket, object.key).catch(() => {});
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Error clearing old cache:', error);
+  }
+}

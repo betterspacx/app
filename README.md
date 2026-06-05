@@ -98,6 +98,15 @@ pnpm run build
 pnpm start
 ```
 
+## Deployment
+
+This project can be deployed to:
+- **Vercel** - Recommended for Next.js applications
+- **Cloudflare Pages** - Supports Next.js with edge functions
+- **Docker** - Containerized deployment
+
+For Cloudflare Pages deployment, ensure all environment variables are configured in the dashboard.
+
 ## Project Structure
 
 ```
