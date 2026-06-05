@@ -122,6 +122,8 @@ pnpm run build:cloudflare
 **Environment variables:**
 Configure all required environment variables in the Cloudflare Pages dashboard (see Environment Setup section).
 
+**Note:** Drizzle database generation is excluded from the build process for Cloudflare Pages compatibility. Run `pnpm run db:generate` locally if needed.
+
 **Manual deployment:**
 ```bash
 pnpm run build:cloudflare

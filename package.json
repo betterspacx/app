@@ -5,8 +5,8 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "next dev --webpack",
-    "build": "drizzle-kit generate && next build --webpack",
-    "build:cloudflare": "drizzle-kit generate && npx @cloudflare/next-on-pages",
+    "build": "next build --webpack",
+    "build:cloudflare": "npx @cloudflare/next-on-pages",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
