@@ -1,0 +1,13 @@
+<!-- Created by konlyzx (2026) - Chrome Extension Component -->
+<!-- Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar) -->
+
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="48" height="48" rx="10" fill="url(#gradient)"/>
+  <circle cx="24" cy="24" r="10" fill="white"/>
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+</svg>

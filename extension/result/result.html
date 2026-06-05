@@ -1,0 +1,128 @@
+<!-- Modified by konlyzx (2026) - Simplified fullscreen layout with Lucide icons, clean header, video metadata display -->
+<!-- Created by konlyzx (2026) - Chrome Extension Result Modal -->
+<!-- Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar) -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GIF Ready - Better Flow</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="result.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-wrapper">
+        <img src="/extension/result/logo.svg" alt="Better Flow" width="20" height="20">
+      </div>
+      <span class="header-title">Better Flow <span class="header-title-muted">/ Studio Preview</span></span>
+    </div>
+    <div class="header-right">
+      <div class="badge-status">
+        <span class="badge-dot"></span>
+        Processing Feed
+      </div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="content-area">
+      <div class="canvas-area">
+        <div class="loading-overlay" id="loadingOverlay">
+          <div class="spinner"></div>
+          <p class="loading-text" id="loadingText">Awaiting streaming chunks...</p>
+        </div>
+
+        <div class="video-wrapper" id="videoWrapper" style="display: none;">
+          <video id="recordedVideo" controls autoplay loop></video>
+        </div>
+      </div>
+
+      <div class="video-info-bar">
+        <div class="video-meta">
+          <div class="meta-item">
+            <i data-lucide="hard-drive"></i>
+            <span id="videoSize">Size: Computing...</span>
+          </div>
+          <div class="meta-item">
+            <i data-lucide="clock"></i>
+            <span id="videoDuration">Duration: 0:00</span>
+          </div>
+          <div class="meta-item">
+            <i data-lucide="maximize-2"></i>
+            <span id="videoDimensions">Resolution: Fetching...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <button class="btn-primary" id="sendToEditorBtn" title="Open in Better Flow Editor">
+          <img src="/extension/result/logo.svg" alt="Better Flow" width="26" height="26">
+          Open in Better Flow
+        </button>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Quick Actions</h3>
+        <div class="action-grid">
+          <button class="action-btn" id="downloadBtn" title="Download Asset">
+            <i data-lucide="download"></i>
+            <span>Download</span>
+          </button>
+          <button class="action-btn" id="copyBtn" title="Copy to clipboard">
+            <i data-lucide="copy"></i>
+            <span>Copy Raw</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Cloud Deployment</h3>
+        <div class="share-input-group">
+          <input 
+            type="text" 
+            class="share-input" 
+            id="shareUrl" 
+            placeholder="Interlink generated on upload..." 
+            readonly
+          >
+          <button class="share-copy-btn" id="copyShareBtn" title="Copy deployment link">
+            <i data-lucide="clipboard"></i>
+          </button>
+        </div>
+        <p class="share-help-text">Your stream gets deployed instantly to your global R2 architecture CDN.</p>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Asset Analytics</h3>
+        <div class="info-card">
+          <div class="info-item">
+            <div class="info-icon">
+              <i data-lucide="check-circle-2"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">Pipeline Status</div>
+              <div class="info-value success">Render Ready</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">
+              <i data-lucide="zap"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">Frame Optimization</div>
+              <div class="info-value">60 FPS Ultra</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="result.js"></script>
+</body>
+</html>

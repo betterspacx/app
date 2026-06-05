@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Better Flow - Screen Recorder",
+  "version": "1.0.0",
+  "description": "Record your screen, tab, or camera and instantly upload to Better Flow editor",
+  "permissions": [
+    "desktopCapture",
+    "tabs",
+    "activeTab",
+    "storage",
+    "offscreen",
+    "scripting",
+    "mediaSession"
+  ],
+  "optional_permissions": [
+    "microphone",
+    "camera"
+  ],
+  "host_permissions": [
+    "https://betterflow.site/*",
+    "https://cdn.betterflow.site/*",
+    "http://localhost:3000/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Better Flow Recorder"
+  },
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "icons": {
+    "16": "icons/icon-16.svg",
+    "48": "icons/icon-48.svg",
+    "128": "icons/icon-128.svg"
+  }
+}

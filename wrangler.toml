@@ -1,0 +1,17 @@
+// Modified by konlyzx (2026) - Removed hardcoded database_id; should be set via environment variable
+// Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
+
+name = "better-flow"
+compatibility_date = "2024-01-01"
+
+# Cloudflare D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "better-flow-db"
+# database_id should be set via CLOUDFLARE_D1_DATABASE_ID environment variable
+migrations_dir = "drizzle/migrations"
+
+# Cloudflare R2 Storage
+[[r2_buckets]]
+binding = "MY_BUCKET"
+bucket_name = "betterflow-storage"
