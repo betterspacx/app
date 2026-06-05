@@ -105,7 +105,30 @@ This project can be deployed to:
 - **Cloudflare Pages** - Supports Next.js with edge functions
 - **Docker** - Containerized deployment
 
-For Cloudflare Pages deployment, ensure all environment variables are configured in the dashboard.
+### Cloudflare Pages Deployment
+
+For Cloudflare Pages, use the following configuration:
+
+**Build command:**
+```bash
+pnpm run build:cloudflare
+```
+
+**Build output directory:**
+```
+.vercel/output/static
+```
+
+**Environment variables:**
+Configure all required environment variables in the Cloudflare Pages dashboard (see Environment Setup section).
+
+**Manual deployment:**
+```bash
+pnpm run build:cloudflare
+npx wrangler pages deploy .vercel/output/static
+```
+
+**Note:** Do not use `npx wrangler deploy` as it is for Workers, not Pages. Use `npx wrangler pages deploy` instead.
 
 ## Project Structure
 
