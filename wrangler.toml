@@ -1,5 +1,5 @@
-// Modified by konlyzx (2026) - Removed hardcoded database_id; should be set via environment variable
-// Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
+# Modified by konlyzx (2026) - Removed hardcoded database_id; should be set via environment variable
+# Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
 
 name = "better-flow"
 compatibility_date = "2024-01-01"
