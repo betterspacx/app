@@ -102,45 +102,21 @@ pnpm start
 
 This project can be deployed to:
 - **Vercel** - Recommended for Next.js applications
-- **Cloudflare Pages** - Supports Next.js with edge functions
 - **Docker** - Containerized deployment
 
-### Cloudflare Pages Deployment
+### Vercel Deployment
 
-For Cloudflare Pages, use the following configuration:
+For Vercel deployment:
 
-**Build command:**
-```bash
-pnpm run build:cloudflare
-```
+1. **Connect your repository** to Vercel
+2. **Configure build settings:**
+   - **Framework Preset**: Next.js
+   - **Build command**: `pnpm run build` (auto-detected)
+   - **Output directory**: `.next` (auto-detected)
+3. **Configure environment variables** in Vercel dashboard (see Environment Setup section)
+4. **Deploy** - Vercel will automatically build and deploy on push to main branch
 
-**Build output directory:**
-```
-.vercel/output/static
-```
-
-**Environment variables:**
-Configure all required environment variables in the Cloudflare Pages dashboard (see Environment Setup section).
-
-**D1 and R2 bindings:**
-Configure D1 database and R2 storage bindings in the Cloudflare Pages dashboard under Settings > Functions > D1 databases and R2 buckets. Do not configure these in wrangler.toml for Pages deployment.
-
-**Important:** If you see "Hello world" instead of your app, check:
-1. Build command is exactly `pnpm run build:cloudflare`
-2. Output directory is exactly `.vercel/output/static`
-3. Clear Cloudflare Pages cache and redeploy
-4. Verify the correct repository and branch are connected
-5. Ensure wrangler.toml does not contain Worker-specific configurations
-
-**Note:** Drizzle database generation is excluded from the build process for Cloudflare Pages compatibility. Run `pnpm run db:generate` locally if needed.
-
-**Manual deployment:**
-```bash
-pnpm run build:cloudflare
-npx wrangler pages deploy .vercel/output/static
-```
-
-**Note:** Do not use `npx wrangler deploy` as it is for Workers, not Pages. Use `npx wrangler pages deploy` instead.
+**Note:** Vercel natively supports Next.js with no additional configuration needed.
 
 ## Project Structure
 
