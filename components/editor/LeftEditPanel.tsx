@@ -1,5 +1,6 @@
 // Modified by konlyzx (2026) - Applied same tab style and content change animations from RightSettingsPanel
 // Modified by konlyzx (2026) - Redesigned LeftEditPanel with compact sections matching reference image
+// Modified by konlyzx (2026) - Added Text, Draw, Fx, Code, Tweet as collapsible sections inside Frame tab
 // Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
 
 'use client';
@@ -21,10 +22,14 @@ import {
   BorderSection,
   ShadowSection,
   BackgroundSection,
+  TextSection,
+  AnnotateSection,
+  SettingsSection,
+  CodeSnippetSection,
+  TweetImportSection,
 } from './sections';
 import { cn } from '@/lib/utils';
 import { useImageStore } from '@/lib/store';
-import { useState } from 'react';
 
 type LeftTabType = 'frame' | 'size' | 'background';
 
@@ -59,6 +64,7 @@ export function LeftEditPanel() {
     setShowTemplates: setTemplatesOpen,
     imageFilters,
     setImageFilter,
+    setUploadedImageUrl,
   } = useImageStore();
 
   const [activeTab, setActiveTab] = React.useState<LeftTabType>('frame');
@@ -90,7 +96,7 @@ export function LeftEditPanel() {
 
   return (
     <div className="w-[240px] h-full bg-[#1c1c1e] flex flex-col overflow-hidden border-r border-white/5 relative shrink-0">
-      {/* Tab Navigation - Frame | BG */}
+      {/* Tab Navigation - Frame | Size | BG */}
       <div className="px-2.5 py-2.5 border-b border-white/10 shrink-0">
         <div className="flex gap-1 p-0.5 bg-[#2c2c2e]/50 rounded-lg border border-white/10">
           {leftTabs.map((tab) => {
@@ -168,23 +174,29 @@ export function LeftEditPanel() {
                   type="file"
                   accept="image/*,video/*"
                   className="hidden"
-                  onChange={(e) => console.log('Files:', e.target.files)}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const url = URL.createObjectURL(file);
+                    setUploadedImageUrl(url, file.name);
+                    e.target.value = '';
+                  }}
                 />
               </div>
 
-              {/* STYLE Section - Original with corner previews */}
+              {/* STYLE Section */}
               <div className="space-y-2">
                 <SectionLabel>Style</SectionLabel>
                 <StyleSection />
               </div>
 
-              {/* BORDER Section - Original with corner previews */}
+              {/* BORDER Section */}
               <div className="space-y-2">
                 <SectionLabel>Border</SectionLabel>
                 <BorderSection />
               </div>
 
-              {/* SHADOW Section - Original with corner previews */}
+              {/* SHADOW Section */}
               <div className="space-y-2">
                 <SectionLabel>Shadow</SectionLabel>
                 <ShadowSection />
@@ -232,8 +244,38 @@ export function LeftEditPanel() {
                 </div>
               )}
 
+              {/* ── TEXT Section ── */}
+              <div className="space-y-2 pt-2">
+                <SectionLabel>Text</SectionLabel>
+                <TextSection />
+              </div>
+
+              {/* ── DRAW & MARKUP Section ── */}
+              <div className="space-y-2 pt-2">
+                <SectionLabel>Draw & Markup</SectionLabel>
+                <AnnotateSection />
+              </div>
+
+              {/* ── FILTERS Section ── */}
+              <div className="space-y-2 pt-2">
+                <SectionLabel>Filters</SectionLabel>
+                <SettingsSection />
+              </div>
+
+              {/* ── CODE Section ── */}
+              <div className="space-y-2 pt-2">
+                <SectionLabel>Code</SectionLabel>
+                <CodeSnippetSection />
+              </div>
+
+              {/* ── TWEET Section ── */}
+              <div className="space-y-2 pt-2">
+                <SectionLabel>Tweet</SectionLabel>
+                <TweetImportSection />
+              </div>
+
               {/* DETAILS Section */}
-              <div className="space-y-2">
+              <div className="space-y-2 pt-2">
                 <SectionLabel>Details</SectionLabel>
                 <div className="grid grid-cols-2 gap-2 text-[10px]">
                   <div className="px-2 py-1.5 rounded-lg bg-[#2c2c2e]">

@@ -1,28 +1,21 @@
-// Modified by konlyzx (2026) - Optimized background loading with lazy images, IntersectionObserver, and closed sections by default
-// Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
-
 'use client';
 
 import * as React from 'react';
 import { useImageStore } from '@/lib/store';
 import { useDropzone } from 'react-dropzone';
-import { useResponsiveCanvasDimensions } from '@/hooks/useAspectRatioDimensions';
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from '@/lib/constants';
-import { getR2ImageUrl } from '@/lib/r2';
 import {
   backgroundCategories,
-  getBackgroundThumbnailUrl,
 } from '@/lib/r2-backgrounds';
 import { gradientColors, type GradientKey } from '@/lib/constants/gradient-colors';
 import { solidColors, type SolidColorKey } from '@/lib/constants/solid-colors';
 import { meshGradients, magicGradients, type MeshGradientKey, type MagicGradientKey } from '@/lib/constants/mesh-gradients';
-import { Button } from '@/components/ui/button';
 import { ColorPicker } from '@/components/ui/color-picker';
 import { SectionWrapper } from './SectionWrapper';
 import { Cancel01Icon, Image01Icon, ShuffleIcon } from 'hugeicons-react';
 import { cn } from '@/lib/utils';
-import { CachedImage } from '@/components/ui/cached-image';
-import { LazyBackgroundImage } from '@/components/ui/lazy-background-image';
+import { CanvasThumbnail } from '@/components/ui/canvas-thumbnail';
+import { preloadImages } from '@/hooks/useLazyImage';
 
 // Shadow overlay IDs
 const OVERLAY_SHADOW_IDS = [
@@ -31,7 +24,6 @@ const OVERLAY_SHADOW_IDS = [
 ];
 const OVERLAY_SHADOW_URLS = OVERLAY_SHADOW_IDS.map((id) => `/overlay-shadow/${id}.webp`);
 
-// Category display names (ordered)
 const CATEGORY_ORDER = ['assets', 'mac', 'radiant', 'mesh', 'raycast', 'paper', 'pattern'] as const;
 const CATEGORY_LABELS: Record<string, string> = {
   assets: 'Abstract',
@@ -53,12 +45,27 @@ export function BackgroundSection() {
     removeImageOverlay,
   } = useImageStore();
 
-  const responsiveDimensions = useResponsiveCanvasDimensions();
   const [bgUploadError, setBgUploadError] = React.useState<string | null>(null);
   const [customColor, setCustomColor] = React.useState('#2b6fff');
   const [expandedCategories, setExpandedCategories] = React.useState<Set<string>>(new Set());
 
+  // Preload visible images on mount so the first paint of thumbnails is instant.
+  React.useEffect(() => {
+    const visible = CATEGORY_ORDER.flatMap(
+      (cat) => backgroundCategories[cat]?.slice(0, 4) ?? []
+    );
+    preloadImages(visible);
+  }, []);
+
   const toggleCategory = (category: string) => {
+    if (!expandedCategories.has(category)) {
+      // Expanding — preload remaining images of this category immediately
+      const allImages = backgroundCategories[category] || [];
+      const remaining = allImages.slice(4);
+      if (remaining.length > 0) {
+        preloadImages(remaining, 8);
+      }
+    }
     setExpandedCategories((prev) => {
       const next = new Set(prev);
       if (next.has(category)) {
@@ -70,7 +77,6 @@ export function BackgroundSection() {
     });
   };
 
-  // Track which custom bg option is active
   const customBgType = React.useMemo(() => {
     if (backgroundConfig.type === 'solid' && backgroundConfig.value === 'transparent') {
       return 'transparent';
@@ -126,31 +132,16 @@ export function BackgroundSection() {
     multiple: false,
   });
 
-  // Overlay helpers
-  const getFullCanvasOverlay = () => {
-    const canvasWidth = responsiveDimensions.width || 1920;
-    const canvasHeight = responsiveDimensions.height || 1080;
-    return {
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
-      size: Math.max(canvasWidth, canvasHeight),
-    };
-  };
-
   const handleAddShadow = (shadowUrl: string) => {
-    // Remove any existing shadows first (only one shadow at a time)
     imageOverlays.forEach((overlay) => {
       if (typeof overlay.src === 'string' && overlay.src.includes('overlay-shadow')) {
         removeImageOverlay(overlay.id);
       }
     });
-
-    // Add the new shadow
-    const { x, y, size } = getFullCanvasOverlay();
     addImageOverlay({
       src: shadowUrl,
-      position: { x, y },
-      size,
+      position: { x: 960, y: 540 },
+      size: 1920,
       rotation: 0,
       opacity: 0.5,
       flipX: false,
@@ -167,7 +158,6 @@ export function BackgroundSection() {
     });
   };
 
-  // Get current active shadow
   const currentShadow = imageOverlays.find(
     (overlay) => typeof overlay.src === 'string' && overlay.src.includes('overlay-shadow')
   );
@@ -183,8 +173,13 @@ export function BackgroundSection() {
     const allBackgrounds = Object.values(backgroundCategories).flat();
     if (allBackgrounds.length === 0) return;
     const randomBg = allBackgrounds[Math.floor(Math.random() * allBackgrounds.length)];
-    setBackgroundType('image');
     setBackgroundValue(randomBg);
+    setBackgroundType('image');
+  };
+
+  const handleSelectImage = (path: string) => {
+    setBackgroundValue(path);
+    setBackgroundType('image');
   };
 
   const availableCategories = CATEGORY_ORDER.filter(
@@ -234,7 +229,6 @@ export function BackgroundSection() {
       {/* Custom BG */}
       <SectionWrapper title="Custom Background" defaultOpen={true}>
         <div className="grid grid-cols-3 gap-2 p-1">
-          {/* Image Upload */}
           <div
             {...getBgRootProps()}
             className={cn(
@@ -254,7 +248,6 @@ export function BackgroundSection() {
             <span className={cn("text-[10px] font-medium", customBgType === 'image' ? "text-foreground" : "text-muted-foreground")}>Image</span>
           </div>
 
-          {/* Color Picker */}
           <ColorPicker
             color={customColor}
             onChange={(newColor) => {
@@ -270,7 +263,6 @@ export function BackgroundSection() {
             )}
           />
 
-          {/* Transparent */}
           <button
             onClick={() => {
               setBackgroundType('solid');
@@ -299,7 +291,6 @@ export function BackgroundSection() {
         </div>
         {bgUploadError && <p className="text-xs text-destructive mt-2">{bgUploadError}</p>}
 
-        {/* Current Image Preview */}
         {backgroundConfig.type === 'image' && backgroundConfig.value?.startsWith('blob:') && (
           <div className="relative rounded-lg overflow-hidden border border-border/40 aspect-video bg-muted/50 mt-3">
             <img
@@ -345,10 +336,7 @@ export function BackgroundSection() {
             return (
               <button
                 key={category}
-                onClick={() => {
-                  setBackgroundValue(firstImage);
-                  setBackgroundType('image');
-                }}
+                onClick={() => handleSelectImage(firstImage)}
                 className={cn(
                   'aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105 relative cursor-pointer',
                   backgroundConfig.value === firstImage
@@ -357,11 +345,9 @@ export function BackgroundSection() {
                 )}
                 title={CATEGORY_LABELS[category] || category}
               >
-                <LazyBackgroundImage
-                  src={getBackgroundThumbnailUrl(firstImage)}
-                  alt={CATEGORY_LABELS[category] || category}
+                <CanvasThumbnail
+                  src={firstImage}
                   className="w-full h-full"
-                  isSelected={backgroundConfig.value === firstImage}
                 />
               </button>
             );
@@ -369,7 +355,7 @@ export function BackgroundSection() {
         </div>
       </SectionWrapper>
 
-      {/* Background Images - Each category shown separately */}
+      {/* Background Images */}
       {availableCategories.map((category) => {
         const allImages = backgroundCategories[category] || [];
         const isExpanded = expandedCategories.has(category);
@@ -386,10 +372,7 @@ export function BackgroundSection() {
               {visibleImages.map((imagePath: string, idx: number) => (
                 <button
                   key={`${category}-${idx}`}
-                  onClick={() => {
-                    setBackgroundValue(imagePath);
-                    setBackgroundType('image');
-                  }}
+                  onClick={() => handleSelectImage(imagePath)}
                   className={cn(
                     'aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105 relative cursor-pointer',
                     backgroundConfig.value === imagePath
@@ -397,11 +380,10 @@ export function BackgroundSection() {
                       : 'border-transparent hover:border-border/50'
                   )}
                 >
-                  <LazyBackgroundImage
-                    src={getBackgroundThumbnailUrl(imagePath)}
-                    alt={`${category} ${idx + 1}`}
+                  <CanvasThumbnail
+                    src={imagePath}
                     className="w-full h-full"
-                    isSelected={backgroundConfig.value === imagePath}
+                    isSelected={backgroundConfig.value === imagePath && backgroundConfig.type === 'image'}
                   />
                 </button>
               ))}
@@ -424,7 +406,7 @@ export function BackgroundSection() {
             )}
           </SectionWrapper>
         );
-      })} 
+      })}
 
       {/* Magic Gradients */}
       <SectionWrapper
@@ -478,7 +460,6 @@ export function BackgroundSection() {
             className="grid grid-flow-col auto-cols-min gap-2 w-max"
             style={{ gridTemplateRows: 'repeat(2, 1fr)', gridAutoFlow: 'column' }}
           >
-            {/* Classic Gradients */}
             {(Object.keys(gradientColors) as GradientKey[]).map((key, idx) => (
               <button
                 key={`classic-${key}`}
@@ -498,7 +479,6 @@ export function BackgroundSection() {
                 }}
               />
             ))}
-            {/* Mesh Gradients */}
             {(Object.keys(meshGradients) as MeshGradientKey[]).map((key, idx) => {
               const classicCount = Object.keys(gradientColors).length;
               const colOffset = Math.ceil(classicCount / 2);
@@ -525,7 +505,6 @@ export function BackgroundSection() {
           </div>
         </div>
       </SectionWrapper>
-
     </>
   );
 }

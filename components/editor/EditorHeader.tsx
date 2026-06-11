@@ -13,10 +13,9 @@ import {
   ArrowDown01Icon,
   Download01Icon,
   RefreshIcon,
-  MagicWand01Icon,
   PencilEdit02Icon,
 } from 'hugeicons-react';
-import { useEditorStore, useImageStore } from '@/lib/store';
+import { useEditorStore, useImageStore, OmitFunctions, EditorState, ImageState, ImageFilters } from '@/lib/store';
 import { useExport } from '@/hooks/useExport';
 import {
   Popover,
@@ -28,8 +27,104 @@ import { ExportSlideshowDialog } from '@/lib/export-slideshow-dialog';
 import { ImageExportProgressView } from '@/components/canvas/dialogs/ImageProgressView';
 import { FormatSelector, QualityPresetSelector, ScaleSlider } from '@/components/export';
 import { cn } from '@/lib/utils';
+import { AuthModal } from '@/components/auth/AuthModal';
+import { SaveDialog } from '@/components/projects/SaveDialog';
+import { ProjectsSidebar } from '@/components/projects/ProjectsSidebar';
+import { saveProject, listProjects, loadProject, deleteProject, ProjectMeta } from '@/lib/project-manager';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+
+function serializeState(): { editorState: OmitFunctions<EditorState>; imageState: OmitFunctions<ImageState> } {
+  const { screenshot, background, shadow, pattern, frame, canvas, noise } = useEditorStore.getState();
+  const {
+    uploadedImageUrl, imageName, selectedGradient, borderRadius, backgroundBorderRadius,
+    selectedAspectRatio, backgroundConfig, backgroundBlur, backgroundNoise, textOverlays,
+    imageOverlays, mockups, imageOpacity, imageScale, imageBorder, imageShadow,
+    perspective3D, imageFilters, exportSettings, slides, activeSlideId, slideshow,
+    isPreviewing, previewIndex, previewStartedAt, timeline, showTimeline, animationClips,
+    annotations, activeAnnotationTool, selectedAnnotationId, annotationDefaults, blurRegions,
+    activeRightPanelTab, showTemplates, editorMode, browserUrl, browserHeaderSize,
+    canvasDimensions, customDimensions, imageStylePreset, shadowPreset,
+  } = useImageStore.getState();
+
+  const editorState = { screenshot, background, shadow, pattern, frame, canvas, noise };
+  const imageState = {
+    uploadedImageUrl, imageName, selectedGradient, borderRadius, backgroundBorderRadius,
+    selectedAspectRatio, backgroundConfig, backgroundBlur, backgroundNoise, textOverlays,
+    imageOverlays, mockups, imageOpacity, imageScale, imageBorder, imageShadow,
+    perspective3D, imageFilters, exportSettings, slides, activeSlideId, slideshow,
+    isPreviewing, previewIndex, previewStartedAt, timeline, showTimeline, animationClips,
+    annotations, activeAnnotationTool, selectedAnnotationId, annotationDefaults, blurRegions,
+    activeRightPanelTab, showTemplates, editorMode, browserUrl, browserHeaderSize,
+    canvasDimensions, customDimensions, imageStylePreset, shadowPreset,
+  };
+  return { editorState, imageState };
+}
+
+function restoreProject(imageState: OmitFunctions<ImageState>, editorState: OmitFunctions<EditorState>) {
+  const es = useEditorStore.getState();
+  const is = useImageStore.getState();
+
+  if (editorState?.screenshot) es.setScreenshot(editorState.screenshot);
+  if (editorState?.background) es.setBackground(editorState.background);
+  if (editorState?.shadow) es.setShadow(editorState.shadow);
+  if (editorState?.pattern) es.setPattern(editorState.pattern);
+  if (editorState?.frame) es.setFrame(editorState.frame);
+  if (editorState?.canvas) es.setCanvas(editorState.canvas);
+  if (editorState?.noise) es.setNoise(editorState.noise);
+
+  if (imageState.uploadedImageUrl) {
+    is.setUploadedImageUrl(imageState.uploadedImageUrl, imageState.imageName);
+  }
+  if (imageState.selectedGradient) is.setGradient(imageState.selectedGradient);
+  if (imageState.borderRadius !== undefined) is.setBorderRadius(imageState.borderRadius);
+  if (imageState.backgroundBorderRadius !== undefined) is.setBackgroundBorderRadius(imageState.backgroundBorderRadius);
+  if (imageState.selectedAspectRatio) is.setAspectRatio(imageState.selectedAspectRatio);
+  if (imageState.customDimensions) is.setCustomDimensions(imageState.customDimensions.width, imageState.customDimensions.height);
+  if (imageState.backgroundConfig) is.setBackgroundConfig(imageState.backgroundConfig);
+  if (imageState.backgroundBlur !== undefined) is.setBackgroundBlur(imageState.backgroundBlur);
+  if (imageState.backgroundNoise !== undefined) is.setBackgroundNoise(imageState.backgroundNoise);
+  if (imageState.imageOpacity !== undefined) is.setImageOpacity(imageState.imageOpacity);
+  if (imageState.imageScale !== undefined) is.setImageScale(imageState.imageScale);
+  if (imageState.imageBorder) is.setImageBorder(imageState.imageBorder);
+  if (imageState.imageShadow) is.setImageShadow(imageState.imageShadow);
+  if (imageState.perspective3D) is.setPerspective3D(imageState.perspective3D);
+  if (imageState.imageFilters) {
+    const filters = imageState.imageFilters as ImageState['imageFilters'];
+    if (filters) {
+      is.resetImageFilters();
+      (Object.keys(filters) as (keyof ImageState['imageFilters'])[]).forEach((key) => {
+        const val = filters[key];
+        if (val !== undefined) is.setImageFilter(key as keyof ImageFilters, val);
+      });
+    }
+  }
+
+  is.clearTextOverlays();
+  imageState.textOverlays?.forEach((o) => is.addTextOverlay(o));
+
+  is.clearImageOverlays();
+  imageState.imageOverlays?.forEach((o) => is.addImageOverlay(o));
+
+  is.clearMockups();
+  imageState.mockups?.forEach((m) => is.addMockup(m));
+}
 
 export function EditorHeader() {
+  const [authOpen, setAuthOpen] = React.useState(false);
+  const [saveOpen, setSaveOpen] = React.useState(false);
+  const [projectsOpen, setProjectsOpen] = React.useState(false);
+  const [projects, setProjects] = React.useState<ProjectMeta[]>([]);
+  const [projectsLoading, setProjectsLoading] = React.useState(false);
+  const [authenticated, setAuthenticated] = React.useState(false);
+
+  React.useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setAuthenticated(!!u);
+    });
+    return unsub;
+  }, []);
+
   const { screenshot } = useEditorStore();
   const { selectedAspectRatio, slides, uploadedImageUrl, clearImage, timeline, animationClips, resetCanvasSettings, setShowTemplates } = useImageStore();
   const [exportOpen, setExportOpen] = React.useState(false);
@@ -37,7 +132,6 @@ export function EditorHeader() {
   const [exportError, setExportError] = React.useState<string | null>(null);
   const hasImage = !!screenshot.src;
 
-  // Undo/redo state
   const [canUndo, setCanUndo] = React.useState(false);
   const [canRedo, setCanRedo] = React.useState(false);
 
@@ -85,6 +179,44 @@ export function EditorHeader() {
     }
   };
 
+  const handleSave = async (name: string) => {
+    const { editorState, imageState } = serializeState();
+    if (!auth.currentUser) throw new Error('Not authenticated');
+    await saveProject(name, editorState, imageState);
+  };
+
+  const handleLoadProject = async (projectId: string) => {
+    const data = await loadProject(projectId);
+    if (!data) return;
+    restoreProject(data.imageState as OmitFunctions<ImageState>, data.editorState as OmitFunctions<EditorState>);
+    setProjectsOpen(false);
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    await deleteProject(projectId);
+    setProjects((prev) => prev.filter((p) => p.id !== projectId));
+  };
+
+  const openProjectList = async () => {
+    setProjectsOpen(true);
+    setProjectsLoading(true);
+    try {
+      const p = await listProjects();
+      setProjects(p);
+    } finally {
+      setProjectsLoading(false);
+    }
+  };
+
+  const handleStartOver = async () => {
+    if (authenticated && uploadedImageUrl) {
+      const { editorState, imageState } = serializeState();
+      await saveProject('Auto-save before Start Over', editorState, imageState, '__presave__').catch(() => {});
+    }
+    clearImage();
+    resetCanvasSettings();
+  };
+
   const hasAnimation = timeline.tracks.length > 0 || animationClips.length > 0;
   const formatLabel =
     exportSettings.format === 'jpeg' ? 'JPEG'
@@ -99,7 +231,6 @@ export function EditorHeader() {
   return (
     <>
       <header className="h-12 pt-3 pb-2 bg-custom-black flex items-center shrink-0 shadow-sm gap-2">
-        {/* Left - Logo + Templates in single container - aligned with sidebar width */}
         <div className="w-[240px] flex items-center h-11 rounded-2xl bg-custom-muted border border-border/40 px-1 ml-2">
           <Link href="/" className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-muted/80 transition-all">
             <Image
@@ -123,8 +254,7 @@ export function EditorHeader() {
           </button>
         </div>
 
-        {/* Center - Undo/Redo + Start Over + Icons in container */}
-        <div className=" flex-1 flex items-center justify-center h-10 rounded-2xl px-2">
+        <div className="flex-1 flex items-center justify-center h-10 rounded-2xl px-2">
           {hasImage && (
             <>
               <button
@@ -161,7 +291,7 @@ export function EditorHeader() {
 
           {uploadedImageUrl && (
             <button
-              onClick={clearImage}
+              onClick={handleStartOver}
               className="flex items-center gap-1.5 px-3 h-8 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all text-xs font-medium hover:shadow-sm active:scale-95 cursor-pointer"
             >
               <RefreshIcon size={14} />
@@ -169,29 +299,48 @@ export function EditorHeader() {
             </button>
           )}
 
-          <div className="flex items-center gap-0.5 ml-1">
-            <button className="flex items-center justify-center w-8 h-8 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all hover:shadow-sm active:scale-95 cursor-pointer">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          {authenticated && uploadedImageUrl && (
+            <>
+              <div className="w-px h-5 bg-border/40 mx-1" />
+              <button
+                onClick={() => setSaveOpen(true)}
+                className="flex items-center gap-1.5 px-3 h-8 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all text-xs font-medium hover:shadow-sm active:scale-95 cursor-pointer"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                <span>Save</span>
+              </button>
+            </>
+          )}
+
+          <button
+            onClick={() => setAuthOpen(true)}
+            className="flex items-center justify-center w-8 h-8 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground hover:bg-muted transition-all hover:shadow-sm active:scale-95 cursor-pointer ml-1"
+            title={authenticated ? 'Account' : 'Sign in'}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M20 21a8 8 0 1 0-16 0" />
+            </svg>
+          </button>
+
+          {authenticated && (
+            <button
+              onClick={openProjectList}
+              className="flex items-center gap-1.5 px-3 h-8 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all text-xs font-medium hover:shadow-sm active:scale-95 cursor-pointer ml-1"
+              title="My Projects"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
               </svg>
+              <span>My Projects</span>
             </button>
-            <button className="flex items-center justify-center w-8 h-8 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all hover:shadow-sm active:scale-95 cursor-pointer">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 6.34L2.1 2.1m17.8 17.8l-4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24-4.24l-4.24 4.24M6.34 6.34l-4.24-4.24"/>
-              </svg>
-            </button>
-            <button className="flex items-center justify-center w-8 h-8 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all hover:shadow-sm active:scale-95 cursor-pointer">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 16v-4M12 8h.01"/>
-              </svg>
-            </button>
-          </div>
+          )}
         </div>
 
-        {/* Right - Export in container */}
         <div className="w-[245px] flex items-center justify-between h-11 rounded-2xl bg-white border border-border/40 px-1 mr-2 gap-1">
           <Popover open={exportOpen} onOpenChange={isExporting ? undefined : setExportOpen}>
             <PopoverTrigger asChild>
@@ -279,6 +428,23 @@ export function EditorHeader() {
       <ExportSlideshowDialog
         open={exportSlideshowOpen}
         onOpenChange={setExportSlideshowOpen}
+      />
+
+      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+
+      <SaveDialog
+        open={saveOpen}
+        onClose={() => setSaveOpen(false)}
+        onSave={handleSave}
+      />
+
+      <ProjectsSidebar
+        open={projectsOpen}
+        onClose={() => setProjectsOpen(false)}
+        projects={projects}
+        loading={projectsLoading}
+        onLoad={handleLoadProject}
+        onDelete={handleDeleteProject}
       />
     </>
   );

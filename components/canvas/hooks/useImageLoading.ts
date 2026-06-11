@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { getR2ImageUrl } from '@/lib/r2';
 import { isOverlayPath } from '@/lib/r2-overlays';
-import { backgroundPaths } from '@/lib/r2-backgrounds';
 import type { BackgroundConfig } from '@/lib/constants/backgrounds';
 import type { ImageOverlay } from '@/lib/store';
 
 const MAX_RETRIES = 2;
-const RETRY_DELAY = 800; // ms
+const RETRY_DELAY = 800;
 
 function loadImageWithRetry(
   url: string,
@@ -28,7 +27,6 @@ function loadImageWithRetry(
         return;
       }
       if (retries < MAX_RETRIES) {
-        // Retry with cache-busting param to bypass cached 404 responses
         setTimeout(() => {
           const bustUrl = url.includes('?')
             ? `${url}&_r=${Date.now()}`
@@ -57,60 +55,23 @@ export function useBackgroundImage(
 
     if (backgroundConfig.type === 'image' && backgroundConfig.value) {
       const imageValue = backgroundConfig.value as string;
+      const isUrl = imageValue.startsWith('http') || imageValue.startsWith('blob:') || imageValue.startsWith('data:');
 
-      const isValidImageValue =
-        imageValue.startsWith('http') ||
-        imageValue.startsWith('blob:') ||
-        imageValue.startsWith('data:') ||
-        (typeof imageValue === 'string' && !imageValue.includes('_gradient'));
-
-      if (!isValidImageValue) {
+      if (!isUrl) {
         setBgImage(null);
         return;
       }
 
-      let imageUrl = imageValue;
-      if (
-        typeof imageUrl === 'string' &&
-        !imageUrl.startsWith('http') &&
-        !imageUrl.startsWith('blob:') &&
-        !imageUrl.startsWith('data:') &&
-        !imageUrl.startsWith('/')
-      ) {
-        if (backgroundPaths.includes(imageUrl)) {
-          imageUrl = getR2ImageUrl({ src: imageUrl });
-        } else {
-          setBgImage(null);
-          return;
-        }
-      }
-
-      // Determine if this is an R2 asset (eligible for retry on 404)
-      const isR2Asset = imageUrl.startsWith('/backgrounds/');
-
-      if (isR2Asset) {
-        loadImageWithRetry(imageUrl, 0, abortController.signal)
-          .then((img) => {
-            if (!abortController.signal.aborted) setBgImage(img);
-          })
-          .catch((err) => {
-            if (err.name !== 'AbortError') {
-              console.error('Failed to load background image:', backgroundConfig.value);
-              setBgImage(null);
-            }
-          });
-      } else {
-        const img = new window.Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          if (!abortController.signal.aborted) setBgImage(img);
-        };
-        img.onerror = () => {
-          console.error('Failed to load background image:', backgroundConfig.value);
-          setBgImage(null);
-        };
-        img.src = imageUrl;
-      }
+      const img = new window.Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        if (!abortController.signal.aborted) setBgImage(img);
+      };
+      img.onerror = () => {
+        console.error('Failed to load background image:', backgroundConfig.value);
+        setBgImage(null);
+      };
+      img.src = imageValue;
     } else {
       setBgImage(null);
     }

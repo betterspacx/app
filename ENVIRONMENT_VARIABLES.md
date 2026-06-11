@@ -29,6 +29,13 @@ R2_API_TOKEN=your_r2_api_token
 CLOUDFLARE_D1_DATABASE_ID=your_d1_database_id
 ```
 
+### Better Auth Configuration
+```env
+BETTER_AUTH_SECRET=your_better_auth_secret_key
+BETTER_AUTH_API_KEY=your_better_auth_api_key
+BETTER_AUTH_URL=http://localhost:3000
+```
+
 ## Optional Variables
 
 ### Google Search Console Verification

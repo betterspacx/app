@@ -103,27 +103,6 @@ export function HTMLBackgroundLayer({
     // Skip crossfade on initial render
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      // For initial image backgrounds, preload to handle 404s
-      if (backgroundConfig.type === 'image') {
-        const url = extractImageUrl(backgroundStyle);
-        if (url && url.startsWith('/backgrounds/')) {
-          preloadImage(url, 0, abortController.signal)
-            .then((loadedUrl) => {
-              if (!abortController.signal.aborted) {
-                const style = {
-                  ...backgroundStyle,
-                  backgroundImage: `url(${loadedUrl})`,
-                };
-                setLayerAStyle(style);
-                setLayerBStyle(style);
-              }
-            })
-            .catch(() => {
-              // Use original URL as fallback
-            });
-          return () => abortController.abort();
-        }
-      }
       setLayerAStyle(backgroundStyle);
       setLayerBStyle(backgroundStyle);
       return;

@@ -1,8 +1,6 @@
 import { gradientColors, GradientKey } from './gradient-colors';
 import { SolidColorKey, solidColors } from './solid-colors';
 import { meshGradients, magicGradients, MeshGradientKey, MagicGradientKey } from './mesh-gradients';
-import { getR2ImageUrl } from '@/lib/r2';
-import { backgroundPaths } from '@/lib/r2-backgrounds';
 
 export type BackgroundType = 'gradient' | 'solid' | 'image';
 
@@ -73,14 +71,12 @@ export const getBackgroundCSS = (
     }
 
     case 'solid': {
-      // Handle transparent background
       if (value === 'transparent') {
         return {
           backgroundColor: 'transparent',
           opacity: 1,
         };
       }
-      // Handle direct color values (hex, rgb, rgba)
       if (typeof value === 'string' && (value.startsWith('#') || value.startsWith('rgb'))) {
         return {
           backgroundColor: value,
@@ -95,22 +91,7 @@ export const getBackgroundCSS = (
     }
 
     case 'image': {
-      // Local assets (from /public) are served directly
-      const isLocalPath = typeof value === 'string' && value.startsWith('/');
-
-      // Check if it's a known R2 background path
-      const isR2Path = typeof value === 'string' &&
-        !isLocalPath &&
-        !value.startsWith('blob:') &&
-        !value.startsWith('http') &&
-        !value.startsWith('data:') &&
-        backgroundPaths.includes(value);
-
-      // Get the image URL (R2 URL if it's a known path, otherwise use as-is)
-      const imageUrl = isR2Path
-        ? getR2ImageUrl({ src: value })
-        : value as string;
-
+      const imageUrl = typeof value === 'string' ? value : '';
       return {
         backgroundImage: `url(${imageUrl})`,
         backgroundSize: 'cover',

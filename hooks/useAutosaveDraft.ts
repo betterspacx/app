@@ -17,7 +17,6 @@ import {
   checkStorageAndCleanup,
   autoCleanIndexedDB,
 } from "@/lib/draft-storage";
-
 const AUTOSAVE_DELAY = 1000;
 
 export function useAutosaveDraft() {

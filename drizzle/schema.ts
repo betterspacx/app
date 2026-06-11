@@ -3,12 +3,16 @@
 
 import { sqliteTable, text, index } from "drizzle-orm/sqlite-core";
 
+// Application tables
 export const projects = sqliteTable("projects", {
   id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
   name: text("name").notNull(),
   createdAt: text("created_at").notNull().default(new Date().toISOString()),
   updatedAt: text("updated_at").notNull().default(new Date().toISOString()),
-});
+}, (table) => ({
+  userIdIdx: index("idx_projects_user_id").on(table.userId),
+}));
 
 export const assets = sqliteTable("assets", {
   id: text("id").primaryKey(),

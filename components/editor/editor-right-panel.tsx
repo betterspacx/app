@@ -1,7 +1,3 @@
-// Modified by konlyzx (2026) - Changed primary green colors to brand blue; added cursor-pointer to interactive elements
-// Modified by konlyzx (2026) - Optimized background thumbnail loading with lazy image component and IntersectionObserver cache
-// Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
-
 "use client";
 
 import * as React from "react";
@@ -10,12 +6,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowDown01Icon, ArrowUp01Icon, Settings02Icon, SparklesIcon, Image01Icon, Cancel01Icon } from "hugeicons-react";
 import { useDropzone } from "react-dropzone";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from "@/lib/constants";
-import { getR2ImageUrl } from "@/lib/r2";
 import {
   backgroundCategories,
   getAvailableCategories,
-  backgroundPaths,
-  getBackgroundThumbnailUrl,
 } from "@/lib/r2-backgrounds";
 import {
   gradientColors,
@@ -28,7 +21,7 @@ import { BackgroundEffects } from "@/components/controls/BackgroundEffects";
 import { PresetGallery } from "@/components/presets/PresetGallery";
 import { Perspective3DControls } from "@/components/controls/Perspective3DControls";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { LazyBackgroundImage } from "@/components/ui/lazy-background-image";
+import { CanvasThumbnail } from "@/components/ui/canvas-thumbnail";
 
 export function EditorRightPanel() {
   const {
@@ -92,6 +85,14 @@ export function EditorRightPanel() {
     multiple: false,
   });
 
+  const handleSelectImage = React.useCallback(
+    (path: string) => {
+      setBackgroundValue(path);
+      setBackgroundType("image");
+    },
+    [setBackgroundValue, setBackgroundType]
+  );
+
   return (
     <div className="w-full h-full bg-[rgb(26,26,26)] flex flex-col overflow-hidden md:w-80 border-l border-border">
       {/* Header */}
@@ -116,7 +117,6 @@ export function EditorRightPanel() {
 
       {expanded && (
         <>
-          {/* Content */}
           <div className="flex-1 overflow-y-auto p-4">
             <Tabs
               value={activeTab}
@@ -157,13 +157,11 @@ export function EditorRightPanel() {
               </TabsContent>
 
               <TabsContent value="settings" className="mt-0 space-y-6">
-                {/* Background Section */}
                 <div className="space-y-4">
                   <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide">
                     Background
                   </h4>
 
-                  {/* Opacity */}
                   <Slider
                     value={[
                       backgroundConfig.opacity !== undefined
@@ -182,7 +180,6 @@ export function EditorRightPanel() {
                     )}%`}
                   />
 
-                  {/* Border Radius */}
                   <div className="space-y-3">
                     <div className="flex gap-2 mb-2">
                       <Button
@@ -227,10 +224,8 @@ export function EditorRightPanel() {
                     />
                   </div>
 
-                  {/* Background Effects */}
                   <BackgroundEffects />
 
-                  {/* Background Type Selector */}
                   <div className="space-y-3">
                     <Label className="text-xs font-medium text-muted-foreground">
                       Background Type
@@ -309,7 +304,6 @@ export function EditorRightPanel() {
                     </div>
                   </div>
 
-                  {/* Gradient Selector */}
                   {backgroundConfig.type === "gradient" && (
                     <div className="space-y-3">
                       <Label className="text-xs font-medium text-muted-foreground">
@@ -337,7 +331,6 @@ export function EditorRightPanel() {
                     </div>
                   )}
 
-                  {/* Solid Color Selector */}
                   {backgroundConfig.type === "solid" && (
                     <div className="space-y-3">
                       <Label className="text-xs font-medium text-muted-foreground">
@@ -365,80 +358,52 @@ export function EditorRightPanel() {
                     </div>
                   )}
 
-                  {/* Image Background Selector */}
                   {backgroundConfig.type === "image" && (
                     <div className="space-y-4">
-                      {/* Current Background Preview */}
-                      {backgroundConfig.value &&
+                      {backgroundConfig.type === "image" &&
+                        backgroundConfig.value &&
                         (backgroundConfig.value.startsWith("blob:") ||
                           backgroundConfig.value.startsWith("http") ||
-                          backgroundConfig.value.startsWith("data:") ||
-                          backgroundPaths.includes(
-                            backgroundConfig.value
-                          )) && (
+                          backgroundConfig.value.startsWith("data:")) && (
                           <div className="space-y-2">
                             <Label className="text-xs font-medium text-muted-foreground">
                               Current Background
                             </Label>
                             <div className="relative rounded-lg overflow-hidden border border-border aspect-video bg-muted">
-                              {(() => {
-                                // Check if it's a known R2 background path
-                                const isR2Path =
-                                  typeof backgroundConfig.value === "string" &&
-                                  !backgroundConfig.value.startsWith("blob:") &&
-                                  !backgroundConfig.value.startsWith("http") &&
-                                  !backgroundConfig.value.startsWith("data:") &&
-                                  backgroundPaths.includes(
-                                    backgroundConfig.value
+                              <img
+                                src={backgroundConfig.value as string}
+                                alt="Current background"
+                                className="w-full h-full object-cover"
+                              />
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="absolute top-2 right-2 flex items-center gap-1.5 bg-destructive hover:bg-destructive/90 text-destructive-foreground border-0 px-3 py-1.5 h-auto"
+                                onClick={() => {
+                                  setBackgroundType("gradient");
+                                  setBackgroundValue(
+                                    "vibrant_orange_pink"
                                   );
-
-                                // Get the image URL
-                                const imageUrl = isR2Path
-                                  ? getR2ImageUrl({ src: backgroundConfig.value as string })
-                                  : (backgroundConfig.value as string);
-
-                                return (
-                                  <>
-                                    <img
-                                      src={imageUrl}
-                                      alt="Current background"
-                                      className="w-full h-full object-cover"
-                                    />
-                                    <Button
-                                      variant="destructive"
-                                      size="sm"
-                                      className="absolute top-2 right-2 flex items-center gap-1.5 bg-destructive hover:bg-destructive/90 text-destructive-foreground border-0 px-3 py-1.5 h-auto"
-                                      onClick={() => {
-                                        // Reset to default gradient
-                                        setBackgroundType("gradient");
-                                        setBackgroundValue(
-                                          "vibrant_orange_pink"
-                                        );
-                                        // If it's a blob URL, revoke it
-                                        if (
-                                          backgroundConfig.value.startsWith(
-                                            "blob:"
-                                          )
-                                        ) {
-                                          URL.revokeObjectURL(
-                                            backgroundConfig.value
-                                          );
-                                        }
-                                      }}
-                                    >
-                                      <Cancel01Icon className="size-3.5" />
-                                      <span className="text-xs font-medium">
-                                        Remove
-                                      </span>
-                                    </Button>
-                                  </>
-                                );
-                              })()}
+                                  if (
+                                    backgroundConfig.value.startsWith(
+                                      "blob:"
+                                    )
+                                  ) {
+                                    URL.revokeObjectURL(
+                                      backgroundConfig.value
+                                    );
+                                  }
+                                }}
+                              >
+                                <Cancel01Icon className="size-3.5" />
+                                <span className="text-xs font-medium">
+                                  Remove
+                                </span>
+                              </Button>
                             </div>
                           </div>
                         )}
 
-                      {/* Preset Backgrounds */}
                       {backgroundCategories &&
                         Object.keys(backgroundCategories).length > 0 && (
                           <div className="space-y-3">
@@ -471,37 +436,26 @@ export function EditorRightPanel() {
                                       </Label>
                                       <div className="grid grid-cols-2 gap-2 overflow-y-auto pb-2 max-h-64">
                                         {categoryBackgrounds.map(
-                                          (imagePath: string, idx: number) => {
-                                            const thumbnailUrl = getBackgroundThumbnailUrl(imagePath);
-
-                                            return (
-                                              <button
-                                                key={`${category}-${idx}`}
-                                                onClick={() => {
-                                                  setBackgroundValue(imagePath);
-                                                  setBackgroundType("image");
-                                                }}
-                                                className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
-                                                  backgroundConfig.value ===
-                                                  imagePath
-                                                    ? "border-primary ring-2 ring-ring"
-                                                    : "border-border hover:border-border/80"
-                                                }`}
-                                                title={`${categoryDisplayName} ${
-                                                  idx + 1
-                                                }`}
-                                              >
-                                                <LazyBackgroundImage
-                                                  src={thumbnailUrl}
-                                                  alt={`${categoryDisplayName} ${
-                                                    idx + 1
-                                                  }`}
-                                                  className="w-full h-full"
-                                                  isSelected={backgroundConfig.value === imagePath}
-                                                />
-                                              </button>
-                                            );
-                                          }
+                                          (imagePath: string, idx: number) => (
+                                            <button
+                                              key={`${category}-${idx}`}
+                                              onClick={() => handleSelectImage(imagePath)}
+                                              className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
+                                                backgroundConfig.value ===
+                                                imagePath
+                                                  ? "border-primary ring-2 ring-ring"
+                                                  : "border-border hover:border-border/80"
+                                              }`}
+                                              title={`${categoryDisplayName} ${
+                                                idx + 1
+                                              }`}
+                                            >
+                                              <CanvasThumbnail
+                                                src={imagePath}
+                                                className="w-full h-full"
+                                              />
+                                            </button>
+                                          )
                                         )}
                                       </div>
                                     </div>
@@ -511,7 +465,6 @@ export function EditorRightPanel() {
                           </div>
                         )}
 
-                      {/* Upload Background Image */}
                       <div className="space-y-2">
                         <Label className="text-xs font-medium text-muted-foreground">
                           Upload Background Image

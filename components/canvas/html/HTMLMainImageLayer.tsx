@@ -362,14 +362,16 @@ export function HTMLMainImageLayer({
     };
   }, [isRotating, setScreenshot]);
 
-  // Handle remove image
+  // Handle remove image — only clears the image, keeps overlays/shapes/filters intact
   const handleRemoveImage = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (onRemoveImage) {
       onRemoveImage();
     } else {
-      useImageStore.getState().clearImage();
+      const state = useImageStore.getState();
+      if (state.uploadedImageUrl) URL.revokeObjectURL(state.uploadedImageUrl);
+      state.setUploadedImageUrl(null, null);
     }
   }, [onRemoveImage]);
 

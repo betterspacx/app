@@ -7,7 +7,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 const imageCache = new Map<string, HTMLImageElement>();
 const loadingPromises = new Map<string, Promise<HTMLImageElement>>();
 
-function loadImage(src: string): Promise<HTMLImageElement> {
+export function loadImage(src: string): Promise<HTMLImageElement> {
   // Return cached promise if already loading
   if (loadingPromises.has(src)) {
     return loadingPromises.get(src)!;
@@ -127,13 +127,27 @@ export function useLazyImage({ src, enabled = true, rootMargin = '100px' }: UseL
   };
 }
 
-// Preload specific images into cache
-export function preloadImages(srcs: string[]): void {
-  srcs.forEach((src) => {
-    if (!imageCache.has(src) && !loadingPromises.has(src)) {
+// Preload images into cache in small batches, yielding between batches
+// so the main thread stays responsive for visible thumbnails.
+export function preloadImages(srcs: string[], batchSize = 6): void {
+  const remaining = srcs.filter(
+    (src) => !imageCache.has(src) && !loadingPromises.has(src)
+  );
+  let index = 0;
+
+  function loadNextBatch() {
+    const batch = remaining.slice(index, index + batchSize);
+    index += batchSize;
+    batch.forEach((src) => {
       loadImage(src).catch(() => {});
+    });
+    if (index < remaining.length) {
+      setTimeout(loadNextBatch, 50);
     }
-  });
+  }
+
+  // Start first batch on microtask to let current render cycle finish
+  queueMicrotask(loadNextBatch);
 }
 
 // Clear cache if needed (e.g., for memory management)

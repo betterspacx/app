@@ -38,16 +38,6 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
-      // CORS headers for R2 background assets
-      {
-        source: "/backgrounds/:path*",
-        headers: [
-          { key: "Access-Control-Allow-Origin", value: "*" },
-          { key: "Access-Control-Allow-Methods", value: "GET, HEAD, OPTIONS" },
-          { key: "Access-Control-Allow-Headers", value: "Content-Type" },
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
       // COOP/COEP for editor routes (FFmpeg WASM)
       {
         source: "/editor/:path*",
@@ -78,13 +68,9 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Proxy R2 assets through same origin to avoid CORS issues
-  // (especially critical for canvas capture during video export)
-  // Also proxy PostHog through same origin to bypass ad blockers
+  // Proxy PostHog through same origin to bypass ad blockers
   async rewrites() {
-    const r2Url = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
     return [
-      // PostHog reverse proxy — static assets must come first
       {
         source: "/svc/static/:path*",
         destination: "https://us-assets.i.posthog.com/static/:path*",
@@ -93,15 +79,6 @@ const nextConfig: NextConfig = {
         source: "/svc/:path*",
         destination: "https://us.i.posthog.com/:path*",
       },
-      // R2 asset proxy
-      ...(r2Url
-        ? [
-            {
-              source: "/backgrounds/:path*",
-              destination: `${r2Url}/backgrounds/:path*`,
-            },
-          ]
-        : []),
     ];
   },
 
