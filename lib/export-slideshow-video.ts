@@ -204,7 +204,7 @@ async function exportSlideshowWithWebCodecs(
 
   const blob = await state.encoder.finalize();
   progress.done();
-  downloadBlob(blob, `screenshotstudio-video-${Date.now()}.mp4`);
+  downloadBlob(blob, `betterflow-video-${Date.now()}.mp4`);
   return { format: "mp4" as const };
 }
 
@@ -267,7 +267,7 @@ async function exportSlideshowWithFFmpeg(
 
   const blob = await encoder.encode();
   progress.done();
-  downloadBlob(blob, `screenshotstudio-video-${Date.now()}.${format}`);
+  downloadBlob(blob, `betterflow-video-${Date.now()}.${format}`);
   return { format };
 }
 
@@ -336,7 +336,7 @@ async function exportSlideshowWithMediaRecorder(
     progress.done();
     const blobType = actualFormat === "mp4" ? "video/mp4" : "video/webm";
     const blob = new Blob(chunks, { type: blobType });
-    downloadBlob(blob, `screenshotstudio-video-${Date.now()}.${actualFormat}`);
+    downloadBlob(blob, `betterflow-video-${Date.now()}.${actualFormat}`);
     return { format: actualFormat };
   } finally {
     if (stream) {
@@ -454,7 +454,7 @@ async function exportAnimationWithFFmpeg(
 
   progress.done();
 
-  downloadBlob(blob, `screenshotstudio-animation-${Date.now()}.${format}`);
+  downloadBlob(blob, `betterflow-animation-${Date.now()}.${format}`);
 
   return { format };
 }
@@ -503,7 +503,7 @@ async function exportAnimationWithWebCodecs(
 
   progress.done();
 
-  downloadBlob(blob, `screenshotstudio-animation-${Date.now()}.mp4`);
+  downloadBlob(blob, `betterflow-animation-${Date.now()}.mp4`);
 
   return { format: "mp4" as const };
 }
@@ -573,7 +573,7 @@ async function exportAnimationWithMediaRecorder(
     progress.done();
     const blobType = actualFormat === "mp4" ? "video/mp4" : "video/webm";
     const blob = new Blob(chunks, { type: blobType });
-    downloadBlob(blob, `screenshotstudio-animation-${Date.now()}.${actualFormat}`);
+    downloadBlob(blob, `betterflow-animation-${Date.now()}.${actualFormat}`);
     return { format: actualFormat };
   } finally {
     if (stream) {

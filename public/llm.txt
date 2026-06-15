@@ -1,47 +1,48 @@
-# Screenshot Studio - Free Online Image Editor
+# Better Flow - Free Screenshot Editor & Mockup Maker
 
-## About
-Screenshot Studio is a free, browser-based image editor for creating professional graphics in seconds. Transform screenshots into stunning social media images with beautiful backgrounds, text overlays, animations, and one-click export. No signup required.
+## What is Better Flow?
+Better Flow is a free, browser-based screenshot editor and mockup maker. It transforms plain screenshots into professional graphics in seconds — no signup, no watermarks, no cost. Users upload a screenshot, apply backgrounds, frames, effects, and animations, then export as PNG, JPG, WebP, MP4, WebM, or GIF.
 
 ## Core Features
-- **Image Editing** - Upload images and adjust size, opacity, borders, shadows, and border radius
-- **Beautiful Backgrounds** - 100+ premium backgrounds including gradients, mesh, radiant, paper textures, and patterns
-- **Text Overlays** - Add multiple text overlays with custom fonts, colors, sizes, positions, and shadows
-- **3D Transforms** - Apply perspective, rotation, and tilt effects for depth
-- **Animation Timeline** - Create animated slideshows with 20+ animation presets (zoom, pan, Ken Burns, tilt, fade)
-- **Video Export** - Export animations as MP4, WebM, or GIF using browser-based encoding
-- **High-Resolution Export** - Export up to 5x resolution as PNG, JPEG, or WebP
-- **Device Frames** - Add macOS, Windows, Arc browser frames to screenshots
+- **100+ Backgrounds** - Gradients, mesh, radiant, solid colors, paper textures, and custom image backgrounds
+- **Browser Mockups** - Safari and Chrome browser frames in light and dark mode
+- **Device Frames** - macOS window, Arc browser, Polaroid, glass, outline, and border frames
+- **3D Transforms** - Perspective tilt, rotation, and depth effects
+- **Text & Image Overlays** - Custom fonts (30+ Google Fonts), colors, sizes, shadows, and positioning
+- **Animation Timeline** - 20+ animation presets: zoom, pan, Ken Burns, tilt, fade, and custom keyframes
+- **Video Export** - Export as MP4, WebM, or GIF using FFmpeg WASM, WebCodecs, or MediaRecorder
+- **High-Resolution Export** - PNG, JPEG, WebP up to 5x scale
 - **Presets** - One-click professional styling presets
+- **No Signup Required** - All features available instantly
 
 ## Pages
-- Home: https://screenshot-studio.com/ - Landing page with features overview
-- Editor: https://screenshot-studio.com/home - Main canvas editor for creating designs
+- Editor: https://betterflow.site/ - Main canvas editor (all features available at root)
 
-## Technology Stack
-- Next.js 16 with App Router
-- React 19
-- TypeScript
-- HTML Canvas with modern-screenshot for rendering
-- Cloudflare R2 for asset storage
-- Tailwind CSS for styling
-- Zustand for state management
-- FFmpeg WASM for video encoding
+## Alternatives & Comparisons
+Better Flow is a free alternative to Pika Style, Shots.so, Screely, and Cleanshot X's decoration features. Unlike paid tools, Better Flow has no watermarks, no subscription, and no export limits.
 
 ## Use Cases
-- Creating social media graphics (Twitter/X, Instagram, LinkedIn)
-- Product screenshot beautification for SaaS landing pages
-- Developer portfolio and project showcase images
-- Marketing graphics and presentations
-- Animated slideshows and video content
+- Beautifying screenshots for SaaS landing pages and product marketing
+- Creating social media graphics for Twitter/X, LinkedIn, Instagram
+- Generating developer portfolio and project showcase images
+- Producing animated product demos and walkthroughs
+- Making code snippet screenshots with stylized backgrounds
 
 ## Target Audience
-Developers, designers, content creators, indie hackers, and anyone who needs to create professional visual designs quickly without design skills.
+Developers, designers, indie hackers, content creators, and product teams who need to create professional visual content quickly without design skills or paid software.
 
 ## Pricing
-100% free with no hidden costs, premium tiers, or watermarks. Unlimited exports and full feature access.
+100% free. No hidden costs, premium tiers, usage limits, or watermarks. Unlimited exports.
+
+## Technology
+- Next.js 16 (App Router), React 19, TypeScript
+- HTML Canvas + modern-screenshot for rendering
+- FFmpeg WASM, WebCodecs, MediaRecorder for video encoding
+- Cloudflare R2 for asset storage
+- Firebase Authentication
+- Zustand for state management
 
 ## Contact
-- Website: https://screenshot-studio.com
+- Website: https://betterflow.site
 - Twitter: https://x.com/konlyzx_
-- GitHub: https://github.com/KartikLabhshetwar/stage
+- GitHub: https://github.com/konlyzx/betterflow

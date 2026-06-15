@@ -132,7 +132,7 @@ export async function getPresignedUrl(
   });
 
   const command = new PutObjectCommand({
-    Bucket: process.env.R2_BUCKET_NAME || 'betterflow-storage',
+    Bucket: process.env.R2_BUCKET_NAME || 'better-flow-storage',
     Key: path,
   });
 

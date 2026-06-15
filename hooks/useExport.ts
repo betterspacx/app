@@ -265,7 +265,7 @@ export function useExport(selectedAspectRatio: string) {
       // Save to storage (95 → 97%)
       anim.set(96);
       const fileExtension = settings.format === 'jpeg' ? 'jpg' : settings.format === 'webp' ? 'webp' : 'png';
-      const fileName = `screenshot-studio-${Date.now()}.${fileExtension}`;
+      const fileName = `betterflow-${Date.now()}.${fileExtension}`;
 
       try {
         await saveExportedImage(

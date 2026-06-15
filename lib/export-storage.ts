@@ -4,7 +4,7 @@
 
 import type { ExportFormat, QualityPreset } from './export/types';
 
-const PREFS_KEY = 'screenshotstudio-export-preferences';
+const PREFS_KEY = 'betterflow-export-preferences';
 
 interface ExportPreferences {
   format: ExportFormat;

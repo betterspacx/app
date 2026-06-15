@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     const r2Key = `backgrounds/videos/${Date.now()}-${fileName}`;
 
     const command = new PutObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME || 'betterflow-storage',
+      Bucket: process.env.R2_BUCKET_NAME || 'better-flow-storage',
       Key: r2Key,
       ContentType: contentType,
     });

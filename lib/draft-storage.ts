@@ -2,10 +2,10 @@
 
 import { EditorState, ImageState, OmitFunctions } from './store';
 
-const DB_NAME = 'screenshotstudio-db';
+const DB_NAME = 'betterflow-db';
 const DB_VERSION = 1;
 const STORE_NAME = 'drafts';
-const DRAFT_KEY = 'screenshotstudio-draft';
+const DRAFT_KEY = 'betterflow-draft';
 
 // Storage limits
 const MAX_STORAGE_MB = 50;
