@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 
-const R2_ENDPOINT = `https://${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`;
-const R2_BUCKET = process.env.R2_BUCKET_NAME || process.env.NEXT_PUBLIC_R2_BUCKET_NAME || 'betterflow-storage';
+const R2_ENDPOINT = `https://${process.env.CLOUDFLARE_ACCOUNT_ID || process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
+const R2_BUCKET = process.env.R2_BUCKET_NAME || '';
 
 let s3Client: S3Client | null = null;
 
@@ -11,8 +11,8 @@ function getS3Client(): S3Client {
       region: 'auto',
       endpoint: R2_ENDPOINT,
       credentials: {
-        accessKeyId: process.env.R2_ACCESS_KEY_ID || process.env.NEXT_PUBLIC_R2_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || process.env.NEXT_PUBLIC_R2_SECRET_ACCESS_KEY || '',
+        accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
       },
     });
   }

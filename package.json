@@ -96,23 +96,23 @@
     "typescript-eslint": "^8.60.1"
   },
   "pnpm": {
-    "overrides": {
-      "protobufjs": "^7.5.5",
-      "minimatch": "^9.0.5",
-      "flatted": "^3.3.4",
-      "dompurify": "^3.2.4",
-      "picomatch": "^4.0.3",
-      "fast-xml-parser": "^5.3.7",
-      "defu": "^6.1.5",
-      "brace-expansion": "^2.0.2",
-      "follow-redirects": "^1.15.12",
-      "postcss": "^8.4.49",
-      "effect": "^3.19.0",
-      "esbuild": "^0.27.4"
-    },
     "onlyBuiltDependencies": [
       "@firebase/util",
       "protobufjs"
     ]
+  },
+  "overrides": {
+    "protobufjs": "^7.5.5",
+    "minimatch": "^9.0.5",
+    "flatted": "^3.3.4",
+    "dompurify": "^3.2.4",
+    "picomatch": "^4.0.3",
+    "fast-xml-parser": "^5.3.7",
+    "defu": "^6.1.5",
+    "brace-expansion": "^2.0.2",
+    "follow-redirects": "^1.15.12",
+    "postcss": "^8.4.49",
+    "effect": "^3.19.0",
+    "esbuild": "^0.27.4"
   }
 }
