@@ -15,9 +15,12 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [callbackUrl, setCallbackUrl] = useState("");
 
   useEffect(() => {
-    setIsDesktop(new URLSearchParams(window.location.search).get("desktop") === "1");
+    const params = new URLSearchParams(window.location.search);
+    setIsDesktop(params.get("desktop") === "1");
+    setCallbackUrl(params.get("callback") ?? "");
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,7 +30,10 @@ export default function LoginPage() {
 
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
-      if (isDesktop) {
+      if (callbackUrl) {
+        const token = await result.user.getIdToken();
+        window.location.href = `${callbackUrl}?token=${encodeURIComponent(token)}`;
+      } else if (isDesktop) {
         const token = await result.user.getIdToken();
         window.location.href = `/auth/desktop-callback?idtoken=${encodeURIComponent(token)}`;
       } else {
@@ -47,7 +53,20 @@ export default function LoginPage() {
       provider.addScope("read:user");
       provider.addScope("user:email");
       const result = await signInWithPopup(auth, provider);
-      if (isDesktop) {
+
+      if (callbackUrl) {
+        // Desktop deep-link flow: send GitHub access token so the desktop app
+        // can sign in with signInWithCredential (avoids custom token backend).
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        const accessToken = credential?.accessToken;
+        if (accessToken) {
+          window.location.href = `${callbackUrl}?github_token=${encodeURIComponent(accessToken)}`;
+        } else {
+          // Fallback to Firebase ID token if GitHub token unavailable
+          const token = await result.user.getIdToken();
+          window.location.href = `${callbackUrl}?token=${encodeURIComponent(token)}`;
+        }
+      } else if (isDesktop) {
         const token = await result.user.getIdToken();
         window.location.href = `/auth/desktop-callback?idtoken=${encodeURIComponent(token)}`;
       } else {
