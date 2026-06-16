@@ -1,6 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
+
 export default function DesktopCallbackPage() {
+  useEffect(() => {
+    // Notify the Tauri main window that GitHub OAuth completed
+    type TauriWindow = Window & {
+      __TAURI__?: { event: { emit: (event: string) => Promise<void> } };
+    };
+    const tauri = (window as TauriWindow).__TAURI__;
+    if (tauri?.event) {
+      tauri.event.emit("desktop-auth-complete").catch(() => {});
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="text-center space-y-3 max-w-sm">
