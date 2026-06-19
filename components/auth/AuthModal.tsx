@@ -357,17 +357,17 @@ function AuthCard({ onClose }: { onClose: () => void }) {
                 {tab === 'signup' && (
                   <div className="space-y-1.5">
                     <Label htmlFor="auth-name" className="text-xs text-muted-foreground">Name</Label>
-                    <Input id="auth-name" type="text" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} className="h-9 text-sm" required />
+                    <Input id="auth-name" type="text" autoComplete="name" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} className="h-9 text-sm" required />
                   </div>
                 )}
                 <div className="space-y-1.5">
                   <Label htmlFor="auth-email" className="text-xs text-muted-foreground">Email</Label>
-                  <Input id="auth-email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="h-9 text-sm" required />
+                  <Input id="auth-email" type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="h-9 text-sm" required />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="auth-password" className="text-xs text-muted-foreground">Password</Label>
                   <div className="relative">
-                    <Input id="auth-password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className="h-9 text-sm pr-9" required minLength={8} />
+                    <Input id="auth-password" type={showPassword ? 'text' : 'password'} autoComplete={tab === 'login' ? 'current-password' : 'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} className="h-9 text-sm pr-9" required minLength={8} />
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" tabIndex={-1}>
                       {showPassword ? (
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

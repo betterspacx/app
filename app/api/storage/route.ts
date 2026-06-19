@@ -54,6 +54,10 @@ function isProfileKey(key: string): boolean {
   return key.endsWith('/profile.json');
 }
 
+function isProjectsIndexKey(key: string): boolean {
+  return key.endsWith('/projects-index.json');
+}
+
 function createDefaultProfile(user: FirebaseUser): string {
   const provider = user.providerId === 'github.com' ? 'github' : 'email';
   const username = user.displayName || user.email?.split('@')[0] || `user_${user.uid.slice(0, 6)}`;
@@ -65,6 +69,10 @@ function createDefaultProfile(user: FirebaseUser): string {
     cloudStorageEnabled: true,
   };
   return JSON.stringify(profile, null, 2);
+}
+
+function createDefaultProjectsIndex(): string {
+  return JSON.stringify({ projects: [] });
 }
 
 export async function GET(request: NextRequest) {
@@ -108,6 +116,10 @@ export async function GET(request: NextRequest) {
       if (isProfileKey(key)) {
         data = createDefaultProfile(user);
         await r2.uploadFile(key, data, 'application/json');
+        return NextResponse.json({ data, created: true });
+      }
+      if (isProjectsIndexKey(key)) {
+        data = createDefaultProjectsIndex();
         return NextResponse.json({ data, created: true });
       }
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
