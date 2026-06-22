@@ -6,12 +6,6 @@ import { useImageStore } from '@/lib/store';
 
 const STORAGE_KEY = 'spacx-announcement-browser-mockups-v1';
 const COVER_IMAGE = '/announcements/browsers/announcement1.png';
-const BROWSER_PREVIEWS = [
-  { src: '/mesh/Bliss.webp', label: 'Safari' },
-  { src: '/raycast/chromatic_dark_1.webp', label: 'Safari Dark' },
-  { src: '/radiant/radiant2.jpg', label: 'Chrome' },
-  { src: '/mesh/Horizon.webp', label: 'Chrome Dark' },
-];
 
 export function AnnouncementModal() {
   const [open, setOpen] = React.useState(false);
@@ -89,26 +83,6 @@ export function AnnouncementModal() {
                   className="block w-full h-full object-cover scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-              </div>
-              <div className="relative grid grid-cols-2 gap-2 px-5 pt-4">
-                {BROWSER_PREVIEWS.map((preview) => (
-                  <div
-                    key={preview.label}
-                    className="relative overflow-hidden rounded-xl border border-white/10 aspect-[5/4]"
-                  >
-                    <img
-                      src={preview.src}
-                      alt={preview.label}
-                      loading="lazy"
-                      draggable={false}
-                      className="block w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                    <span className="absolute bottom-1.5 left-2 text-[10px] font-medium text-white/80">
-                      {preview.label}
-                    </span>
-                  </div>
-                ))}
               </div>
 
               <div className="relative flex flex-col items-center text-center px-7 pb-7 pt-5 space-y-4">

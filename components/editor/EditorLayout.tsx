@@ -4,9 +4,6 @@
 'use client';
 
 import * as React from 'react';
-import { LeftEditPanel } from './LeftEditPanel';
-import { TemplatesPanel } from './TemplatesPanel';
-import { RightSettingsPanel } from './RightSettingsPanel';
 import { UnifiedRightPanel } from './unified-right-panel';
 import { EditorContent } from './EditorContent';
 import { EditorCanvas } from '@/components/canvas/EditorCanvas';
@@ -24,6 +21,10 @@ import { TimelineEditor } from '@/components/timeline';
 import { useImageStore } from '@/lib/store';
 import { trackEditorOpen } from '@/lib/analytics';
 import { cn } from '@/lib/utils';
+
+const RightSettingsPanel = React.lazy(() => import('./RightSettingsPanel').then(m => ({ default: m.RightSettingsPanel })));
+const LeftEditPanel = React.lazy(() => import('./LeftEditPanel').then(m => ({ default: m.LeftEditPanel })));
+const TemplatesPanel = React.lazy(() => import('./TemplatesPanel').then(m => ({ default: m.TemplatesPanel })));
 
 function EditorMain() {
   const isMobile = useIsMobile();
@@ -70,7 +71,9 @@ function EditorMain() {
       <EditorStoreSync />
       {!isMobile && (
         <ClientOnly>
-          <TemplatesPanel />
+          <React.Suspense fallback={null}>
+            <TemplatesPanel />
+          </React.Suspense>
         </ClientOnly>
       )}
       <div
@@ -93,7 +96,9 @@ function EditorMain() {
           {!isMobile && (
             <div className="pb-2 pl-2 shrink-0">
               <div className="h-full rounded-2xl overflow-hidden shadow-lg border border-border/50 bg-[#1c1c1e]">
-                <LeftEditPanel />
+                <React.Suspense fallback={null}>
+                  <LeftEditPanel />
+                </React.Suspense>
               </div>
             </div>
           )}
@@ -107,9 +112,11 @@ function EditorMain() {
           </div>
           {!isMobile && (
             <div className="pb-2 pr-2">
-              <div className="h-full rounded-2xl overflow-hidden shadow-lg border border-border/50 bg-muted/50">
-                <RightSettingsPanel />
-              </div>
+              <React.Suspense fallback={<div className="h-full rounded-2xl border border-border/50 bg-muted/50" />}>
+                <div className="h-full rounded-2xl overflow-hidden shadow-lg border border-border/50 bg-muted/50">
+                  <RightSettingsPanel />
+                </div>
+              </React.Suspense>
             </div>
           )}
           {isMobile && (

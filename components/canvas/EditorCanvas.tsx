@@ -8,11 +8,23 @@ import { useState } from 'react';
 import React from 'react';
 import { ExportSlideshowDialog } from '@/lib/export-slideshow-dialog';
 import { aspectRatios } from '@/lib/constants/aspect-ratios';
+import { isVideoFile } from '@/lib/constants';
+import { gradientColors } from '@/lib/constants/gradient-colors';
 
 const ClientCanvas = dynamic(() => import('@/components/canvas/ClientCanvas'), {
   ssr: false,
   loading: () => (
     <div className="flex-1 flex items-center justify-center min-h-[400px]">
+      <div
+        id="canvas-background"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: gradientColors.vibrant_orange_pink,
+          opacity: 1,
+          pointerEvents: 'none',
+        }}
+      />
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
     </div>
   ),
@@ -36,6 +48,15 @@ export function EditorCanvas() {
   // Check both stores - imageStore is the source of truth (tracked by undo/redo)
   const hasImage = !!uploadedImageUrl && !!screenshot.src;
   const [exportOpen, setExportOpen] = useState(false);
+
+  // Preload the image before ClientCanvas finishes loading its chunk
+  React.useEffect(() => {
+    if (uploadedImageUrl && !isVideoFile(uploadedImageUrl)) {
+      const img = new window.Image();
+      img.crossOrigin = 'anonymous';
+      img.src = uploadedImageUrl;
+    }
+  }, [uploadedImageUrl]);
 
   React.useEffect(() => {
     if (!isPreviewing) return;

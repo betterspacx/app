@@ -153,3 +153,9 @@ export const ASPECT_RATIO_PRESETS: AspectRatioPreset[] = [
 ];
 
 export const DEFAULT_ASPECT_RATIO = ASPECT_RATIO_PRESETS.find((p) => p.id === 'custom') || ASPECT_RATIO_PRESETS[0];
+
+export function isVideoFile(url: string): boolean {
+  const videoExtensions = ['.webm', '.mp4', '.mov', '.avi', '.mkv'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some((ext) => lowerUrl.includes(ext));
+}

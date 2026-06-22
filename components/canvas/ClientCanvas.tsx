@@ -23,6 +23,7 @@ import {
   HTMLBlurRegionLayer,
   SnapAlignmentGuides,
 } from './html';
+import { isVideoFile } from '@/lib/constants';
 
 // Reference to the HTML canvas container for export
 let globalCanvasContainer: HTMLDivElement | null = null;
@@ -94,8 +95,8 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
   const responsiveDimensions = useResponsiveCanvasDimensions();
 
   const [viewportSize, setViewportSize] = useState({
-    width: 1920,
-    height: 1080,
+    width: typeof window !== 'undefined' ? window.innerWidth : 1920,
+    height: typeof window !== 'undefined' ? window.innerHeight : 1080,
   });
 
   const [patternImage, setPatternImage] = useState<HTMLCanvasElement | null>(null);
@@ -409,6 +410,7 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
       ref={containerRef}
       id="image-render-card"
       className="flex items-center justify-center"
+      initial={false}
       animate={{
         width: containerWidth,
         height: containerHeight,
@@ -434,6 +436,7 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
         onPointerDown={handleCanvasDeselect}
         style={{
           isolation: 'isolate',
+          contain: 'layout style',
         }}
       >
         <HTMLBackgroundLayer
@@ -598,13 +601,6 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
 
 export function getCanvasContainer(): HTMLDivElement | null {
   return globalCanvasContainer;
-}
-
-// Check if URL is a video file
-function isVideoFile(url: string): boolean {
-  const videoExtensions = ['.webm', '.mp4', '.mov', '.avi', '.mkv'];
-  const lowerUrl = url.toLowerCase();
-  return videoExtensions.some((ext) => lowerUrl.includes(ext));
 }
 
 export default function ClientCanvas() {

@@ -1,5 +1,5 @@
 {
-  "name": "screenshot-studio",
+  "name": "betterflow",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -104,20 +104,20 @@
     "onlyBuiltDependencies": [
       "@firebase/util",
       "protobufjs"
-    ]
-  },
-  "overrides": {
-    "protobufjs": "^7.5.5",
-    "minimatch": "^9.0.5",
-    "flatted": "^3.3.4",
-    "dompurify": "^3.2.4",
-    "picomatch": "^4.0.3",
-    "fast-xml-parser": "^5.3.7",
-    "defu": "^6.1.5",
-    "brace-expansion": "^2.0.2",
-    "follow-redirects": "^1.15.12",
-    "postcss": "^8.4.49",
-    "effect": "^3.19.0",
-    "esbuild": "^0.27.4"
+    ],
+    "overrides": {
+      "protobufjs": "^7.5.6",
+      "minimatch": "^9.0.5",
+      "flatted": "^3.3.4",
+      "dompurify": "^3.4.11",
+      "picomatch": "^4.0.3",
+      "fast-xml-parser": "^5.3.7",
+      "defu": "^6.1.5",
+      "brace-expansion": "^2.0.2",
+      "follow-redirects": "^1.15.12",
+      "postcss": "^8.5.10",
+      "effect": "^3.19.0",
+      "esbuild": "^0.27.4"
+    }
   }
 }
