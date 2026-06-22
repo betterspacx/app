@@ -1,7 +1,7 @@
 // Modified by konlyzx (2026) - Removed hardcoded R2 URLs; should be configured via environment variables
 // Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
 
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
@@ -10,13 +10,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         // R2 custom domain - configure via NEXT_PUBLIC_R2_CUSTOM_DOMAIN
-        protocol: "https",
-        hostname: process.env.NEXT_PUBLIC_R2_CUSTOM_DOMAIN || "localhost",
+        protocol: 'https',
+        hostname: process.env.NEXT_PUBLIC_R2_CUSTOM_DOMAIN || 'localhost',
       },
       {
         // R2 dev bucket - configure via NEXT_PUBLIC_R2_PUBLIC_URL
-        protocol: "https",
-        hostname: process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace("https://", "") || "localhost",
+        protocol: 'https',
+        hostname: process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace('https://', '') || 'localhost',
       },
     ],
     // Disable image optimization for R2 backgrounds to avoid validation errors
@@ -30,27 +30,27 @@ const nextConfig: NextConfig = {
     return [
       // Security and SEO headers for all pages
       {
-        source: "/(.*)",
+        source: '/(.*)',
         headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "X-DNS-Prefetch-Control", value: "on" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },
       // COOP/COEP for editor routes (FFmpeg WASM)
       {
-        source: "/editor/:path*",
+        source: '/editor/:path*',
         headers: [
-          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
         ],
       },
       {
-        source: "/home",
+        source: '/home',
         headers: [
-          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
         ],
       },
     ];
@@ -61,8 +61,8 @@ const nextConfig: NextConfig = {
     return [
       // Old /home editor URL → new / root
       {
-        source: "/home",
-        destination: "/",
+        source: '/home',
+        destination: '/',
         permanent: true,
       },
     ];
@@ -72,25 +72,24 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/svc/static/:path*",
-        destination: "https://us-assets.i.posthog.com/static/:path*",
+        source: '/svc/static/:path*',
+        destination: 'https://us-assets.i.posthog.com/static/:path*',
       },
       {
-        source: "/svc/:path*",
-        destination: "https://us.i.posthog.com/:path*",
+        source: '/svc/:path*',
+        destination: 'https://us.i.posthog.com/:path*',
       },
     ];
   },
 
   // REQUIRED for react-konva
   webpack: (config) => {
-    config.externals = [...(config.externals || []), { canvas: "canvas" }];
+    config.externals = [...(config.externals || []), { canvas: 'canvas' }];
     return config;
   },
 
   // Turbopack configuration (Next.js 16+ default bundler)
   turbopack: {},
-
 };
 
 export default nextConfig;

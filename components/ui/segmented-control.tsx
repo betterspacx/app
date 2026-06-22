@@ -17,13 +17,7 @@ interface SegmentedControlProps {
   size?: 'sm' | 'md';
 }
 
-export function SegmentedControl({
-  options,
-  value,
-  onChange,
-  className,
-  size = 'md',
-}: SegmentedControlProps) {
+export function SegmentedControl({ options, value, onChange, className, size = 'md' }: SegmentedControlProps) {
   const activeIndex = options.findIndex((o) => o.id === value);
 
   return (
@@ -37,9 +31,7 @@ export function SegmentedControl({
       <div
         className={cn(
           'absolute bg-background dark:bg-accent transition-all duration-200 ease-out',
-          size === 'sm'
-            ? 'top-[2px] bottom-[2px] rounded-[8px]'
-            : 'top-0.5 bottom-0.5 rounded-[10px]'
+          size === 'sm' ? 'top-[2px] bottom-[2px] rounded-[8px]' : 'top-0.5 bottom-0.5 rounded-[10px]'
         )}
         style={{
           left: `calc(${activeIndex * (100 / options.length)}% + 2px)`,
@@ -52,24 +44,13 @@ export function SegmentedControl({
           onClick={() => onChange(option.id)}
           className={cn(
             'relative z-10 flex-1 flex items-center justify-center gap-1.5 transition-colors duration-150 cursor-pointer',
-            size === 'sm'
-              ? 'py-1.5 px-2 rounded-[8px]'
-              : 'py-2 px-2.5 rounded-[10px]',
-            value === option.id
-              ? 'text-foreground'
-              : 'text-muted-foreground hover:text-foreground'
+            size === 'sm' ? 'py-1.5 px-2 rounded-[8px]' : 'py-2 px-2.5 rounded-[10px]',
+            value === option.id ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
           )}
         >
           {option.icon}
           {option.label && (
-            <span
-              className={cn(
-                'font-medium',
-                size === 'sm' ? 'text-[10px]' : 'text-[11px]'
-              )}
-            >
-              {option.label}
-            </span>
+            <span className={cn('font-medium', size === 'sm' ? 'text-[10px]' : 'text-[11px]')}>{option.label}</span>
           )}
         </button>
       ))}

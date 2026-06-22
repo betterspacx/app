@@ -20,16 +20,8 @@ export function LazyBackgroundImage({ src, alt, className, isSelected }: LazyBac
   });
 
   return (
-    <div
-      ref={elementRef}
-      className={cn('w-full h-full relative overflow-hidden', className)}
-    >
-      {/* Skeleton / Placeholder */}
-      {!isLoaded && !hasError && (
-        <div className="absolute inset-0 bg-muted animate-pulse" />
-      )}
-
-      {/* Actual image - only render when loaded */}
+    <div ref={elementRef} className={cn('w-full h-full relative overflow-hidden', className)}>
+      {!isLoaded && !hasError && <div className="absolute inset-0 bg-muted animate-pulse" />}
       {isLoaded && !hasError && (
         <img
           src={src}
@@ -39,13 +31,7 @@ export function LazyBackgroundImage({ src, alt, className, isSelected }: LazyBac
           decoding="async"
         />
       )}
-
-      {/* Error state - subtle placeholder, no text */}
-      {hasError && (
-        <div className="absolute inset-0 bg-muted/30" />
-      )}
-
-      {/* Selection ring overlay */}
+      {hasError && <div className="absolute inset-0 bg-muted/30" />}
       {isSelected && (
         <div className="absolute inset-0 border-2 border-blue-500 ring-1 ring-blue-500/30 rounded-lg pointer-events-none" />
       )}

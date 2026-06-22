@@ -1,13 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import {
-  useEditorStore,
-  useImageStore,
-  OmitFunctions,
-  EditorState,
-  ImageState,
-} from "@/lib/store";
+import { useEffect, useRef, useState } from 'react';
+import { useEditorStore, useImageStore, OmitFunctions, EditorState, ImageState } from '@/lib/store';
 import {
   saveDraft,
   getDraft,
@@ -16,7 +10,7 @@ import {
   migrateFromLocalStorage,
   checkStorageAndCleanup,
   autoCleanIndexedDB,
-} from "@/lib/draft-storage";
+} from '@/lib/draft-storage';
 const AUTOSAVE_DELAY = 1000;
 
 export function useAutosaveDraft() {
@@ -77,26 +71,19 @@ export function useAutosaveDraft() {
 
         // Restore rest of image state
         if (img) {
-          if (img.selectedGradient)
-            imageStore.setGradient(img.selectedGradient);
-          if (img.borderRadius !== undefined)
-            imageStore.setBorderRadius(img.borderRadius);
+          if (img.selectedGradient) imageStore.setGradient(img.selectedGradient);
+          if (img.borderRadius !== undefined) imageStore.setBorderRadius(img.borderRadius);
           if (img.backgroundBorderRadius !== undefined)
             imageStore.setBackgroundBorderRadius(img.backgroundBorderRadius);
-          if (img.selectedAspectRatio)
-            imageStore.setAspectRatio(img.selectedAspectRatio);
-          if (img.backgroundConfig)
-            imageStore.setBackgroundConfig(img.backgroundConfig);
-          if (img.backgroundBlur !== undefined)
-            imageStore.setBackgroundBlur(img.backgroundBlur);
-          if (img.backgroundNoise !== undefined)
-            imageStore.setBackgroundNoise(img.backgroundNoise);
-          if (img.imageOpacity !== undefined)
-            imageStore.setImageOpacity(img.imageOpacity);
-          if (img.imageScale !== undefined)
-            imageStore.setImageScale(img.imageScale);
+          if (img.selectedAspectRatio) imageStore.setAspectRatio(img.selectedAspectRatio);
+          if (img.backgroundConfig) imageStore.setBackgroundConfig(img.backgroundConfig);
+          if (img.backgroundBlur !== undefined) imageStore.setBackgroundBlur(img.backgroundBlur);
+          if (img.backgroundNoise !== undefined) imageStore.setBackgroundNoise(img.backgroundNoise);
+          if (img.imageOpacity !== undefined) imageStore.setImageOpacity(img.imageOpacity);
+          if (img.imageScale !== undefined) imageStore.setImageScale(img.imageScale);
           if (img.imageBorder) imageStore.setImageBorder(img.imageBorder);
           if (img.imageShadow) imageStore.setImageShadow(img.imageShadow);
+          useImageStore.setState({ activePresetId: img.activePresetId ?? null });
           if (img.perspective3D) imageStore.setPerspective3D(img.perspective3D);
 
           imageStore.clearTextOverlays();
@@ -117,7 +104,7 @@ export function useAutosaveDraft() {
         setLastSaved(new Date(draft.timestamp));
         hasLoadedRef.current = true;
       } catch (error) {
-        console.error("Failed to load draft:", error);
+        console.error('Failed to load draft:', error);
         hasLoadedRef.current = true;
       }
     };
@@ -138,15 +125,7 @@ export function useAutosaveDraft() {
 
       saveTimeoutRef.current = setTimeout(async () => {
         try {
-          const {
-            screenshot,
-            background,
-            shadow,
-            pattern,
-            frame,
-            canvas,
-            noise,
-          } = editorStore;
+          const { screenshot, background, shadow, pattern, frame, canvas, noise } = editorStore;
 
           const {
             imageName,
@@ -164,6 +143,7 @@ export function useAutosaveDraft() {
             imageScale,
             imageBorder,
             imageShadow,
+            activePresetId,
             perspective3D,
           } = imageStore;
 
@@ -186,6 +166,7 @@ export function useAutosaveDraft() {
             is: imageScale,
             ib: imageBorder,
             ish: imageShadow,
+            ap: activePresetId,
             p3d: perspective3D,
             tc: textOverlays.length,
             oc: imageOverlays.length,
@@ -203,26 +184,24 @@ export function useAutosaveDraft() {
 
           // Convert screenshot blob URL to base64
           let processedScreenshotSrc = screenshot.src;
-          if (screenshot.src && screenshot.src.startsWith("blob:")) {
+          if (screenshot.src && screenshot.src.startsWith('blob:')) {
             processedScreenshotSrc = await blobUrlToBase64(screenshot.src);
           }
 
           // Convert background config blob URL to base64
           const processedBackgroundConfig = { ...backgroundConfig };
           if (
-            backgroundConfig.type === "image" &&
-            typeof backgroundConfig.value === "string" &&
-            backgroundConfig.value.startsWith("blob:")
+            backgroundConfig.type === 'image' &&
+            typeof backgroundConfig.value === 'string' &&
+            backgroundConfig.value.startsWith('blob:')
           ) {
-            processedBackgroundConfig.value = await blobUrlToBase64(
-              backgroundConfig.value
-            );
+            processedBackgroundConfig.value = await blobUrlToBase64(backgroundConfig.value);
           }
 
           // Process image overlays
           const processedImageOverlays = await Promise.all(
             imageOverlays.map(async (overlay) => {
-              if (overlay.src.startsWith("blob:") && overlay.isCustom) {
+              if (overlay.src.startsWith('blob:') && overlay.isCustom) {
                 const base64Src = await blobUrlToBase64(overlay.src);
                 return { ...overlay, src: base64Src };
               }
@@ -260,6 +239,7 @@ export function useAutosaveDraft() {
             imageScale,
             imageBorder,
             imageShadow,
+            activePresetId,
             imageStylePreset: 'default',
             shadowPreset: 'soft',
             perspective3D,
@@ -283,7 +263,7 @@ export function useAutosaveDraft() {
             slideshow: {
               enabled: false,
               defaultDuration: 0,
-              animation: "none",
+              animation: 'none',
             },
             isPreviewing: false,
             previewIndex: 0,
@@ -364,14 +344,13 @@ export function useAutosaveDraft() {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isSaving) {
         e.preventDefault();
-        e.returnValue =
-          "You have unsaved changes. Are you sure you want to leave?";
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
         return e.returnValue;
       }
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isSaving]);
 
   const clearDraft = async () => {
@@ -395,7 +374,7 @@ export function useAutosaveDraft() {
 
       setLastSaved(null);
     } catch (error) {
-      console.error("Failed to clear draft:", error);
+      console.error('Failed to clear draft:', error);
       throw error;
     }
   };

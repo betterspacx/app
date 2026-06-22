@@ -1,12 +1,17 @@
 export const gradientColors = {
-  vibrant_orange_pink: 'linear-gradient(135deg, rgb(255, 100, 50) 12.8%, rgb(255, 0, 101) 43.52%, rgb(123, 46, 255) 84.34%)',
-  peach_pink_purple: 'linear-gradient(135deg, rgb(255, 177, 122) 12.8%, rgb(233, 107, 189) 43.52%, rgb(123, 79, 255) 84.34%)',
-  cyan_blue_purple: 'linear-gradient(135deg, rgb(0, 255, 229) 12.8%, rgb(75, 108, 255) 43.52%, rgb(156, 31, 217) 84.34%)',
-  orange_pink_dark: 'linear-gradient(135deg, rgb(255, 184, 107) 12.8%, rgb(255, 69, 133) 43.52%, rgb(47, 28, 150) 84.34%)',
+  vibrant_orange_pink:
+    'linear-gradient(135deg, rgb(255, 100, 50) 12.8%, rgb(255, 0, 101) 43.52%, rgb(123, 46, 255) 84.34%)',
+  peach_pink_purple:
+    'linear-gradient(135deg, rgb(255, 177, 122) 12.8%, rgb(233, 107, 189) 43.52%, rgb(123, 79, 255) 84.34%)',
+  cyan_blue_purple:
+    'linear-gradient(135deg, rgb(0, 255, 229) 12.8%, rgb(75, 108, 255) 43.52%, rgb(156, 31, 217) 84.34%)',
+  orange_pink_dark:
+    'linear-gradient(135deg, rgb(255, 184, 107) 12.8%, rgb(255, 69, 133) 43.52%, rgb(47, 28, 150) 84.34%)',
   green_teal_navy: 'linear-gradient(135deg, rgb(71, 246, 132) 12.8%, rgb(0, 184, 169) 43.52%, rgb(24, 78, 104) 84.34%)',
   pink_red_yellow: 'linear-gradient(135deg, rgb(255, 97, 230) 12.8%, rgb(255, 51, 51) 43.52%, rgb(255, 184, 0) 84.34%)',
   cyan_blue_violet: 'linear-gradient(135deg, rgb(0, 255, 224) 12.8%, rgb(0, 102, 255) 43.52%, rgb(102, 0, 255) 84.34%)',
-  peach_pink_lavender: 'linear-gradient(135deg, rgb(255, 177, 122) 12.8%, rgb(255, 77, 109) 43.52%, rgb(132, 94, 194) 84.34%)',
+  peach_pink_lavender:
+    'linear-gradient(135deg, rgb(255, 177, 122) 12.8%, rgb(255, 77, 109) 43.52%, rgb(132, 94, 194) 84.34%)',
   lime_cyan_blue: 'linear-gradient(135deg, rgb(89, 255, 0) 12.8%, rgb(0, 255, 209) 43.52%, rgb(0, 102, 255) 84.34%)',
   pink_red_burgundy: 'linear-gradient(135deg, rgb(255, 94, 154) 12.8%, rgb(255, 0, 61) 43.52%, rgb(144, 0, 72) 84.34%)',
   blue_pink: 'linear-gradient(135deg, rgb(52, 148, 230), rgb(236, 110, 173))',
@@ -54,7 +59,8 @@ export const gradientColors = {
   navy_purple: 'linear-gradient(135deg, rgb(255, 184, 184), rgb(255, 184, 209), rgb(255, 184, 233))',
   purple_orange: 'linear-gradient(135deg, rgb(250, 215, 161), rgb(233, 109, 113))',
   purple_green: 'linear-gradient(135deg, rgb(255, 210, 111), rgb(54, 119, 255))',
-  blue_cyan: 'linear-gradient(135deg, rgb(5, 25, 55), rgb(0, 77, 122), rgb(0, 135, 147), rgb(0, 191, 114), rgb(168, 235, 18))',
+  blue_cyan:
+    'linear-gradient(135deg, rgb(5, 25, 55), rgb(0, 77, 122), rgb(0, 135, 147), rgb(0, 191, 114), rgb(168, 235, 18))',
   purple_yellow: 'linear-gradient(135deg, rgb(51, 51, 51), rgb(221, 24, 24))',
   navy_cyan: 'linear-gradient(135deg, rgb(15, 12, 41), rgb(48, 43, 99), rgb(36, 36, 62))',
   slate_blue: 'linear-gradient(135deg, rgb(35, 7, 77), rgb(204, 83, 51))',
@@ -104,4 +110,3 @@ export const gradientColors = {
 };
 
 export type GradientKey = keyof typeof gradientColors;
-

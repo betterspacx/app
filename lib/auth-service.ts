@@ -48,10 +48,21 @@ export async function signInWithEmail(email: string, password: string): Promise<
     return { ok: true, user: result.user, profile: profile! };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : '';
-    if (msg.includes('auth/invalid-credential') || msg.includes('auth/user-not-found') || msg.includes('auth/wrong-password')) {
+    if (
+      msg.includes('auth/invalid-credential') ||
+      msg.includes('auth/user-not-found') ||
+      msg.includes('auth/wrong-password')
+    ) {
       return { ok: false, error: 'Invalid email or password' };
     }
-    return { ok: false, error: msg.replace('Firebase: ', '').replace(/\(.*\).*$/, '').trim() || 'Authentication failed' };
+    return {
+      ok: false,
+      error:
+        msg
+          .replace('Firebase: ', '')
+          .replace(/\(.*\).*$/, '')
+          .trim() || 'Authentication failed',
+    };
   }
 }
 
@@ -65,7 +76,14 @@ export async function signUpWithEmail(email: string, password: string, name?: st
     const msg = err instanceof Error ? err.message : '';
     if (msg.includes('auth/email-already-in-use')) return { ok: false, error: 'Email already in use' };
     if (msg.includes('auth/weak-password')) return { ok: false, error: 'Password must be at least 6 characters' };
-    return { ok: false, error: msg.replace('Firebase: ', '').replace(/\(.*\).*$/, '').trim() || 'Registration failed' };
+    return {
+      ok: false,
+      error:
+        msg
+          .replace('Firebase: ', '')
+          .replace(/\(.*\).*$/, '')
+          .trim() || 'Registration failed',
+    };
   }
 }
 

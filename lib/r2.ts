@@ -16,7 +16,11 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
  * R2 bucket binding type from Cloudflare Workers
  */
 export interface R2Bucket {
-  put: (key: string, value: ReadableStream | ArrayBuffer | ArrayBufferView | string, options?: R2PutOptions) => Promise<R2Object>;
+  put: (
+    key: string,
+    value: ReadableStream | ArrayBuffer | ArrayBufferView | string,
+    options?: R2PutOptions
+  ) => Promise<R2Object>;
   get: (key: string) => Promise<R2Object | null>;
   delete: (key: string) => Promise<void>;
   list: (options?: R2ListOptions) => R2Objects;
@@ -115,11 +119,7 @@ export function getR2ImageUrl(options: {
  * @param expiresIn - URL expiration time in seconds (default: 60)
  * @returns The presigned URL for PUT request
  */
-export async function getPresignedUrl(
-  bucket: R2Bucket,
-  path: string,
-  expiresIn: number = 60
-): Promise<string> {
+export async function getPresignedUrl(bucket: R2Bucket, path: string, expiresIn: number = 60): Promise<string> {
   // For Cloudflare Workers with R2 binding, we use the S3 SDK with the binding
   // The binding provides the credentials automatically
   const s3Client = new S3Client({
@@ -164,10 +164,7 @@ export async function uploadToR2(
  * @param path - The object path/key in the bucket
  * @returns The R2 object or null if not found
  */
-export async function downloadFromR2(
-  bucket: R2Bucket,
-  path: string
-): Promise<R2Object | null> {
+export async function downloadFromR2(bucket: R2Bucket, path: string): Promise<R2Object | null> {
   return bucket.get(path);
 }
 
@@ -177,10 +174,7 @@ export async function downloadFromR2(
  * @param bucket - The R2 bucket binding (MY_BUCKET)
  * @param path - The object path/key in the bucket
  */
-export async function deleteFromR2(
-  bucket: R2Bucket,
-  path: string
-): Promise<void> {
+export async function deleteFromR2(bucket: R2Bucket, path: string): Promise<void> {
   return bucket.delete(path);
 }
 

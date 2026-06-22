@@ -17,14 +17,7 @@ interface CachedImageProps {
  * CachedImage component - uses Next.js Image for optimized loading and caching.
  * Handles external images with proper error states.
  */
-export function CachedImage({
-  src,
-  alt,
-  className,
-  loading = 'lazy',
-  onLoad,
-  onError,
-}: CachedImageProps) {
+export function CachedImage({ src, alt, className, loading = 'lazy', onLoad, onError }: CachedImageProps) {
   const [hasError, setHasError] = useState(false);
 
   if (hasError) {

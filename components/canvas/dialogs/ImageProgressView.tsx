@@ -1,30 +1,35 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import type { ExportFormat } from "@/lib/export/types";
+import { useMemo } from 'react';
+import type { ExportFormat } from '@/lib/export/types';
 
 export function getStatusMessage(progress: number): string {
-  if (progress < 15) return "Preparing your canvas...";
-  if (progress < 35) return "Capturing every pixel...";
-  if (progress < 55) return "Applying the finishing touches...";
-  if (progress < 80) return "Almost there, hang tight...";
-  return "Polishing your masterpiece...";
+  if (progress < 15) return 'Preparing your canvas...';
+  if (progress < 35) return 'Capturing every pixel...';
+  if (progress < 55) return 'Applying the finishing touches...';
+  if (progress < 80) return 'Almost there, hang tight...';
+  return 'Polishing your masterpiece...';
 }
 
 export function ImageExportProgressView({ progress, format }: { progress: number; format: ExportFormat }) {
   const statusMessage = useMemo(() => getStatusMessage(progress), [progress]);
   const formatLabel =
-    format === 'jpeg' ? 'JPEG'
-    : format === 'webp' ? 'WebP'
-    : format === 'png' ? 'PNG'
-    : format === 'mp4' ? 'MP4'
-    : format === 'webm' ? 'WebM'
-    : format === 'gif' ? 'GIF'
-    : 'PNG';
+    format === 'jpeg'
+      ? 'JPEG'
+      : format === 'webp'
+        ? 'WebP'
+        : format === 'png'
+          ? 'PNG'
+          : format === 'mp4'
+            ? 'MP4'
+            : format === 'webm'
+              ? 'WebM'
+              : format === 'gif'
+                ? 'GIF'
+                : 'PNG';
 
   return (
     <div className="flex flex-col items-center py-8 space-y-6">
-      {/* Bouncing ball loader */}
       <style>{`
         .bounce-loader {
           height: 60px;
@@ -54,11 +59,7 @@ export function ImageExportProgressView({ progress, format }: { progress: number
         }
       `}</style>
       <div className="bounce-loader" />
-
-      {/* Percentage */}
       <span className="text-2xl font-bold text-primary tabular-nums">{progress}%</span>
-
-      {/* Progress bar */}
       <div className="w-full">
         <div className="h-1.5 bg-accent rounded-full overflow-hidden">
           <div
@@ -67,13 +68,7 @@ export function ImageExportProgressView({ progress, format }: { progress: number
           />
         </div>
       </div>
-
-      {/* Status message */}
-      <p className="text-sm text-muted-foreground">
-        {statusMessage}
-      </p>
-
-      {/* Format tag */}
+      <p className="text-sm text-muted-foreground">{statusMessage}</p>
       <div className="px-3 py-1 rounded-full bg-accent border border-border/50">
         <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
           Exporting as {formatLabel}

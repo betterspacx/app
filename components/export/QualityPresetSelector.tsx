@@ -17,11 +17,7 @@ interface QualityPresetSelectorProps {
 
 const PRESETS: QualityPreset[] = ['high', 'medium', 'low'];
 
-export function QualityPresetSelector({
-  qualityPreset,
-  format,
-  onQualityPresetChange,
-}: QualityPresetSelectorProps) {
+export function QualityPresetSelector({ qualityPreset, format, onQualityPresetChange }: QualityPresetSelectorProps) {
   const currentLabel = QUALITY_PRESET_LABELS[qualityPreset];
 
   return (
@@ -47,9 +43,7 @@ export function QualityPresetSelector({
           );
         })}
       </div>
-      <p className="text-xs text-muted-foreground">
-        {currentLabel.description[format]}
-      </p>
+      <p className="text-xs text-muted-foreground">{currentLabel.description[format]}</p>
     </div>
   );
 }

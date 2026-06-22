@@ -1,19 +1,19 @@
 // Created by konlyzx (2026) - Loading spinner component with animated gradient effects
 // Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
 
-"use client";
+'use client';
 
-import { motion } from "motion/react";
+import { motion } from 'motion/react';
 
 export default function LoadingScreen() {
   return (
     <motion.div
       className="fixed inset-0 z-[100] flex items-center justify-center"
-      style={{ backgroundColor: "#0b0b0c" }}
+      style={{ backgroundColor: '#0b0b0c' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
       <style>{`
         .bf-spinner {

@@ -13,12 +13,7 @@ import { exportElement, type ExportOptions } from '@/lib/export/export-service';
 import { saveExportPreferences, getExportPreferences, saveExportedImage } from '@/lib/export-storage';
 import { useImageStore, useEditorStore } from '@/lib/store';
 import { getCanvasContainer } from '@/components/canvas/ClientCanvas';
-import {
-  trackExportStart,
-  trackExportComplete,
-  trackExportError,
-  trackCopyToClipboard,
-} from '@/lib/analytics';
+import { trackExportStart, trackExportComplete, trackExportError, trackCopyToClipboard } from '@/lib/analytics';
 import type { ExportFormat, QualityPreset } from '@/lib/export/types';
 import { isVideoFormat } from '@/lib/export/types';
 import { exportAnimationVideo } from '@/lib/export-slideshow-video';
@@ -105,7 +100,17 @@ export function useExport(selectedAspectRatio: string) {
     };
   }, []);
 
-  const { backgroundConfig, backgroundBorderRadius, backgroundBlur, backgroundNoise, textOverlays, imageOverlays, perspective3D, timeline, animationClips } = useImageStore();
+  const {
+    backgroundConfig,
+    backgroundBorderRadius,
+    backgroundBlur,
+    backgroundNoise,
+    textOverlays,
+    imageOverlays,
+    perspective3D,
+    timeline,
+    animationClips,
+  } = useImageStore();
   const backgroundOpacity = backgroundConfig?.opacity !== undefined ? backgroundConfig.opacity : 1;
   const { screenshot } = useEditorStore();
   const hasAnimation = timeline.tracks.length > 0 || animationClips.length > 0;
@@ -161,23 +166,32 @@ export function useExport(selectedAspectRatio: string) {
     }
   }, []);
 
-  const updateFormat = useCallback(async (format: ExportFormat) => {
-    const newSettings = { ...settings, format };
-    setSettings(newSettings);
-    await savePreferences(newSettings);
-  }, [settings, savePreferences]);
+  const updateFormat = useCallback(
+    async (format: ExportFormat) => {
+      const newSettings = { ...settings, format };
+      setSettings(newSettings);
+      await savePreferences(newSettings);
+    },
+    [settings, savePreferences]
+  );
 
-  const updateQualityPreset = useCallback(async (qualityPreset: QualityPreset) => {
-    const newSettings = { ...settings, qualityPreset };
-    setSettings(newSettings);
-    await savePreferences(newSettings);
-  }, [settings, savePreferences]);
+  const updateQualityPreset = useCallback(
+    async (qualityPreset: QualityPreset) => {
+      const newSettings = { ...settings, qualityPreset };
+      setSettings(newSettings);
+      await savePreferences(newSettings);
+    },
+    [settings, savePreferences]
+  );
 
-  const updateScale = useCallback(async (scale: number) => {
-    const newSettings = { ...settings, scale };
-    setSettings(newSettings);
-    await savePreferences(newSettings);
-  }, [settings, savePreferences]);
+  const updateScale = useCallback(
+    async (scale: number) => {
+      const newSettings = { ...settings, scale };
+      setSettings(newSettings);
+      await savePreferences(newSettings);
+    },
+    [settings, savePreferences]
+  );
 
   const exportImage = useCallback(async (): Promise<void> => {
     const anim = progressAnimator.current;
@@ -214,7 +228,7 @@ export function useExport(selectedAspectRatio: string) {
         confetti({
           particleCount: 100,
           spread: 70,
-          origin: { y: 0.6 }
+          origin: { y: 0.6 },
         });
 
         toast.success('Video exported successfully!', {
@@ -268,13 +282,7 @@ export function useExport(selectedAspectRatio: string) {
       const fileName = `betterflow-${Date.now()}.${fileExtension}`;
 
       try {
-        await saveExportedImage(
-          result.blob,
-          settings.format,
-          settings.qualityPreset,
-          settings.scale,
-          fileName
-        );
+        await saveExportedImage(result.blob, settings.format, settings.qualityPreset, settings.scale, fileName);
       } catch (error) {
         console.warn('Failed to save export to IndexedDB:', error);
       }
@@ -284,13 +292,7 @@ export function useExport(selectedAspectRatio: string) {
 
       const durationMs = Date.now() - startTime;
       const fileSizeKb = Math.round(result.blob.size / 1024);
-      trackExportComplete(
-        settings.format,
-        settings.qualityPreset,
-        settings.scale,
-        fileSizeKb,
-        durationMs
-      );
+      trackExportComplete(settings.format, settings.qualityPreset, settings.scale, fileSizeKb, durationMs);
 
       const url = URL.createObjectURL(result.blob);
       const link = document.createElement('a');
@@ -310,7 +312,7 @@ export function useExport(selectedAspectRatio: string) {
       confetti({
         particleCount: 100,
         spread: 70,
-        origin: { y: 0.6 }
+        origin: { y: 0.6 },
       });
 
       toast.success('Image downloaded successfully!', {
@@ -321,9 +323,7 @@ export function useExport(selectedAspectRatio: string) {
     } catch (error) {
       anim.reset();
       console.error('Export failed:', error);
-      const errorMessage = error instanceof Error
-        ? error.message
-        : 'Failed to export image. Please try again.';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to export image. Please try again.';
 
       trackExportError(settings.format, errorMessage);
 
@@ -335,7 +335,21 @@ export function useExport(selectedAspectRatio: string) {
     } finally {
       setIsExporting(false);
     }
-  }, [selectedAspectRatio, settings, hasAnimation, backgroundConfig, backgroundBorderRadius, backgroundBlur, backgroundNoise, backgroundOpacity, textOverlays, imageOverlays, perspective3D, screenshot.src, screenshot.radius]);
+  }, [
+    selectedAspectRatio,
+    settings,
+    hasAnimation,
+    backgroundConfig,
+    backgroundBorderRadius,
+    backgroundBlur,
+    backgroundNoise,
+    backgroundOpacity,
+    textOverlays,
+    imageOverlays,
+    perspective3D,
+    screenshot.src,
+    screenshot.radius,
+  ]);
 
   const copyImage = useCallback(async (): Promise<void> => {
     const anim = copyAnimator.current;
@@ -382,37 +396,41 @@ export function useExport(selectedAspectRatio: string) {
 
       // Prepare clipboard blob — clipboard requires PNG
       anim.set(96);
-      const blob = result.blob.type === 'image/png'
-        ? result.blob
-        : await new Promise<Blob>((resolve, reject) => {
-          const url = URL.createObjectURL(result.blob);
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            URL.revokeObjectURL(url);
-            if (!ctx) {
-              reject(new Error('Failed to get canvas context'));
-              return;
-            }
-            ctx.drawImage(img, 0, 0);
-            canvas.toBlob((b) => {
-              b ? resolve(b) : reject(new Error('Failed to create blob'));
-            }, 'image/png');
-          };
-          img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load image')); };
-          img.src = url;
-        });
+      const blob =
+        result.blob.type === 'image/png'
+          ? result.blob
+          : await new Promise<Blob>((resolve, reject) => {
+              const url = URL.createObjectURL(result.blob);
+              const img = new Image();
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                URL.revokeObjectURL(url);
+                if (!ctx) {
+                  reject(new Error('Failed to get canvas context'));
+                  return;
+                }
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob((b) => {
+                  b ? resolve(b) : reject(new Error('Failed to create blob'));
+                }, 'image/png');
+              };
+              img.onerror = () => {
+                URL.revokeObjectURL(url);
+                reject(new Error('Failed to load image'));
+              };
+              img.src = url;
+            });
 
       // Stage 4: Write to clipboard (85 → 100%)
       anim.set(92);
       if (navigator.clipboard && navigator.clipboard.write) {
         await navigator.clipboard.write([
           new ClipboardItem({
-            'image/png': blob
-          })
+            'image/png': blob,
+          }),
         ]);
 
         trackCopyToClipboard(true);
@@ -423,7 +441,7 @@ export function useExport(selectedAspectRatio: string) {
         confetti({
           particleCount: 100,
           spread: 70,
-          origin: { y: 0.6 }
+          origin: { y: 0.6 },
         });
 
         toast.success('Image copied to clipboard!', {
@@ -437,9 +455,8 @@ export function useExport(selectedAspectRatio: string) {
     } catch (error) {
       anim.reset();
       console.error('Copy failed:', error);
-      const errorMessage = error instanceof Error
-        ? error.message
-        : 'Failed to copy image to clipboard. Please try again.';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to copy image to clipboard. Please try again.';
 
       trackCopyToClipboard(false);
 
@@ -451,7 +468,19 @@ export function useExport(selectedAspectRatio: string) {
     } finally {
       setIsCopying(false);
     }
-  }, [selectedAspectRatio, backgroundConfig, backgroundBorderRadius, backgroundBlur, backgroundNoise, backgroundOpacity, textOverlays, imageOverlays, perspective3D, screenshot.src, screenshot.radius]);
+  }, [
+    selectedAspectRatio,
+    backgroundConfig,
+    backgroundBorderRadius,
+    backgroundBlur,
+    backgroundNoise,
+    backgroundOpacity,
+    textOverlays,
+    imageOverlays,
+    perspective3D,
+    screenshot.src,
+    screenshot.radius,
+  ]);
 
   return {
     settings,

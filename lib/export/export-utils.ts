@@ -10,23 +10,40 @@ import { exportWorkerService } from '@/lib/workers/export-worker-service';
 export function convertStylesToRGB(element: HTMLElement, doc: Document): void {
   const win = doc.defaultView || (doc as any).parentWindow;
   if (!win) return;
-  
+
   try {
     const computedStyle = win.getComputedStyle(element);
     const allProps = [
-      'color', 'backgroundColor', 'borderColor', 'borderTopColor',
-      'borderRightColor', 'borderBottomColor', 'borderLeftColor',
-      'outlineColor', 'boxShadow', 'textShadow', 'background',
-      'backgroundImage', 'backgroundColor', 'fill', 'stroke'
+      'color',
+      'backgroundColor',
+      'borderColor',
+      'borderTopColor',
+      'borderRightColor',
+      'borderBottomColor',
+      'borderLeftColor',
+      'outlineColor',
+      'boxShadow',
+      'textShadow',
+      'background',
+      'backgroundImage',
+      'backgroundColor',
+      'fill',
+      'stroke',
     ];
-    
+
     // Convert all relevant CSS properties
-    allProps.forEach(prop => {
+    allProps.forEach((prop) => {
       try {
         const value = computedStyle.getPropertyValue(prop);
         if (value && (value.includes('oklch') || value.includes('var('))) {
           const computed = (computedStyle as any)[prop];
-          if (computed && computed !== 'rgba(0, 0, 0, 0)' && computed !== 'transparent' && computed !== 'none' && !computed.includes('oklch')) {
+          if (
+            computed &&
+            computed !== 'rgba(0, 0, 0, 0)' &&
+            computed !== 'transparent' &&
+            computed !== 'none' &&
+            !computed.includes('oklch')
+          ) {
             element.style.setProperty(prop, computed, 'important');
           }
         }
@@ -34,13 +51,13 @@ export function convertStylesToRGB(element: HTMLElement, doc: Document): void {
         // Ignore errors for individual properties
       }
     });
-    
+
     // Also check inline styles
     if (element.style && element.style.cssText) {
       const cssText = element.style.cssText;
       if (cssText.includes('oklch') || cssText.includes('var(')) {
         // Re-apply computed styles
-        allProps.forEach(prop => {
+        allProps.forEach((prop) => {
           try {
             const computed = (computedStyle as any)[prop];
             if (computed && !computed.includes('oklch')) {
@@ -55,9 +72,9 @@ export function convertStylesToRGB(element: HTMLElement, doc: Document): void {
   } catch (e) {
     // Ignore errors
   }
-  
+
   // Convert all children recursively
-  Array.from(element.children).forEach(child => {
+  Array.from(element.children).forEach((child) => {
     if (child instanceof HTMLElement) {
       convertStylesToRGB(child, doc);
     }
@@ -83,7 +100,7 @@ export function injectRGBOverrides(doc: Document): void {
       // Ignore cross-origin errors
     }
   });
-  
+
   // Inject CSS overrides with high specificity
   const style = doc.createElement('style');
   style.id = 'oklch-rgb-converter';
@@ -121,7 +138,7 @@ export function injectRGBOverrides(doc: Document): void {
       outline-color: rgba(180, 180, 180, 0.5) !important;
     }
   `;
-  
+
   const head = doc.head || doc.getElementsByTagName('head')[0] || doc.documentElement;
   if (head) {
     head.insertBefore(style, head.firstChild);
@@ -136,12 +153,12 @@ export function preserveImageStyles(img: HTMLImageElement, clonedDoc: Document):
   if (img.style.display === 'none') {
     img.style.display = '';
   }
-  
+
   // Preserve border styles - get from original document and apply with !important
   const originalImg = document.querySelector(`img[src="${img.getAttribute('src')}"]`);
   if (originalImg && originalImg instanceof HTMLElement) {
     const originalStyle = window.getComputedStyle(originalImg);
-    
+
     // Get border properties
     const borderTop = originalStyle.borderTop;
     const borderRight = originalStyle.borderRight;
@@ -151,13 +168,13 @@ export function preserveImageStyles(img: HTMLImageElement, clonedDoc: Document):
     const boxShadow = originalStyle.boxShadow;
     const opacity = originalStyle.opacity;
     const transform = originalStyle.transform;
-    
+
     // Get border colors separately
     const borderTopColor = originalStyle.borderTopColor;
     const borderRightColor = originalStyle.borderRightColor;
     const borderBottomColor = originalStyle.borderBottomColor;
     const borderLeftColor = originalStyle.borderLeftColor;
-    
+
     if (borderTop && borderTop !== '0px none rgb(0, 0, 0)' && borderTop !== '0px none') {
       const borderTopWidth = originalStyle.borderTopWidth;
       const borderTopStyle = originalStyle.borderTopStyle;
@@ -214,7 +231,7 @@ export function convertSVGStyles(targetElement: HTMLElement, clonedDoc: Document
     if (svg instanceof HTMLElement || svg instanceof SVGElement) {
       const fill = svg.getAttribute('fill');
       const stroke = svg.getAttribute('stroke');
-      
+
       if (fill && (fill.includes('oklch') || fill.includes('var('))) {
         const temp = clonedDoc.createElement('div');
         temp.style.color = fill;
@@ -224,7 +241,7 @@ export function convertSVGStyles(targetElement: HTMLElement, clonedDoc: Document
         }
         temp.remove();
       }
-      
+
       if (stroke && (stroke.includes('oklch') || stroke.includes('var('))) {
         const temp = clonedDoc.createElement('div');
         temp.style.color = stroke;
@@ -251,7 +268,7 @@ export function setupExportElement(
   targetElement.style.height = `${exportHeight}px`;
   targetElement.style.maxWidth = 'none';
   targetElement.style.maxHeight = 'none';
-  
+
   // Also ensure parent containers don't constrain the size
   let parent = targetElement.parentElement;
   while (parent && parent !== clonedDoc.body) {
@@ -296,7 +313,8 @@ export async function waitForImages(element: HTMLElement): Promise<void> {
  * This creates more natural-looking noise compared to uniform random
  */
 function gaussianRandom(mean: number = 0, stdDev: number = 1): number {
-  let u = 0, v = 0;
+  let u = 0,
+    v = 0;
   while (u === 0) u = Math.random(); // Converting [0,1) to (0,1)
   while (v === 0) v = Math.random();
   const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
@@ -306,46 +324,42 @@ function gaussianRandom(mean: number = 0, stdDev: number = 1): number {
 /**
  * Generate a noise texture canvas with Gaussian-distributed noise (sync version for fallback)
  * This creates realistic image grain/noise similar to film grain or sensor noise
- * 
+ *
  * @param width - Canvas width in pixels
  * @param height - Canvas height in pixels
  * @param intensity - Noise intensity (0-1), controls the standard deviation
  * @returns Canvas element with noise texture
  */
-function generateNoiseTextureSync(
-  width: number,
-  height: number,
-  intensity: number
-): HTMLCanvasElement {
+function generateNoiseTextureSync(width: number, height: number, intensity: number): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext('2d');
-  
+
   if (!ctx) return canvas;
-  
+
   const imageData = ctx.createImageData(width, height);
   const data = imageData.data;
-  
+
   // Intensity controls the standard deviation of the Gaussian distribution
   // Higher intensity = more variation in pixel values
   const stdDev = intensity * 50; // Scale to reasonable range (0-50)
-  
+
   // Generate Gaussian noise for each pixel
   for (let i = 0; i < data.length; i += 4) {
     // Generate Gaussian noise value centered at 128 (mid-gray)
     const noise = gaussianRandom(128, stdDev);
-    
+
     // Clamp to valid RGB range [0, 255]
     const value = Math.max(0, Math.min(255, Math.round(noise)));
-    
+
     // Apply same value to R, G, B for grayscale noise
-    data[i] = value;     // R
+    data[i] = value; // R
     data[i + 1] = value; // G
     data[i + 2] = value; // B
-    data[i + 3] = 255;   // A (fully opaque)
+    data[i + 3] = 255; // A (fully opaque)
   }
-  
+
   ctx.putImageData(imageData, 0, 0);
   return canvas;
 }
@@ -354,17 +368,13 @@ function generateNoiseTextureSync(
  * Generate a noise texture canvas with Gaussian-distributed noise
  * Uses Web Worker for heavy computation to prevent UI blocking
  * Falls back to synchronous generation if worker is unavailable
- * 
+ *
  * @param width - Canvas width in pixels
  * @param height - Canvas height in pixels
  * @param intensity - Noise intensity (0-1), controls the standard deviation
  * @returns Canvas element with noise texture
  */
-export function generateNoiseTexture(
-  width: number,
-  height: number,
-  intensity: number
-): HTMLCanvasElement {
+export function generateNoiseTexture(width: number, height: number, intensity: number): HTMLCanvasElement {
   // Return sync version for immediate use
   // The async version is available via generateNoiseTextureAsync
   return generateNoiseTextureSync(width, height, intensity);
@@ -373,7 +383,7 @@ export function generateNoiseTexture(
 /**
  * Generate a noise texture canvas asynchronously using Web Worker
  * This offloads heavy computation to a worker thread to prevent UI blocking
- * 
+ *
  * @param width - Canvas width in pixels
  * @param height - Canvas height in pixels
  * @param intensity - Noise intensity (0-1), controls the standard deviation
@@ -387,17 +397,17 @@ export async function generateNoiseTextureAsync(
   try {
     // Use worker service for heavy computation
     const imageData = await exportWorkerService.generateNoiseTexture(width, height, intensity);
-    
+
     // Convert ImageData to canvas
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d');
-    
+
     if (!ctx) {
       return generateNoiseTextureSync(width, height, intensity);
     }
-    
+
     ctx.putImageData(imageData, 0, 0);
     return canvas;
   } catch (error) {
@@ -405,5 +415,3 @@ export async function generateNoiseTextureAsync(
     return generateNoiseTextureSync(width, height, intensity);
   }
 }
-
-

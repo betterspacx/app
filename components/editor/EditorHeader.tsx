@@ -4,6 +4,8 @@
 'use client';
 
 import * as React from 'react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -17,11 +19,7 @@ import {
 } from 'hugeicons-react';
 import { useEditorStore, useImageStore, OmitFunctions, EditorState, ImageState, ImageFilters } from '@/lib/store';
 import { useExport } from '@/hooks/useExport';
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from '@/components/ui/popover';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { CopyProgressDialog } from '@/components/canvas/dialogs/CopyProgressDialog';
 import { ExportSlideshowDialog } from '@/lib/export-slideshow-dialog';
 import { ImageExportProgressView } from '@/components/canvas/dialogs/ImageProgressView';
@@ -37,26 +35,96 @@ import { auth } from '@/lib/firebase';
 function serializeState(): { editorState: OmitFunctions<EditorState>; imageState: OmitFunctions<ImageState> } {
   const { screenshot, background, shadow, pattern, frame, canvas, noise } = useEditorStore.getState();
   const {
-    uploadedImageUrl, imageName, selectedGradient, borderRadius, backgroundBorderRadius,
-    selectedAspectRatio, backgroundConfig, backgroundBlur, backgroundNoise, textOverlays,
-    imageOverlays, mockups, imageOpacity, imageScale, imageBorder, imageShadow,
-    perspective3D, imageFilters, exportSettings, slides, activeSlideId, slideshow,
-    isPreviewing, previewIndex, previewStartedAt, timeline, showTimeline, animationClips,
-    annotations, activeAnnotationTool, selectedAnnotationId, annotationDefaults, blurRegions,
-    activeRightPanelTab, showTemplates, editorMode, browserUrl, browserHeaderSize,
-    canvasDimensions, customDimensions, imageStylePreset, shadowPreset,
+    uploadedImageUrl,
+    imageName,
+    selectedGradient,
+    borderRadius,
+    backgroundBorderRadius,
+    selectedAspectRatio,
+    backgroundConfig,
+    backgroundBlur,
+    backgroundNoise,
+    textOverlays,
+    imageOverlays,
+    mockups,
+    imageOpacity,
+    imageScale,
+    imageBorder,
+    imageShadow,
+    perspective3D,
+    imageFilters,
+    exportSettings,
+    slides,
+    activeSlideId,
+    slideshow,
+    isPreviewing,
+    previewIndex,
+    previewStartedAt,
+    timeline,
+    showTimeline,
+    animationClips,
+    annotations,
+    activeAnnotationTool,
+    selectedAnnotationId,
+    annotationDefaults,
+    blurRegions,
+    activeRightPanelTab,
+    showTemplates,
+    editorMode,
+    browserUrl,
+    browserHeaderSize,
+    canvasDimensions,
+    customDimensions,
+    activePresetId,
+    imageStylePreset,
+    shadowPreset,
   } = useImageStore.getState();
 
   const editorState = { screenshot, background, shadow, pattern, frame, canvas, noise };
   const imageState = {
-    uploadedImageUrl, imageName, selectedGradient, borderRadius, backgroundBorderRadius,
-    selectedAspectRatio, backgroundConfig, backgroundBlur, backgroundNoise, textOverlays,
-    imageOverlays, mockups, imageOpacity, imageScale, imageBorder, imageShadow,
-    perspective3D, imageFilters, exportSettings, slides, activeSlideId, slideshow,
-    isPreviewing, previewIndex, previewStartedAt, timeline, showTimeline, animationClips,
-    annotations, activeAnnotationTool, selectedAnnotationId, annotationDefaults, blurRegions,
-    activeRightPanelTab, showTemplates, editorMode, browserUrl, browserHeaderSize,
-    canvasDimensions, customDimensions, imageStylePreset, shadowPreset,
+    uploadedImageUrl,
+    imageName,
+    selectedGradient,
+    borderRadius,
+    backgroundBorderRadius,
+    selectedAspectRatio,
+    backgroundConfig,
+    backgroundBlur,
+    backgroundNoise,
+    textOverlays,
+    imageOverlays,
+    mockups,
+    imageOpacity,
+    imageScale,
+    imageBorder,
+    imageShadow,
+    perspective3D,
+    imageFilters,
+    exportSettings,
+    slides,
+    activeSlideId,
+    slideshow,
+    isPreviewing,
+    previewIndex,
+    previewStartedAt,
+    timeline,
+    showTimeline,
+    animationClips,
+    annotations,
+    activeAnnotationTool,
+    selectedAnnotationId,
+    annotationDefaults,
+    blurRegions,
+    activeRightPanelTab,
+    showTemplates,
+    editorMode,
+    browserUrl,
+    browserHeaderSize,
+    canvasDimensions,
+    customDimensions,
+    activePresetId,
+    imageStylePreset,
+    shadowPreset,
   };
   return { editorState, imageState };
 }
@@ -80,7 +148,8 @@ function restoreProject(imageState: OmitFunctions<ImageState>, editorState: Omit
   if (imageState.borderRadius !== undefined) is.setBorderRadius(imageState.borderRadius);
   if (imageState.backgroundBorderRadius !== undefined) is.setBackgroundBorderRadius(imageState.backgroundBorderRadius);
   if (imageState.selectedAspectRatio) is.setAspectRatio(imageState.selectedAspectRatio);
-  if (imageState.customDimensions) is.setCustomDimensions(imageState.customDimensions.width, imageState.customDimensions.height);
+  if (imageState.customDimensions)
+    is.setCustomDimensions(imageState.customDimensions.width, imageState.customDimensions.height);
   if (imageState.backgroundConfig) is.setBackgroundConfig(imageState.backgroundConfig);
   if (imageState.backgroundBlur !== undefined) is.setBackgroundBlur(imageState.backgroundBlur);
   if (imageState.backgroundNoise !== undefined) is.setBackgroundNoise(imageState.backgroundNoise);
@@ -88,6 +157,7 @@ function restoreProject(imageState: OmitFunctions<ImageState>, editorState: Omit
   if (imageState.imageScale !== undefined) is.setImageScale(imageState.imageScale);
   if (imageState.imageBorder) is.setImageBorder(imageState.imageBorder);
   if (imageState.imageShadow) is.setImageShadow(imageState.imageShadow);
+  useImageStore.setState({ activePresetId: imageState.activePresetId ?? null });
   if (imageState.perspective3D) is.setPerspective3D(imageState.perspective3D);
   if (imageState.imageFilters) {
     const filters = imageState.imageFilters as ImageState['imageFilters'];
@@ -126,11 +196,42 @@ export function EditorHeader() {
   }, []);
 
   const { screenshot } = useEditorStore();
-  const { selectedAspectRatio, slides, uploadedImageUrl, clearImage, timeline, animationClips, resetCanvasSettings, setShowTemplates } = useImageStore();
+  const {
+    selectedAspectRatio,
+    slides,
+    uploadedImageUrl,
+    clearImage,
+    timeline,
+    animationClips,
+    resetCanvasSettings,
+    setShowTemplates,
+    showTemplates,
+  } = useImageStore();
   const [exportOpen, setExportOpen] = React.useState(false);
   const [exportSlideshowOpen, setExportSlideshowOpen] = React.useState(false);
   const [exportError, setExportError] = React.useState<string | null>(null);
   const hasImage = !!screenshot.src;
+
+  const headerPanelRef = React.useRef<HTMLDivElement>(null);
+  const headerFirstRender = React.useRef(true);
+  gsap.registerPlugin(useGSAP);
+
+  useGSAP(
+    () => {
+      if (!headerPanelRef.current) return;
+      if (headerFirstRender.current) {
+        headerFirstRender.current = false;
+        gsap.set(headerPanelRef.current, { width: 240 });
+        return;
+      }
+      gsap.to(headerPanelRef.current, {
+        width: 240,
+        duration: 0.3,
+        ease: 'power3.out',
+      });
+    },
+    { dependencies: [showTemplates], scope: headerPanelRef }
+  );
 
   const [canUndo, setCanUndo] = React.useState(false);
   const [canRedo, setCanRedo] = React.useState(false);
@@ -219,39 +320,52 @@ export function EditorHeader() {
 
   const hasAnimation = timeline.tracks.length > 0 || animationClips.length > 0;
   const formatLabel =
-    exportSettings.format === 'jpeg' ? 'JPEG'
-    : exportSettings.format === 'webp' ? 'WebP'
-    : exportSettings.format === 'png' ? 'PNG'
-    : exportSettings.format === 'mp4' ? 'MP4'
-    : exportSettings.format === 'webm' ? 'WebM'
-    : exportSettings.format === 'gif' ? 'GIF'
-    : 'PNG';
+    exportSettings.format === 'jpeg'
+      ? 'JPEG'
+      : exportSettings.format === 'webp'
+        ? 'WebP'
+        : exportSettings.format === 'png'
+          ? 'PNG'
+          : exportSettings.format === 'mp4'
+            ? 'MP4'
+            : exportSettings.format === 'webm'
+              ? 'WebM'
+              : exportSettings.format === 'gif'
+                ? 'GIF'
+                : 'PNG';
   const exportTypeLabel = hasAnimation ? 'Video' : 'Image';
 
   return (
     <>
       <header className="h-12 pt-3 pb-2 bg-custom-black flex items-center shrink-0 shadow-sm gap-2">
-        <div className="w-[240px] flex items-center h-11 rounded-2xl bg-custom-muted border border-border/40 px-1 ml-2">
-          <Link href="/" className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-muted/80 transition-all">
-            <Image
-              src="/logo.svg"
-              alt="Better Flow"
-              width={32}
-              height={32}
-              className="h-7 w-7"
-            />
-          </Link>
+        <div
+          ref={headerPanelRef}
+          className="shrink-0 ml-2 overflow-hidden"
+          style={{
+            width: 240,
+          }}
+        >
+          <div className="w-full flex items-center h-11 rounded-2xl bg-custom-muted border border-border/40 px-1">
+            <Link
+              href="/"
+              className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-muted/80 transition-all"
+            >
+              <Image src="/logo.svg" alt="Better Flow" width={32} height={32} className="h-7 w-7" />
+            </Link>
 
-          <div className="w-px h-6 bg-border/40 mx-1" />
+            <div className="w-px h-6 bg-border/40 mx-1" />
 
-          <button
-            onClick={() => setShowTemplates(true)}
-            className="flex items-center gap-2 px-4 h-10 rounded-xl hover:bg-muted/50 text-[#1a1a2e] hover:opacity-90 transition-all duration-200 group flex-1 justify-center cursor-pointer"
-          >
-            <PencilEdit02Icon size={16} className="text-white" />
-            <span className="text-sm font-medium text-foreground">Templates</span>
-            <ArrowDown01Icon size={14} className="text-muted-foreground ml-1" />
-          </button>
+            <div className="flex-1 min-w-0 flex items-center">
+              <button
+                onClick={() => setShowTemplates(true)}
+                className="flex-1 flex items-center gap-2 px-4 h-10 rounded-xl hover:bg-muted/50 text-foreground transition-colors duration-200 group justify-center cursor-pointer"
+              >
+                <PencilEdit02Icon size={16} className="text-white" />
+                <span className="text-sm font-medium text-foreground">Templates</span>
+                <ArrowDown01Icon size={14} className="text-muted-foreground ml-1" />
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="flex-1 flex items-center justify-center h-10 rounded-2xl px-2">
@@ -306,7 +420,16 @@ export function EditorHeader() {
                 onClick={() => setSaveOpen(true)}
                 className="flex items-center gap-1.5 px-3 h-8 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all text-xs font-medium hover:shadow-sm active:scale-95 cursor-pointer"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
                   <polyline points="17 21 17 13 7 13 7 21" />
                   <polyline points="7 3 7 8 15 8" />
@@ -321,7 +444,16 @@ export function EditorHeader() {
             className="flex items-center justify-center w-8 h-8 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground hover:bg-muted transition-all hover:shadow-sm active:scale-95 cursor-pointer ml-1"
             title={authenticated ? 'Account' : 'Sign in'}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <circle cx="12" cy="8" r="4" />
               <path d="M20 21a8 8 0 1 0-16 0" />
             </svg>
@@ -333,7 +465,16 @@ export function EditorHeader() {
               className="flex items-center gap-1.5 px-3 h-8 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all text-xs font-medium hover:shadow-sm active:scale-95 cursor-pointer ml-1"
               title="My Projects"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
               </svg>
               <span>My Projects</span>
@@ -349,7 +490,9 @@ export function EditorHeader() {
                 className="flex-1 flex items-center justify-between px-4 h-10 rounded-2xl text-black text-xs font-medium transition-all cursor-pointer"
               >
                 <h6 className="font-semibold">Export</h6>
-                <span className="opacity-90">{exportSettings.scale}x · {formatLabel}</span>
+                <span className="opacity-90">
+                  {exportSettings.scale}x · {formatLabel}
+                </span>
                 <ArrowDown01Icon size={12} />
               </button>
             </PopoverTrigger>
@@ -368,15 +511,17 @@ export function EditorHeader() {
                 </div>
               ) : (
                 <div className="p-4 space-y-4">
-                  <FormatSelector format={exportSettings.format} onFormatChange={updateFormat} hasAnimation={hasAnimation} />
+                  <FormatSelector
+                    format={exportSettings.format}
+                    onFormatChange={updateFormat}
+                    hasAnimation={hasAnimation}
+                  />
                   <QualityPresetSelector
                     qualityPreset={exportSettings.qualityPreset}
                     format={exportSettings.format}
                     onQualityPresetChange={updateQualityPreset}
                   />
-                  {!hasAnimation && (
-                    <ScaleSlider scale={exportSettings.scale} onScaleChange={updateScale} />
-                  )}
+                  {!hasAnimation && <ScaleSlider scale={exportSettings.scale} onScaleChange={updateScale} />}
 
                   {exportError && (
                     <div className="text-xs text-destructive bg-muted/50 p-2.5 rounded-lg border border-destructive/20">
@@ -406,7 +551,7 @@ export function EditorHeader() {
             className="flex items-center justify-center w-8 h-8 rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-foreground hover:shadow-sm active:scale-95"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
             </svg>
           </a>
 
@@ -417,7 +562,7 @@ export function EditorHeader() {
             className="flex items-center justify-center w-8 h-8 rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-foreground hover:shadow-sm active:scale-95"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
             </svg>
           </a>
         </div>
@@ -425,18 +570,11 @@ export function EditorHeader() {
 
       <CopyProgressDialog open={isCopying} progress={copyProgress} />
 
-      <ExportSlideshowDialog
-        open={exportSlideshowOpen}
-        onOpenChange={setExportSlideshowOpen}
-      />
+      <ExportSlideshowDialog open={exportSlideshowOpen} onOpenChange={setExportSlideshowOpen} />
 
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
 
-      <SaveDialog
-        open={saveOpen}
-        onClose={() => setSaveOpen(false)}
-        onSave={handleSave}
-      />
+      <SaveDialog open={saveOpen} onClose={() => setSaveOpen(false)} onSave={handleSave} />
 
       <ProjectsSidebar
         open={projectsOpen}

@@ -25,7 +25,14 @@ export function SettingsSection() {
 
   const [filterTarget, setFilterTarget] = React.useState<FilterTarget>('foreground');
 
-  const foregroundFilters: { key: keyof ImageFilters; label: string; min: number; max: number; defaultValue: number; suffix: string }[] = [
+  const foregroundFilters: {
+    key: keyof ImageFilters;
+    label: string;
+    min: number;
+    max: number;
+    defaultValue: number;
+    suffix: string;
+  }[] = [
     { key: 'brightness', label: 'Brightness', min: 0, max: 200, defaultValue: 100, suffix: '' },
     { key: 'contrast', label: 'Contrast', min: 0, max: 200, defaultValue: 100, suffix: '' },
     { key: 'saturate', label: 'Saturation', min: 0, max: 200, defaultValue: 100, suffix: '' },
@@ -50,10 +57,8 @@ export function SettingsSection() {
 
   return (
     <>
-      {/* Filters Section */}
-      <SectionWrapper title="Color Filters" defaultOpen={false}>
+      <SectionWrapper title="Image" defaultOpen={false}>
         <div className="space-y-3">
-          {/* Foreground/Background Toggle - Segmented Control */}
           <div className="relative flex p-0.5 bg-muted dark:bg-muted/80 rounded-lg border border-border/30">
             <div
               className={cn(
@@ -65,9 +70,7 @@ export function SettingsSection() {
               onClick={() => setFilterTarget('foreground')}
               className={cn(
                 'relative z-10 flex-1 py-2 text-xs font-medium rounded-md transition-colors duration-150 cursor-pointer',
-                filterTarget === 'foreground'
-                  ? 'text-foreground'
-                  : 'text-muted-foreground hover:text-muted-foreground'
+                filterTarget === 'foreground' ? 'text-foreground' : 'text-muted-foreground hover:text-muted-foreground'
               )}
             >
               Image
@@ -76,16 +79,12 @@ export function SettingsSection() {
               onClick={() => setFilterTarget('background')}
               className={cn(
                 'relative z-10 flex-1 py-2 text-xs font-medium rounded-md transition-colors duration-150 cursor-pointer',
-                filterTarget === 'background'
-                  ? 'text-foreground'
-                  : 'text-muted-foreground hover:text-muted-foreground'
+                filterTarget === 'background' ? 'text-foreground' : 'text-muted-foreground hover:text-muted-foreground'
               )}
             >
               Background
             </button>
           </div>
-
-          {/* Foreground Filters */}
           {filterTarget === 'foreground' && (
             <div className="space-y-2">
               {foregroundFilters.map((filter) => (
@@ -100,8 +99,6 @@ export function SettingsSection() {
                   valueDisplay={`${imageFilters[filter.key]}${filter.suffix}`}
                 />
               ))}
-
-              {/* Reset Filters Button */}
               {isFiltersModified && (
                 <Button
                   variant="outline"
@@ -115,8 +112,6 @@ export function SettingsSection() {
               )}
             </div>
           )}
-
-          {/* Background Filters */}
           {filterTarget === 'background' && (
             <div className="space-y-2">
               <Slider
@@ -137,8 +132,6 @@ export function SettingsSection() {
                 label="Noise"
                 valueDisplay={`${backgroundNoise}%`}
               />
-
-              {/* Reset Background Filters Button */}
               {isBackgroundFiltersModified && (
                 <Button
                   variant="outline"
@@ -154,8 +147,6 @@ export function SettingsSection() {
           )}
         </div>
       </SectionWrapper>
-
-      {/* Canvas Section */}
       <SectionWrapper title="Canvas" defaultOpen={false}>
         <Slider
           value={[backgroundBorderRadius]}

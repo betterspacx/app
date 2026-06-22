@@ -7,33 +7,24 @@ import { fontFamilies, getAvailableFontWeights, getFontCSS } from '@/lib/constan
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 
-const QUICK_COLORS = [
-  '#ffffff', '#000000', '#ef4444', '#f97316',
-  '#eab308', '#22c55e', '#3b82f6', '#8b5cf6',
-];
+const QUICK_COLORS = ['#ffffff', '#000000', '#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6'];
 
 const WEIGHT_LABELS: Record<string, string> = {
   '100': 'Thin',
   '200': 'Extra Light',
   '300': 'Light',
-  'normal': 'Regular',
+  normal: 'Regular',
   '400': 'Regular',
   '500': 'Medium',
   '600': 'Semibold',
-  'bold': 'Bold',
+  bold: 'Bold',
   '700': 'Bold',
   '800': 'Extra Bold',
   '900': 'Black',
 };
 
 export const TextOverlayControls = () => {
-  const {
-    textOverlays,
-    addTextOverlay,
-    updateTextOverlay,
-    removeTextOverlay,
-    clearTextOverlays,
-  } = useImageStore();
+  const { textOverlays, addTextOverlay, updateTextOverlay, removeTextOverlay, clearTextOverlays } = useImageStore();
 
   const [selectedOverlayId, setSelectedOverlayId] = useState<string | null>(null);
   const editInputRef = useRef<HTMLTextAreaElement>(null);
@@ -79,7 +70,6 @@ export const TextOverlayControls = () => {
 
   return (
     <div className="space-y-3">
-      {/* Add text button — big and clear */}
       <button
         onClick={handleAddText}
         className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-border/60 hover:border-primary/40 hover:bg-primary/5 text-muted-foreground hover:text-primary transition-all duration-150"
@@ -87,8 +77,6 @@ export const TextOverlayControls = () => {
         <Add01Icon size={16} />
         <span className="text-xs font-medium">Add Text</span>
       </button>
-
-      {/* Text overlay list */}
       {textOverlays.length > 0 && (
         <div className="space-y-1">
           {textOverlays.map((overlay) => {
@@ -99,15 +87,15 @@ export const TextOverlayControls = () => {
                 onClick={() => setSelectedOverlayId(isSelected ? null : overlay.id)}
                 className={cn(
                   'flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-all group',
-                  isSelected
-                    ? 'bg-primary/8 border border-primary/20'
-                    : 'hover:bg-accent/60 border border-transparent'
+                  isSelected ? 'bg-primary/8 border border-primary/20' : 'hover:bg-accent/60 border border-transparent'
                 )}
               >
-                <div className={cn(
-                  "w-7 h-7 rounded-md flex items-center justify-center shrink-0",
-                  isSelected ? "bg-primary/10 text-primary" : "bg-muted/60 text-muted-foreground/60"
-                )}>
+                <div
+                  className={cn(
+                    'w-7 h-7 rounded-md flex items-center justify-center shrink-0',
+                    isSelected ? 'bg-primary/10 text-primary' : 'bg-muted/60 text-muted-foreground/60'
+                  )}
+                >
                   <TextIcon size={13} />
                 </div>
                 <span
@@ -125,9 +113,7 @@ export const TextOverlayControls = () => {
                   }}
                   className="p-1 rounded-md text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {overlay.isVisible
-                    ? <ViewIcon size={13} />
-                    : <ViewOffSlashIcon size={13} />}
+                  {overlay.isVisible ? <ViewIcon size={13} /> : <ViewOffSlashIcon size={13} />}
                 </button>
                 <button
                   onClick={(e) => {
@@ -153,12 +139,8 @@ export const TextOverlayControls = () => {
           )}
         </div>
       )}
-
-      {/* Selected overlay editor */}
       {selectedOverlay && (
         <div className="space-y-4 pt-3 border-t border-border/30">
-
-          {/* Text content */}
           <div className="space-y-1.5">
             <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Content</label>
             <textarea
@@ -170,8 +152,6 @@ export const TextOverlayControls = () => {
               className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
             />
           </div>
-
-          {/* Color */}
           <div className="space-y-1.5">
             <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Color</label>
             <div className="flex items-center gap-1.5">
@@ -200,12 +180,8 @@ export const TextOverlayControls = () => {
               />
             </div>
           </div>
-
-          {/* Typography */}
           <div className="space-y-2">
             <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Typography</label>
-
-            {/* Font family */}
             <select
               value={selectedOverlay.fontFamily}
               onChange={(e) => {
@@ -224,19 +200,17 @@ export const TextOverlayControls = () => {
                 </option>
               ))}
             </select>
-
-            {/* Weight */}
             <select
               value={selectedOverlay.fontWeight}
               onChange={(e) => updateTextOverlay(selectedOverlay.id, { fontWeight: e.target.value })}
               className="w-full h-9 px-2.5 text-xs rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
             >
               {getAvailableFontWeights(selectedOverlay.fontFamily).map((w) => (
-                <option key={w} value={w}>{WEIGHT_LABELS[w] ?? w}</option>
+                <option key={w} value={w}>
+                  {WEIGHT_LABELS[w] ?? w}
+                </option>
               ))}
             </select>
-
-            {/* Size */}
             <Slider
               value={[selectedOverlay.fontSize]}
               onValueChange={(v) => updateTextOverlay(selectedOverlay.id, { fontSize: v[0] })}
@@ -247,8 +221,6 @@ export const TextOverlayControls = () => {
               valueDisplay={`${selectedOverlay.fontSize}px`}
             />
           </div>
-
-          {/* Opacity */}
           <Slider
             value={[selectedOverlay.opacity]}
             onValueChange={(v) => updateTextOverlay(selectedOverlay.id, { opacity: v[0] })}
@@ -258,10 +230,10 @@ export const TextOverlayControls = () => {
             label="Opacity"
             valueDisplay={`${Math.round(selectedOverlay.opacity * 100)}%`}
           />
-
-          {/* Orientation */}
           <div className="space-y-1.5">
-            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Orientation</label>
+            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+              Orientation
+            </label>
             <div className="flex items-center gap-1 p-0.5 rounded-lg bg-muted/50 border border-border/20">
               {(['horizontal', 'vertical'] as const).map((dir) => (
                 <button
@@ -279,15 +251,15 @@ export const TextOverlayControls = () => {
               ))}
             </div>
           </div>
-
-          {/* Text Shadow */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Shadow</label>
               <button
-                onClick={() => updateTextOverlay(selectedOverlay.id, {
-                  textShadow: { ...selectedOverlay.textShadow, enabled: !selectedOverlay.textShadow.enabled },
-                })}
+                onClick={() =>
+                  updateTextOverlay(selectedOverlay.id, {
+                    textShadow: { ...selectedOverlay.textShadow, enabled: !selectedOverlay.textShadow.enabled },
+                  })
+                }
                 className={cn(
                   'w-8 h-[18px] rounded-full transition-colors relative',
                   selectedOverlay.textShadow.enabled ? 'bg-primary' : 'bg-muted-foreground/30'
@@ -306,9 +278,11 @@ export const TextOverlayControls = () => {
               <div className="space-y-1">
                 <Slider
                   value={[selectedOverlay.textShadow.blur]}
-                  onValueChange={(v) => updateTextOverlay(selectedOverlay.id, {
-                    textShadow: { ...selectedOverlay.textShadow, blur: v[0] },
-                  })}
+                  onValueChange={(v) =>
+                    updateTextOverlay(selectedOverlay.id, {
+                      textShadow: { ...selectedOverlay.textShadow, blur: v[0] },
+                    })
+                  }
                   min={0}
                   max={20}
                   step={1}
@@ -317,9 +291,11 @@ export const TextOverlayControls = () => {
                 />
                 <Slider
                   value={[selectedOverlay.textShadow.offsetX]}
-                  onValueChange={(v) => updateTextOverlay(selectedOverlay.id, {
-                    textShadow: { ...selectedOverlay.textShadow, offsetX: v[0] },
-                  })}
+                  onValueChange={(v) =>
+                    updateTextOverlay(selectedOverlay.id, {
+                      textShadow: { ...selectedOverlay.textShadow, offsetX: v[0] },
+                    })
+                  }
                   min={-20}
                   max={20}
                   step={1}
@@ -328,9 +304,11 @@ export const TextOverlayControls = () => {
                 />
                 <Slider
                   value={[selectedOverlay.textShadow.offsetY]}
-                  onValueChange={(v) => updateTextOverlay(selectedOverlay.id, {
-                    textShadow: { ...selectedOverlay.textShadow, offsetY: v[0] },
-                  })}
+                  onValueChange={(v) =>
+                    updateTextOverlay(selectedOverlay.id, {
+                      textShadow: { ...selectedOverlay.textShadow, offsetY: v[0] },
+                    })
+                  }
                   min={-20}
                   max={20}
                   step={1}

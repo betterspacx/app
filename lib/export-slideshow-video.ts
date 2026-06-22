@@ -1,31 +1,19 @@
-import { useExportProgress } from "@/hooks/useExportProgress";
-import { streamSlidesToEncoder, streamAnimationToEncoder, switchToSlideAndWait } from "./render-slideFrame";
-import { exportSlideFrameAsCanvas } from "./export-slideFrame";
-import {
-  type VideoFormat,
-  type VideoQuality,
-  isMp4Supported,
-} from "./export/video-encoder";
-import {
-  WebCodecsVideoEncoder,
-  isWebCodecsSupported,
-  isH264Supported,
-} from "./export/webcodecs-encoder";
-import {
-  FFmpegVideoEncoder,
-  loadFFmpeg,
-  type FFmpegFormat,
-} from "./export/ffmpeg-encoder";
-import { useImageStore } from "@/lib/store";
+import { useExportProgress } from '@/hooks/useExportProgress';
+import { streamSlidesToEncoder, streamAnimationToEncoder, switchToSlideAndWait } from './render-slideFrame';
+import { exportSlideFrameAsCanvas } from './export-slideFrame';
+import { type VideoFormat, type VideoQuality, isMp4Supported } from './export/video-encoder';
+import { WebCodecsVideoEncoder, isWebCodecsSupported, isH264Supported } from './export/webcodecs-encoder';
+import { FFmpegVideoEncoder, loadFFmpeg, type FFmpegFormat } from './export/ffmpeg-encoder';
+import { useImageStore } from '@/lib/store';
 
 const ANIMATION_FPS = 60;
 const SLIDESHOW_FPS = 30; // Static frames don't need 60fps — halves all frame work
 
 // Bitrates for different quality levels (for WebCodecs)
 const QUALITY_BITRATES: Record<VideoQuality, number> = {
-  high: 25_000_000,   // 25 Mbps
+  high: 25_000_000, // 25 Mbps
   medium: 10_000_000, // 10 Mbps
-  low: 5_000_000,     // 5 Mbps
+  low: 5_000_000, // 5 Mbps
 };
 
 // Encoder types
@@ -49,7 +37,7 @@ export async function checkEncoderSupport(): Promise<{
   mediarecorder: boolean;
   recommended: EncoderType;
 }> {
-  const webcodecs = isWebCodecsSupported() && await isH264Supported();
+  const webcodecs = isWebCodecsSupported() && (await isH264Supported());
 
   return {
     ffmpeg: true, // Always available (WASM)
@@ -63,9 +51,7 @@ export async function checkEncoderSupport(): Promise<{
  * Pre-load FFmpeg for faster exports
  * Call this early (e.g., when user opens export dialog)
  */
-export async function preloadFFmpeg(
-  onProgress?: (progress: number) => void
-): Promise<void> {
+export async function preloadFFmpeg(onProgress?: (progress: number) => void): Promise<void> {
   await loadFFmpeg(onProgress);
 }
 
@@ -98,7 +84,7 @@ function restoreStoreState(saved: ReturnType<typeof saveStoreState>) {
  */
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
@@ -108,22 +94,22 @@ function downloadBlob(blob: Blob, filename: string) {
 }
 
 function getMediaRecorderCodec(preferFormat: VideoFormat): { mimeType: string; format: VideoFormat } {
-  if (typeof MediaRecorder === "undefined") {
-    throw new Error("MediaRecorder is not supported in this browser");
+  if (typeof MediaRecorder === 'undefined') {
+    throw new Error('MediaRecorder is not supported in this browser');
   }
 
-  if (preferFormat === "mp4" && isMp4Supported()) {
-    return { mimeType: "video/mp4; codecs=avc1", format: "mp4" };
+  if (preferFormat === 'mp4' && isMp4Supported()) {
+    return { mimeType: 'video/mp4; codecs=avc1', format: 'mp4' };
   }
-  if (MediaRecorder.isTypeSupported("video/webm; codecs=vp9")) {
-    return { mimeType: "video/webm; codecs=vp9", format: "webm" };
+  if (MediaRecorder.isTypeSupported('video/webm; codecs=vp9')) {
+    return { mimeType: 'video/webm; codecs=vp9', format: 'webm' };
   }
-  return { mimeType: "video/webm; codecs=vp8", format: "webm" };
+  return { mimeType: 'video/webm; codecs=vp8', format: 'webm' };
 }
 
 function yieldToMain(): Promise<void> {
   return new Promise((resolve) => {
-    if (typeof requestIdleCallback !== "undefined") {
+    if (typeof requestIdleCallback !== 'undefined') {
       requestIdleCallback(() => resolve(), { timeout: 16 });
     } else {
       setTimeout(resolve, 0);
@@ -135,7 +121,7 @@ function yieldToMain(): Promise<void> {
  * Export slideshow as video — routes to appropriate encoder based on format
  */
 export async function exportSlideshowVideo(options: VideoExportOptions = {}) {
-  const { format = "mp4", quality = "high" } = options;
+  const { format = 'mp4', quality = 'high' } = options;
   const progress = useExportProgress.getState();
   const savedState = saveStoreState();
 
@@ -144,14 +130,14 @@ export async function exportSlideshowVideo(options: VideoExportOptions = {}) {
   try {
     let result;
 
-    if (format === "webm") {
-      result = await exportSlideshowWithMediaRecorder("webm", quality, progress);
-    } else if (format === "gif") {
-      result = await exportSlideshowWithFFmpeg("gif", quality, progress);
-    } else if (isWebCodecsSupported() && await isH264Supported()) {
+    if (format === 'webm') {
+      result = await exportSlideshowWithMediaRecorder('webm', quality, progress);
+    } else if (format === 'gif') {
+      result = await exportSlideshowWithFFmpeg('gif', quality, progress);
+    } else if (isWebCodecsSupported() && (await isH264Supported())) {
       result = await exportSlideshowWithWebCodecs(quality, progress);
     } else {
-      result = await exportSlideshowWithFFmpeg("mp4", quality, progress);
+      result = await exportSlideshowWithFFmpeg('mp4', quality, progress);
     }
 
     restoreStoreState(savedState);
@@ -199,13 +185,13 @@ async function exportSlideshowWithWebCodecs(
   );
 
   if (!state.encoder) {
-    throw new Error("No frames to export");
+    throw new Error('No frames to export');
   }
 
   const blob = await state.encoder.finalize();
   progress.done();
   downloadBlob(blob, `betterflow-video-${Date.now()}.mp4`);
-  return { format: "mp4" as const };
+  return { format: 'mp4' as const };
 }
 
 /**
@@ -221,11 +207,11 @@ async function exportSlideshowWithFFmpeg(
 
   // Build ordered slide list
   const orderedSlides = [...slides];
-  const slideList: (typeof orderedSlides[number] | null)[] =
+  const slideList: ((typeof orderedSlides)[number] | null)[] =
     orderedSlides.length > 0 ? orderedSlides : uploadedImageUrl ? [null] : [];
 
   if (slideList.length === 0) {
-    throw new Error("No frames to export");
+    throw new Error('No frames to export');
   }
 
   let encoder: FFmpegVideoEncoder | null = null;
@@ -253,16 +239,14 @@ async function exportSlideshowWithFFmpeg(
       await encoder.initialize();
     }
 
-    const duration = slide
-      ? (slide.duration || slideshow.defaultDuration || 2)
-      : (slideshow.defaultDuration || 2);
+    const duration = slide ? slide.duration || slideshow.defaultDuration || 2 : slideshow.defaultDuration || 2;
 
     await encoder.addSlide(canvas, duration);
-    progress.set((si + 1) / slideList.length * 40);
+    progress.set(((si + 1) / slideList.length) * 40);
   }
 
   if (!encoder) {
-    throw new Error("No frames to export");
+    throw new Error('No frames to export');
   }
 
   const blob = await encoder.encode();
@@ -282,8 +266,8 @@ async function exportSlideshowWithMediaRecorder(
   const bitrate = QUALITY_BITRATES[quality];
   const { mimeType, format: actualFormat } = getMediaRecorderCodec(format);
 
-  const canvas = document.createElement("canvas");
-  canvas.style.cssText = "position:fixed;left:-99999px;top:0;pointer-events:none;";
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;left:-99999px;top:0;pointer-events:none;';
   document.body.appendChild(canvas);
 
   let stream: MediaStream | null = null;
@@ -303,10 +287,10 @@ async function exportSlideshowWithMediaRecorder(
 
     let frameCount = 0;
     const frameInterval = 1000 / SLIDESHOW_FPS;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) throw new Error("Failed to initialize canvas context for recording");
+    const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) throw new Error('Failed to initialize canvas context for recording');
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
+    ctx.imageSmoothingQuality = 'high';
 
     await streamSlidesToEncoder(
       SLIDESHOW_FPS,
@@ -334,7 +318,7 @@ async function exportSlideshowWithMediaRecorder(
     });
 
     progress.done();
-    const blobType = actualFormat === "mp4" ? "video/mp4" : "video/webm";
+    const blobType = actualFormat === 'mp4' ? 'video/mp4' : 'video/webm';
     const blob = new Blob(chunks, { type: blobType });
     downloadBlob(blob, `betterflow-video-${Date.now()}.${actualFormat}`);
     return { format: actualFormat };
@@ -356,7 +340,7 @@ async function exportSlideshowWithMediaRecorder(
  * - 'auto': Automatically picks the best available encoder (default)
  */
 export async function exportAnimationVideo(options: VideoExportOptions = {}) {
-  const { format = "mp4", quality = "high", encoder = "auto" } = options;
+  const { format = 'mp4', quality = 'high', encoder = 'auto' } = options;
   const progress = useExportProgress.getState();
   const savedState = saveStoreState();
 
@@ -366,37 +350,37 @@ export async function exportAnimationVideo(options: VideoExportOptions = {}) {
     // Determine which encoder to use
     let selectedEncoder = encoder;
 
-    if (encoder === "auto") {
+    if (encoder === 'auto') {
       // Auto-select based on format and availability
-      if (format === "gif") {
-        selectedEncoder = "ffmpeg"; // Only FFmpeg supports GIF
-      } else if (format === "webm") {
-        selectedEncoder = "mediarecorder"; // MediaRecorder natively supports WebM
-      } else if (format === "mp4" && isWebCodecsSupported()) {
-        selectedEncoder = "webcodecs"; // Prefer WebCodecs: browser-native, no WASM loading
+      if (format === 'gif') {
+        selectedEncoder = 'ffmpeg'; // Only FFmpeg supports GIF
+      } else if (format === 'webm') {
+        selectedEncoder = 'mediarecorder'; // MediaRecorder natively supports WebM
+      } else if (format === 'mp4' && isWebCodecsSupported()) {
+        selectedEncoder = 'webcodecs'; // Prefer WebCodecs: browser-native, no WASM loading
       } else {
-        selectedEncoder = "ffmpeg";
+        selectedEncoder = 'ffmpeg';
       }
     }
 
     // Route to appropriate encoder
     let result;
     switch (selectedEncoder) {
-      case "ffmpeg":
+      case 'ffmpeg':
         result = await exportAnimationWithFFmpeg(format as FFmpegFormat, quality, progress);
         break;
 
-      case "webcodecs":
-        if (format === "mp4" && isWebCodecsSupported() && await isH264Supported()) {
+      case 'webcodecs':
+        if (format === 'mp4' && isWebCodecsSupported() && (await isH264Supported())) {
           result = await exportAnimationWithWebCodecs(quality, progress);
           break;
         }
         // Fall through to FFmpeg if WebCodecs unavailable
-        console.warn("WebCodecs not available, falling back to FFmpeg");
+        console.warn('WebCodecs not available, falling back to FFmpeg');
         result = await exportAnimationWithFFmpeg(format as FFmpegFormat, quality, progress);
         break;
 
-      case "mediarecorder":
+      case 'mediarecorder':
         result = await exportAnimationWithMediaRecorder(format as VideoFormat, quality, progress);
         break;
 
@@ -447,7 +431,7 @@ async function exportAnimationWithFFmpeg(
   );
 
   if (!state.encoder) {
-    throw new Error("No frames to export");
+    throw new Error('No frames to export');
   }
 
   const blob = await state.encoder.encode();
@@ -496,7 +480,7 @@ async function exportAnimationWithWebCodecs(
   );
 
   if (!state.encoder) {
-    throw new Error("No frames to export");
+    throw new Error('No frames to export');
   }
 
   const blob = await state.encoder.finalize();
@@ -505,7 +489,7 @@ async function exportAnimationWithWebCodecs(
 
   downloadBlob(blob, `betterflow-animation-${Date.now()}.mp4`);
 
-  return { format: "mp4" as const };
+  return { format: 'mp4' as const };
 }
 
 /**
@@ -519,8 +503,8 @@ async function exportAnimationWithMediaRecorder(
   const bitrate = QUALITY_BITRATES[quality];
   const { mimeType, format: actualFormat } = getMediaRecorderCodec(format);
 
-  const canvas = document.createElement("canvas");
-  canvas.style.cssText = "position:fixed;left:-99999px;top:0;pointer-events:none;";
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;left:-99999px;top:0;pointer-events:none;';
   document.body.appendChild(canvas);
 
   let stream: MediaStream | null = null;
@@ -540,10 +524,10 @@ async function exportAnimationWithMediaRecorder(
 
     let frameCount = 0;
     const frameInterval = 1000 / ANIMATION_FPS;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) throw new Error("Failed to initialize canvas context for recording");
+    const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) throw new Error('Failed to initialize canvas context for recording');
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
+    ctx.imageSmoothingQuality = 'high';
 
     await streamAnimationToEncoder(
       ANIMATION_FPS,
@@ -571,7 +555,7 @@ async function exportAnimationWithMediaRecorder(
     });
 
     progress.done();
-    const blobType = actualFormat === "mp4" ? "video/mp4" : "video/webm";
+    const blobType = actualFormat === 'mp4' ? 'video/mp4' : 'video/webm';
     const blob = new Blob(chunks, { type: blobType });
     downloadBlob(blob, `betterflow-animation-${Date.now()}.${actualFormat}`);
     return { format: actualFormat };

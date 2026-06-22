@@ -55,9 +55,7 @@ export function TimelinePlayhead({ width, height }: TimelinePlayheadProps) {
       style={{ left: position, height, transform: 'translateX(-50%)' }}
       onMouseDown={handleMouseDown}
     >
-      {/* Wider clickable area containing the triangle and line */}
       <div className="w-3 h-full flex flex-col items-center hover:bg-red-500/10 transition-colors">
-        {/* Head triangle */}
         <div
           className={cn(
             'w-0 h-0 -mt-1',
@@ -67,15 +65,7 @@ export function TimelinePlayhead({ width, height }: TimelinePlayheadProps) {
             isDragging && 'border-t-red-400'
           )}
         />
-
-        {/* Vertical line */}
-        <div
-          className={cn(
-            'w-[2px] flex-1',
-            'bg-red-500',
-            isPlaying && 'animate-pulse'
-          )}
-        />
+        <div className={cn('w-[2px] flex-1', 'bg-red-500', isPlaying && 'animate-pulse')} />
       </div>
     </div>
   );

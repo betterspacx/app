@@ -46,21 +46,14 @@ export function CanvasThumbnail({ src, className, isSelected }: CanvasThumbnailP
 
   return (
     <div className={cn('relative w-full h-full overflow-hidden', className)}>
-      {!loaded && (
-        <div className="absolute inset-0 bg-muted animate-pulse" />
-      )}
+      {!loaded && <div className="absolute inset-0 bg-muted animate-pulse" />}
       <canvas
         ref={canvasRef}
         width={160}
         height={160}
-        className={cn(
-          'w-full h-full',
-          loaded ? 'opacity-100' : 'opacity-0'
-        )}
+        className={cn('w-full h-full', loaded ? 'opacity-100' : 'opacity-0')}
       />
-      {isSelected && (
-        <div className="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none" />
-      )}
+      {isSelected && <div className="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none" />}
     </div>
   );
 }

@@ -87,7 +87,6 @@ export function AnimationPresetGallery() {
 
   return (
     <div className="space-y-5">
-      {/* Header with clear button */}
       {hasAnimation && (
         <div className="flex items-center justify-between p-3 bg-primary/10 border border-primary/20 rounded-lg">
           <div>
@@ -109,8 +108,6 @@ export function AnimationPresetGallery() {
           </Button>
         </div>
       )}
-
-      {/* Preset categories */}
       {Object.entries(PRESET_BY_CATEGORY).map(([category, presets]) => (
         <div key={category} className="space-y-2">
           <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -118,7 +115,7 @@ export function AnimationPresetGallery() {
           </h4>
           <div className="grid grid-cols-3 gap-2">
             {presets.map((preset) => {
-              const isApplied = animationClips.some(c => c.presetId === preset.id);
+              const isApplied = animationClips.some((c) => c.presetId === preset.id);
               return (
                 <button
                   key={preset.id}
@@ -127,17 +124,10 @@ export function AnimationPresetGallery() {
                     'relative flex flex-col items-center gap-1.5 p-1.5 rounded-lg transition-all group cursor-pointer',
                     'bg-muted/60 hover:bg-card/80',
                     'border-2',
-                    isApplied
-                      ? 'border-primary/50'
-                      : 'border-transparent hover:border-border/50'
+                    isApplied ? 'border-primary/50' : 'border-transparent hover:border-border/50'
                   )}
                 >
-                  {/* Preview container */}
-                  <div
-                    className="relative w-full aspect-[4/3] rounded-md overflow-hidden"
-                    style={getBackgroundStyle()}
-                  >
-                    {/* Mini preview */}
+                  <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden" style={getBackgroundStyle()}>
                     <div className="absolute inset-0 flex items-center justify-center p-1">
                       {previewImageUrl ? (
                         <div className="w-3/4 h-3/4">
@@ -147,9 +137,7 @@ export function AnimationPresetGallery() {
                             className="w-full h-full object-contain rounded-sm"
                             style={{
                               borderRadius: `${Math.min(borderRadius, 4)}px`,
-                              boxShadow: imageShadow.enabled
-                                ? 'rgba(0, 0, 0, 0.3) 1px 1px 4px'
-                                : undefined,
+                              boxShadow: imageShadow.enabled ? 'rgba(0, 0, 0, 0.3) 1px 1px 4px' : undefined,
                             }}
                           />
                         </div>
@@ -157,28 +145,20 @@ export function AnimationPresetGallery() {
                         <div className="w-3/4 h-3/4 bg-muted-foreground/40 rounded" />
                       )}
                     </div>
-
-                    {/* Hover add indicator */}
                     <div className="absolute inset-0 bg-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <div className="bg-foreground/20 rounded-full p-2">
                         <Add01Icon size={16} className="text-primary-foreground" />
                       </div>
                     </div>
-
-                    {/* Duration badge */}
                     <div className="absolute bottom-1 right-1 px-1 py-0.5 bg-foreground/60 rounded text-[8px] text-background/80">
                       {(preset.duration / 1000).toFixed(1)}s
                     </div>
-
-                    {/* Applied indicator */}
                     {isApplied && (
                       <div className="absolute top-1 left-1 px-1 py-0.5 bg-primary rounded text-[7px] text-primary-foreground font-medium">
                         Added
                       </div>
                     )}
                   </div>
-
-                  {/* Preset name */}
                   <span className="text-[9px] font-medium text-foreground/70 truncate w-full text-center">
                     {preset.name}
                   </span>
@@ -188,25 +168,16 @@ export function AnimationPresetGallery() {
           </div>
         </div>
       ))}
-
-      {/* Info text */}
       {!previewImageUrl && (
         <div className="p-3 rounded-lg bg-muted/50 border border-border text-center">
-          <p className="text-xs text-muted-foreground">
-            Upload an image to see animation previews
-          </p>
+          <p className="text-xs text-muted-foreground">Upload an image to see animation previews</p>
         </div>
       )}
-
-      {/* Instructions */}
       <div className="p-3 rounded-lg bg-muted/50 border border-border/30 space-y-1">
         <p className="text-xs text-foreground/60">
-          Click any preset to add it to the timeline.
-          You can add multiple animations and arrange them.
+          Click any preset to add it to the timeline. You can add multiple animations and arrange them.
         </p>
-        <p className="text-[10px] text-foreground/40">
-          Use the timeline at the bottom to resize and reorder clips.
-        </p>
+        <p className="text-[10px] text-foreground/40">Use the timeline at the bottom to resize and reorder clips.</p>
       </div>
     </div>
   );

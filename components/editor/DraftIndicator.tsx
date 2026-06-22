@@ -1,18 +1,8 @@
-"use client";
+'use client';
 
-import {
-  Loading03Icon,
-  CheckmarkCircle02Icon,
-  Clock01Icon,
-  Delete02Icon,
-} from "hugeicons-react";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Loading03Icon, CheckmarkCircle02Icon, Clock01Icon, Delete02Icon } from 'hugeicons-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,8 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { formatDistanceToNow } from "date-fns";
+} from '@/components/ui/alert-dialog';
+import { formatDistanceToNow } from 'date-fns';
 
 interface DraftIndicatorProps {
   isSaving: boolean;
@@ -32,16 +22,11 @@ interface DraftIndicatorProps {
   onClearDraft: () => Promise<void>;
 }
 
-export function DraftIndicator({
-  isSaving,
-  lastSaved,
-  onClearDraft,
-}: DraftIndicatorProps) {
+export function DraftIndicator({ isSaving, lastSaved, onClearDraft }: DraftIndicatorProps) {
   const getStatusText = () => {
-    if (isSaving) return "Saving...";
-    if (lastSaved)
-      return `Saved ${formatDistanceToNow(lastSaved, { addSuffix: true })}`;
-    return "No changes";
+    if (isSaving) return 'Saving...';
+    if (lastSaved) return `Saved ${formatDistanceToNow(lastSaved, { addSuffix: true })}`;
+    return 'No changes';
   };
 
   const getIcon = () => {
@@ -86,8 +71,8 @@ export function DraftIndicator({
             <AlertDialogHeader>
               <AlertDialogTitle>Delete draft?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will permanently delete your saved draft and clear the
-                current canvas. This action cannot be undone.
+                This will permanently delete your saved draft and clear the current canvas. This action cannot be
+                undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

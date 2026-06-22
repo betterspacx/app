@@ -89,7 +89,6 @@ export function OverlayToolbar({
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Rotate controls */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -120,8 +119,6 @@ export function OverlayToolbar({
       </button>
 
       <div className="w-px h-5 bg-border/40" />
-
-      {/* Size controls */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -152,8 +149,6 @@ export function OverlayToolbar({
       </button>
 
       <div className="w-px h-5 bg-border/40" />
-
-      {/* Duplicate */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -170,8 +165,6 @@ export function OverlayToolbar({
       </button>
 
       <div className="w-px h-5 bg-border/40" />
-
-      {/* Delete */}
       <button
         onClick={(e) => {
           e.stopPropagation();

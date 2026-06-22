@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ImageExportProgressView } from "./ImageProgressView";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ImageExportProgressView } from './ImageProgressView';
 
 interface CopyProgressDialogProps {
   open: boolean;
@@ -14,12 +14,8 @@ export function CopyProgressDialog({ open, progress }: CopyProgressDialogProps) 
       <DialogContent className="sm:max-w-[420px] max-h-[90vh] overflow-y-auto p-0">
         <div className="p-6 pb-4">
           <DialogHeader className="pb-1">
-            <DialogTitle className="text-xl font-semibold text-foreground">
-              Copying Image
-            </DialogTitle>
-            <p className="text-sm text-muted-foreground pt-1">
-              Preparing your image for the clipboard
-            </p>
+            <DialogTitle className="text-xl font-semibold text-foreground">Copying Image</DialogTitle>
+            <p className="text-sm text-muted-foreground pt-1">Preparing your image for the clipboard</p>
           </DialogHeader>
         </div>
         <div className="px-6 pb-6">

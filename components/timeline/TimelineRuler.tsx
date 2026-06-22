@@ -39,28 +39,13 @@ export function TimelineRuler({ width }: TimelineRulerProps) {
   };
 
   return (
-    <div
-      className="relative h-6 bg-card border-b border-border/30 select-none"
-      style={{ width }}
-    >
+    <div className="relative h-6 bg-card border-b border-border/30 select-none" style={{ width }}>
       {ticks.map(({ time, isMajor }) => {
         const left = (time / duration) * width;
         return (
-          <div
-            key={time}
-            className="absolute top-0 flex flex-col items-center"
-            style={{ left }}
-          >
-            <div
-              className={`w-px ${
-                isMajor ? 'h-3 bg-foreground/40' : 'h-2 bg-foreground/20'
-              }`}
-            />
-            {isMajor && (
-              <span className="text-[9px] text-foreground/50 mt-0.5 font-mono">
-                {formatTickLabel(time)}
-              </span>
-            )}
+          <div key={time} className="absolute top-0 flex flex-col items-center" style={{ left }}>
+            <div className={`w-px ${isMajor ? 'h-3 bg-foreground/40' : 'h-2 bg-foreground/20'}`} />
+            {isMajor && <span className="text-[9px] text-foreground/50 mt-0.5 font-mono">{formatTickLabel(time)}</span>}
           </div>
         );
       })}

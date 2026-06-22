@@ -20,7 +20,10 @@ export const QUALITY_PRESETS: Record<QualityPreset, QualitySettings> = {
   low: { jpeg: 60, pngCompression: 9, webp: 55 },
 };
 
-export const QUALITY_PRESET_LABELS: Record<QualityPreset, { label: string; description: Record<ExportFormat, string> }> = {
+export const QUALITY_PRESET_LABELS: Record<
+  QualityPreset,
+  { label: string; description: Record<ExportFormat, string> }
+> = {
   high: {
     label: 'High',
     description: {

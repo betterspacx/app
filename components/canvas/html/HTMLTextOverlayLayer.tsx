@@ -24,14 +24,7 @@ interface DraggableTextProps {
   onUpdate: (updates: Partial<TextOverlay>) => void;
 }
 
-function DraggableText({
-  overlay,
-  canvasW,
-  canvasH,
-  isSelected,
-  onSelect,
-  onUpdate,
-}: DraggableTextProps) {
+function DraggableText({ overlay, canvasW, canvasH, isSelected, onSelect, onUpdate }: DraggableTextProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -41,14 +34,17 @@ function DraggableText({
   const textX = (overlay.position.x / 100) * canvasW;
   const textY = (overlay.position.y / 100) * canvasH;
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-    setDragStart({ x: e.clientX, y: e.clientY });
-    setInitialPos({ x: textX, y: textY });
-    onSelect();
-  }, [textX, textY, onSelect]);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+      setDragStart({ x: e.clientX, y: e.clientY });
+      setInitialPos({ x: textX, y: textY });
+      onSelect();
+    },
+    [textX, textY, onSelect]
+  );
 
   useEffect(() => {
     if (!isDragging) return;
@@ -132,11 +128,14 @@ export function HTMLTextOverlayLayer({
   setIsMainImageSelected,
   updateTextOverlay,
 }: HTMLTextOverlayLayerProps) {
-  const handleSelect = useCallback((id: string) => {
-    setSelectedTextId(id);
-    setSelectedOverlayId(null);
-    setIsMainImageSelected(false);
-  }, [setSelectedTextId, setSelectedOverlayId, setIsMainImageSelected]);
+  const handleSelect = useCallback(
+    (id: string) => {
+      setSelectedTextId(id);
+      setSelectedOverlayId(null);
+      setIsMainImageSelected(false);
+    },
+    [setSelectedTextId, setSelectedOverlayId, setIsMainImageSelected]
+  );
 
   return (
     <div

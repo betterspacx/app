@@ -4,12 +4,7 @@ import { useRef, useCallback, useMemo, useState } from 'react';
 import Moveable from 'react-moveable';
 import type { ImageOverlay } from '@/lib/store';
 import { cn } from '@/lib/utils';
-import {
-  Delete02Icon,
-  Copy01Icon,
-  LayerSendToBackIcon,
-  LayerBringToFrontIcon,
-} from 'hugeicons-react';
+import { Delete02Icon, Copy01Icon, LayerSendToBackIcon, LayerBringToFrontIcon } from 'hugeicons-react';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -70,10 +65,9 @@ function OverlayElement({
     );
   }
 
-  const flipTransform = [
-    overlay.flipX ? 'scaleX(-1)' : '',
-    overlay.flipY ? 'scaleY(-1)' : '',
-  ].filter(Boolean).join(' ');
+  const flipTransform = [overlay.flipX ? 'scaleX(-1)' : '', overlay.flipY ? 'scaleY(-1)' : '']
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div
@@ -196,13 +190,16 @@ export function HTMLImageOverlayLayer({
   const overlayRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [interacting, setInteracting] = useState(false);
 
-  const setOverlayRef = useCallback((id: string) => (el: HTMLDivElement | null) => {
-    if (el) {
-      overlayRefs.current.set(id, el);
-    } else {
-      overlayRefs.current.delete(id);
-    }
-  }, []);
+  const setOverlayRef = useCallback(
+    (id: string) => (el: HTMLDivElement | null) => {
+      if (el) {
+        overlayRefs.current.set(id, el);
+      } else {
+        overlayRefs.current.delete(id);
+      }
+    },
+    []
+  );
 
   const handleSelect = useCallback(
     (id: string) => {
@@ -213,11 +210,9 @@ export function HTMLImageOverlayLayer({
     [setSelectedOverlayId, setIsMainImageSelected, setSelectedTextId]
   );
 
-  const selectedOverlay = selectedOverlayId
-    ? imageOverlays.find((o) => o.id === selectedOverlayId)
-    : null;
+  const selectedOverlay = selectedOverlayId ? imageOverlays.find((o) => o.id === selectedOverlayId) : null;
 
-  const selectedEl = selectedOverlayId ? overlayRefs.current.get(selectedOverlayId) ?? null : null;
+  const selectedEl = selectedOverlayId ? (overlayRefs.current.get(selectedOverlayId) ?? null) : null;
   const isShadow = selectedOverlay?.src.includes('overlay-shadow');
 
   return (
@@ -245,8 +240,6 @@ export function HTMLImageOverlayLayer({
           />
         );
       })}
-
-      {/* Moveable + Context toolbar for selected overlay */}
       {selectedOverlay && selectedEl && !isShadow && (
         <>
           <Moveable
@@ -310,8 +303,6 @@ export function HTMLImageOverlayLayer({
               }
             }}
           />
-
-          {/* Minimal context toolbar below the selected overlay */}
           {!interacting && (
             <div
               style={{

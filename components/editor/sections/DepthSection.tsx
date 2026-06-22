@@ -105,11 +105,18 @@ export function DepthSection() {
 
     // Image overlays (array order = z-order, first = bottom)
     imageOverlays.forEach((overlay, i) => {
-      const isR2 = isOverlayPath(overlay.src) || (typeof overlay.src === 'string' && overlay.src.startsWith('overlays/'));
+      const isR2 =
+        isOverlayPath(overlay.src) || (typeof overlay.src === 'string' && overlay.src.startsWith('overlays/'));
       const thumbSrc = isR2 && !overlay.isCustom ? getR2ImageUrl({ src: overlay.src }) : overlay.src;
       // Derive a readable label from the filename
       const nameFromPath = overlay.src.startsWith('/')
-        ? overlay.src.split('/').pop()?.replace(/\.\w+$/, '').replace(/[-_][A-Za-z0-9]{6,}$/, '').replace(/[-_]/g, ' ').trim() ?? `Asset ${i + 1}`
+        ? (overlay.src
+            .split('/')
+            .pop()
+            ?.replace(/\.\w+$/, '')
+            .replace(/[-_][A-Za-z0-9]{6,}$/, '')
+            .replace(/[-_]/g, ' ')
+            .trim() ?? `Asset ${i + 1}`)
         : null;
       items.push({
         id: overlay.id,
@@ -246,36 +253,28 @@ export function DepthSection() {
   };
 
   // Selected image overlay (for editing controls)
-  const selectedOverlay = selectedLayerId
-    ? imageOverlays.find((o) => o.id === selectedLayerId) ?? null
-    : null;
+  const selectedOverlay = selectedLayerId ? (imageOverlays.find((o) => o.id === selectedLayerId) ?? null) : null;
 
   const activeAssets = LOCAL_OBJECTS;
 
   return (
     <div className="space-y-2">
-      {/* ── Layer list (at the top) ── */}
       <SectionWrapper
         title="Layers"
         defaultOpen={true}
         action={
           layers.length > 0 ? (
-            <span className="text-[10px] tabular-nums text-muted-foreground">
-              {layers.length}
-            </span>
+            <span className="text-[10px] tabular-nums text-muted-foreground">{layers.length}</span>
           ) : undefined
         }
       >
         {layers.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-6 text-center">
             <LayersLogoIcon size={28} className="text-muted-foreground/50" />
-            <p className="text-xs text-muted-foreground">
-              No layers yet. Add assets below or use the Edit tab.
-            </p>
+            <p className="text-xs text-muted-foreground">No layers yet. Add assets below or use the Edit tab.</p>
           </div>
         ) : (
           <div className="space-y-0.5">
-            {/* Render in reverse so top of list = top of canvas */}
             {[...layers].reverse().map((layer) => {
               const isSelected = selectedLayerId === layer.id;
               const isImageOverlay = layer.type === 'image-overlay';
@@ -283,28 +282,23 @@ export function DepthSection() {
               return (
                 <div
                   key={layer.id}
-                  className={cn(
-                    'rounded-lg transition-all duration-150',
-                    isSelected && 'bg-accent/50'
-                  )}
+                  className={cn('rounded-lg transition-all duration-150', isSelected && 'bg-accent/50')}
                 >
-                  {/* Main row */}
                   <div
                     onClick={() => setSelectedLayerId(isSelected ? null : layer.id)}
                     className={cn(
                       'flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-all duration-150 group',
-                      isSelected
-                        ? 'bg-primary/8'
-                        : 'hover:bg-accent/60'
+                      isSelected ? 'bg-primary/8' : 'hover:bg-accent/60'
                     )}
                   >
-                    {/* Thumbnail / Icon */}
-                    <div className={cn(
-                      "w-9 h-9 rounded-lg flex items-center justify-center shrink-0 overflow-hidden",
-                      isSelected
-                        ? "bg-[#c9d4ff]/10 border border-[#c9d4ff]/20"
-                        : "bg-muted/60 border border-border/30"
-                    )}>
+                    <div
+                      className={cn(
+                        'w-9 h-9 rounded-lg flex items-center justify-center shrink-0 overflow-hidden',
+                        isSelected
+                          ? 'bg-[#c9d4ff]/10 border border-[#c9d4ff]/20'
+                          : 'bg-muted/60 border border-border/30'
+                      )}
+                    >
                       {layer.thumbnailSrc ? (
                         <img
                           src={layer.thumbnailSrc}
@@ -313,25 +307,29 @@ export function DepthSection() {
                           className="w-full h-full object-contain"
                         />
                       ) : (
-                        <span className={cn(
-                          isSelected ? "text-[#c9d4ff]" : "text-muted-foreground/60"
-                        )}>
+                        <span className={cn(isSelected ? 'text-[#c9d4ff]' : 'text-muted-foreground/60')}>
                           {getLayerIcon(layer.type)}
                         </span>
                       )}
                     </div>
-
-                    {/* Label */}
                     <div className="flex-1 min-w-0">
-                      <p className={cn(
-                        "text-xs font-medium truncate",
-                        isSelected ? "text-foreground" : "text-foreground/80"
-                      )}>
+                      <p
+                        className={cn(
+                          'text-xs font-medium truncate',
+                          isSelected ? 'text-foreground' : 'text-foreground/80'
+                        )}
+                      >
                         {layer.label}
                       </p>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <p className="text-[10px] text-muted-foreground capitalize">
-                          {layer.type === 'image-overlay' ? 'Image' : layer.type === 'text-overlay' ? 'Text' : layer.type === 'annotation' ? 'Drawing' : layer.type.replace('-', ' ')}
+                          {layer.type === 'image-overlay'
+                            ? 'Image'
+                            : layer.type === 'text-overlay'
+                              ? 'Text'
+                              : layer.type === 'annotation'
+                                ? 'Drawing'
+                                : layer.type.replace('-', ' ')}
                         </p>
                         {isImageOverlay && layer.layerPosition === 'back' && (
                           <span className="text-[9px] px-1 py-px rounded bg-muted text-muted-foreground leading-none border border-border/30">
@@ -340,10 +338,7 @@ export function DepthSection() {
                         )}
                       </div>
                     </div>
-
-                    {/* Quick controls — always visible for key actions */}
                     <div className="flex items-center gap-0.5 shrink-0">
-                      {/* Visibility — always visible */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -359,8 +354,6 @@ export function DepthSection() {
                       >
                         {layer.isVisible ? <ViewIcon size={14} /> : <ViewOffSlashIcon size={14} />}
                       </button>
-
-                      {/* Delete — show on hover */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -373,8 +366,6 @@ export function DepthSection() {
                       </button>
                     </div>
                   </div>
-
-                  {/* Expanded controls when selected (image overlays) */}
                   {isSelected && isImageOverlay && (
                     <div className="flex items-center gap-1 px-2.5 pb-2 pt-0.5">
                       <button
@@ -411,9 +402,15 @@ export function DepthSection() {
                         )}
                         title={layer.layerPosition === 'back' ? 'Move to front' : 'Move behind image'}
                       >
-                        {layer.layerPosition === 'back'
-                          ? <><LayerBringForwardIcon size={12} /> Front</>
-                          : <><LayerSendBackwardIcon size={12} /> Back</>}
+                        {layer.layerPosition === 'back' ? (
+                          <>
+                            <LayerBringForwardIcon size={12} /> Front
+                          </>
+                        ) : (
+                          <>
+                            <LayerSendBackwardIcon size={12} /> Back
+                          </>
+                        )}
                       </button>
                     </div>
                   )}
@@ -423,8 +420,6 @@ export function DepthSection() {
           </div>
         )}
       </SectionWrapper>
-
-      {/* ── Selected overlay controls ── */}
       {selectedOverlay && (
         <SectionWrapper title="Properties" defaultOpen={true}>
           <OverlayProperties
@@ -437,11 +432,8 @@ export function DepthSection() {
           />
         </SectionWrapper>
       )}
-
-      {/* ── Asset picker ── */}
       <SectionWrapper title="3D Objects" defaultOpen={true}>
         <div className="space-y-3">
-          {/* Upload button */}
           <button
             onClick={() => fileInputRef.current?.click()}
             className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-border/60 hover:border-primary/40 hover:bg-primary/5 text-muted-foreground hover:text-primary transition-all duration-150 cursor-pointer"
@@ -449,15 +441,7 @@ export function DepthSection() {
             <Upload04Icon size={16} />
             <span className="text-xs font-medium">Upload Image</span>
           </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-
-          {/* Asset grid */}
+          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
           <div className="grid grid-cols-3 gap-2 p-1">
             {activeAssets.map((assetPath) => {
               const isLocal = assetPath.startsWith('/');
@@ -509,7 +493,6 @@ function OverlayProperties({
 
   return (
     <div className="space-y-3">
-      {/* Sliders */}
       <div className="space-y-2">
         <Slider
           value={[overlay.size]}
@@ -568,8 +551,6 @@ function OverlayProperties({
           valueDisplay={`${overlay.blur ?? 0}px`}
         />
       </div>
-
-      {/* Flip */}
       <div className="flex gap-1.5">
         <button
           onClick={() => onUpdate({ flipX: !overlay.flipX })}
@@ -594,8 +575,6 @@ function OverlayProperties({
           Flip Y
         </button>
       </div>
-
-      {/* Layer position: front / back */}
       <div className="space-y-1.5">
         <span className="text-xs font-medium text-muted-foreground">Position</span>
         <div className="flex gap-1.5">
@@ -623,8 +602,6 @@ function OverlayProperties({
           </button>
         </div>
       </div>
-
-      {/* Remove */}
       <button
         onClick={onRemove}
         className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 text-xs font-medium transition-colors cursor-pointer"

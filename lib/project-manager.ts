@@ -59,7 +59,12 @@ async function removeFromIndex(uid: string, projectId: string): Promise<void> {
   await storageService.write(indexKey(uid), JSON.stringify(index), 'application/json');
 }
 
-export async function saveProject(name: string, editorState: unknown, imageState: unknown, existingId?: string): Promise<ProjectMeta> {
+export async function saveProject(
+  name: string,
+  editorState: unknown,
+  imageState: unknown,
+  existingId?: string
+): Promise<ProjectMeta> {
   const uid = getUid();
   if (!uid) throw new Error('Not authenticated');
 

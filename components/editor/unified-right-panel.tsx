@@ -18,6 +18,7 @@ import {
   SettingsSection,
   StyleSection,
   BrowserMockupSection,
+  DeviceFramesSection,
   BorderSection,
   ShadowSection,
   BackgroundSection,
@@ -33,7 +34,6 @@ import {
 import { cn } from '@/lib/utils';
 import { useImageStore } from '@/lib/store';
 
-
 type TabType = 'edit' | 'transforms';
 
 const tabs: { id: TabType; icon: React.ReactNode; label: string }[] = [
@@ -42,7 +42,13 @@ const tabs: { id: TabType; icon: React.ReactNode; label: string }[] = [
 ];
 
 export function UnifiedRightPanel() {
-  const { activeRightPanelTab, setActiveRightPanelTab, showTemplates: templatesOpen, setShowTemplates: setTemplatesOpen, editorMode } = useImageStore();
+  const {
+    activeRightPanelTab,
+    setActiveRightPanelTab,
+    showTemplates: templatesOpen,
+    setShowTemplates: setTemplatesOpen,
+    editorMode,
+  } = useImageStore();
   const activeTab = activeRightPanelTab;
   const setActiveTab = setActiveRightPanelTab;
 
@@ -73,7 +79,6 @@ export function UnifiedRightPanel() {
 
   return (
     <div className="w-full h-full bg-custom-muted flex flex-col overflow-hidden md:w-[460px] border-r border-border/40 relative">
-      {/* Tab Navigation */}
       <div className="px-3 py-3 border-b border-border/30 shrink-0">
         <div className="flex gap-1 p-1 bg-gradient-to-b from-muted/90 to-muted/70 dark:from-muted/60 dark:to-muted/40 rounded-xl border border-border/30 shadow-sm">
           {tabs.map((tab) => {
@@ -94,9 +99,7 @@ export function UnifiedRightPanel() {
                 <span
                   className={cn(
                     'text-xs font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
-                    isActive
-                      ? 'max-w-[80px] opacity-100 ml-2'
-                      : 'max-w-0 opacity-0 ml-0'
+                    isActive ? 'max-w-[80px] opacity-100 ml-2' : 'max-w-0 opacity-0 ml-0'
                   )}
                 >
                   {tab.label}
@@ -106,8 +109,6 @@ export function UnifiedRightPanel() {
           })}
         </div>
       </div>
-
-      {/* Toggle switches - like reference */}
       <div className="px-4 py-3 border-b border-border/30 shrink-0">
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">Auto-fit</span>
@@ -116,8 +117,6 @@ export function UnifiedRightPanel() {
           </div>
         </div>
       </div>
-
-      {/* Scrollable Content with fade transition */}
       <div className="flex-1 overflow-y-auto scrollbar-hide">
         <div
           className="p-4 transition-all duration-150 ease-out"
@@ -128,43 +127,28 @@ export function UnifiedRightPanel() {
         >
           {contentKey === 'edit' && (
             <div className="space-y-4">
-              {/* Mockup Preview */}
-              <div className="aspect-video bg-muted/50 rounded-xl border border-border/30 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-muted rounded-full mx-auto mb-2" />
-                  <span className="text-xs text-muted-foreground">Preview</span>
-                </div>
-              </div>
-              {/* Layout Presets */}
-              <div className="pt-2">
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">Layout Presets</span>
-              </div>
-              <div className="space-y-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="aspect-[4/3] rounded-lg bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 p-0.5 cursor-pointer hover:scale-[1.02] transition-transform">
-                    <div className="w-full h-full bg-card rounded-md flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full" />
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <DeviceFramesSection />
+              <BrowserMockupSection />
+              <StyleSection />
+              <BorderSection />
+              <ShadowSection />
+              <BackgroundSection />
+              <TextSection />
+              <ImageOverlaySection />
+              <ImagePositionSection />
+              <SettingsSection />
             </div>
           )}
 
           {contentKey === 'transforms' && <TransformsGallery />}
         </div>
       </div>
-
-      {/* Templates Overlay */}
       <div
         className={cn(
           'absolute inset-0 z-50 bg-card flex flex-col transition-all duration-300 ease-out',
-          templatesOpen
-            ? 'translate-x-0 opacity-100'
-            : '-translate-x-full opacity-0 pointer-events-none'
+          templatesOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0 pointer-events-none'
         )}
       >
-        {/* Overlay Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border/30 shrink-0">
           <div className="flex items-center gap-2.5">
             <MagicWand01Icon size={20} className="text-primary" />
@@ -177,8 +161,6 @@ export function UnifiedRightPanel() {
             <Cancel01Icon size={18} />
           </button>
         </div>
-
-        {/* Overlay Content */}
         <div className="flex-1 overflow-y-auto scrollbar-hide">
           <div className="p-5">
             <PresetGallery />

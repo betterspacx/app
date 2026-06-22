@@ -29,10 +29,7 @@ function shouldTrack(): boolean {
 /**
  * Safely track a custom event with PostHog
  */
-export function trackEvent(
-  eventName: string,
-  eventData?: Record<string, string | number | boolean>
-): void {
+export function trackEvent(eventName: string, eventData?: Record<string, string | number | boolean>): void {
   if (!shouldTrack()) {
     if (process.env.NODE_ENV === 'development') {
       console.log('[PostHog] Skipped:', eventName, eventData);
@@ -50,10 +47,7 @@ export function trackEvent(
 /**
  * Identify a user in PostHog (for future auth integration)
  */
-export function identifyUser(
-  userId: string,
-  properties?: Record<string, string | number | boolean>
-): void {
+export function identifyUser(userId: string, properties?: Record<string, string | number | boolean>): void {
   try {
     posthog.identify(userId, properties);
   } catch (error) {
@@ -113,10 +107,7 @@ export function trackCopyToClipboard(success: boolean): void {
 // Feature Usage — high-level actions that help understand what people use
 // =============================================================================
 
-export function trackBackgroundChange(
-  type: 'gradient' | 'solid' | 'image' | 'transparent',
-  value?: string
-): void {
+export function trackBackgroundChange(type: 'gradient' | 'solid' | 'image' | 'transparent', value?: string): void {
   trackEvent('background_change', { type, value: value?.substring(0, 50) || '' });
 }
 
@@ -144,7 +135,11 @@ export function trackAspectRatioChange(ratio: string): void {
 }
 
 export function trackAnimationClipAdd(presetId: string, presetName: string, duration: number): void {
-  trackEvent('animation_clip_add', { preset_id: presetId, preset_name: presetName.substring(0, 50), duration_ms: duration });
+  trackEvent('animation_clip_add', {
+    preset_id: presetId,
+    preset_name: presetName.substring(0, 50),
+    duration_ms: duration,
+  });
 }
 
 // =============================================================================

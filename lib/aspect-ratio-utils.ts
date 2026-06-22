@@ -1,6 +1,6 @@
 /**
  * Aspect Ratio Utilities
- * 
+ *
  * Provides standard pixel dimensions for common aspect ratios
  * Based on industry standards for social media, video, and design platforms
  */
@@ -31,41 +31,38 @@ const STANDARD_DIMENSIONS: Record<string, { width: number; height: number }> = {
 
 // Special dimensions for specific aspect ratio IDs that share common ratios
 const SPECIAL_DIMENSIONS: Record<string, { width: number; height: number }> = {
-  'youtube_banner': { width: 2560, height: 1440 }, // YouTube Channel Banner - Higher resolution 16:9
-  'instagram_banner': { width: 1080, height: 1080 }, // Instagram Highlight Cover - Square format
-  'youtube_thumbnail': { width: 1280, height: 720 }, // YouTube Thumbnail
-  'youtube_video': { width: 1920, height: 1080 }, // YouTube Video
-  'pinterest_long': { width: 1000, height: 2100 }, // Pinterest Long Pin
-  'appstore_iphone65': { width: 1284, height: 2778 }, // iPhone 6.5" screenshot
-  'appstore_iphone55': { width: 1242, height: 2208 }, // iPhone 5.5" screenshot
-  'appstore_ipad': { width: 2048, height: 2732 }, // iPad Pro 12.9" screenshot
-  'appstore_iphone65_landscape': { width: 2778, height: 1284 }, // iPhone 6.5" landscape
-  'appstore_iphone55_landscape': { width: 2208, height: 1242 }, // iPhone 5.5" landscape
-  'appstore_ipad_landscape': { width: 2732, height: 2048 }, // iPad Pro 12.9" landscape
+  youtube_banner: { width: 2560, height: 1440 }, // YouTube Channel Banner - Higher resolution 16:9
+  instagram_banner: { width: 1080, height: 1080 }, // Instagram Highlight Cover - Square format
+  youtube_thumbnail: { width: 1280, height: 720 }, // YouTube Thumbnail
+  youtube_video: { width: 1920, height: 1080 }, // YouTube Video
+  pinterest_long: { width: 1000, height: 2100 }, // Pinterest Long Pin
+  appstore_iphone65: { width: 1284, height: 2778 }, // iPhone 6.5" screenshot
+  appstore_iphone55: { width: 1242, height: 2208 }, // iPhone 5.5" screenshot
+  appstore_ipad: { width: 2048, height: 2732 }, // iPad Pro 12.9" screenshot
+  appstore_iphone65_landscape: { width: 2778, height: 1284 }, // iPhone 6.5" landscape
+  appstore_iphone55_landscape: { width: 2208, height: 1242 }, // iPhone 5.5" landscape
+  appstore_ipad_landscape: { width: 2732, height: 2048 }, // iPad Pro 12.9" landscape
 };
 
 /**
  * Get standard pixel dimensions for an aspect ratio
  * Returns dimensions that maintain the aspect ratio but use standard sizes
- * 
+ *
  * @param width - Aspect ratio width (e.g., 16 for 16:9)
  * @param height - Aspect ratio height (e.g., 9 for 16:9)
  * @returns Standard pixel dimensions for the aspect ratio
  */
-export function getStandardDimensions(
-  width: number,
-  height: number
-): { width: number; height: number } {
+export function getStandardDimensions(width: number, height: number): { width: number; height: number } {
   const ratioString = `${width}:${height}`;
-  
+
   // Check if we have a standard dimension for this ratio
   if (STANDARD_DIMENSIONS[ratioString]) {
     return STANDARD_DIMENSIONS[ratioString];
   }
-  
+
   // Calculate ratio
   const ratio = width / height;
-  
+
   // Fallback: scale to a reasonable size maintaining aspect ratio
   // Aim for width around 1920px for landscape or 1080px for portrait
   if (ratio > 1) {
@@ -79,7 +76,7 @@ export function getStandardDimensions(
 
 /**
  * Get aspect ratio preset from aspect ratio ID
- * 
+ *
  * @param aspectRatioId - The ID of the aspect ratio (e.g., '16_9')
  * @returns AspectRatioPreset with proper dimensions
  */
@@ -120,17 +117,17 @@ export function getAspectRatioPreset(aspectRatioId: string): AspectRatioPreset |
       description: aspectRatio.description,
     };
   }
-  
+
   // Find matching preset by comparing ratio strings
   const ratioString = `${aspectRatio.width}:${aspectRatio.height}`;
   const matchingPreset = ASPECT_RATIO_PRESETS.find(
     (preset) => preset.ratio === ratioString || preset.ratio === aspectRatio.ratio.toString()
   );
-  
+
   if (matchingPreset) {
     return matchingPreset;
   }
-  
+
   // Create a preset with standard dimensions for this aspect ratio
   const standardDimensions = getStandardDimensions(aspectRatio.width, aspectRatio.height);
   return {
@@ -147,7 +144,7 @@ export function getAspectRatioPreset(aspectRatioId: string): AspectRatioPreset |
 /**
  * Calculate display dimensions that fit within viewport constraints
  * while maintaining aspect ratio
- * 
+ *
  * @param width - Original width
  * @param height - Original height
  * @param maxWidth - Maximum width constraint
@@ -161,21 +158,21 @@ export function calculateFitDimensions(
   maxHeight?: number
 ): { width: number; height: number } {
   const ratio = width / height;
-  
+
   let displayWidth = width;
   let displayHeight = height;
-  
+
   // Apply constraints
   if (maxWidth && displayWidth > maxWidth) {
     displayWidth = maxWidth;
     displayHeight = displayWidth / ratio;
   }
-  
+
   if (maxHeight && displayHeight > maxHeight) {
     displayHeight = maxHeight;
     displayWidth = displayHeight * ratio;
   }
-  
+
   return {
     width: Math.round(displayWidth),
     height: Math.round(displayHeight),
@@ -184,7 +181,7 @@ export function calculateFitDimensions(
 
 /**
  * Get CSS aspect ratio string from dimensions
- * 
+ *
  * @param width - Width of the aspect ratio
  * @param height - Height of the aspect ratio
  * @returns CSS aspect ratio string (e.g., "16/9")
@@ -192,4 +189,3 @@ export function calculateFitDimensions(
 export function getAspectRatioCSS(width: number, height: number): string {
   return `${width} / ${height}`;
 }
-

@@ -2,12 +2,15 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { FavouriteIcon, Coffee02Icon, DollarCircleIcon, SmartPhone01Icon, Copy01Icon, Tick02Icon } from 'hugeicons-react';
+  FavouriteIcon,
+  Coffee02Icon,
+  DollarCircleIcon,
+  SmartPhone01Icon,
+  Copy01Icon,
+  Tick02Icon,
+} from 'hugeicons-react';
 import { cn } from '@/lib/utils';
 import { Button as MovingBorderButton } from '@/components/ui/moving-border';
 
@@ -43,12 +46,7 @@ export function SponsorButton({ className, variant = 'bar' }: SponsorButtonProps
               <FavouriteIcon className="h-6 w-6" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent 
-            className="w-80 p-0" 
-            align="end"
-            side="top"
-            sideOffset={12}
-          >
+          <PopoverContent className="w-80 p-0" align="end" side="top" sideOffset={12}>
             <SponsorContent upiId={upiId} copied={copied} onCopy={handleCopy} />
           </PopoverContent>
         </Popover>
@@ -62,7 +60,7 @@ export function SponsorButton({ className, variant = 'bar' }: SponsorButtonProps
         <MovingBorderButton
           as="button"
           borderRadius="0.5rem"
-          containerClassName={cn("h-10", className)}
+          containerClassName={cn('h-10', className)}
           borderClassName=""
           gradientColor="var(--primary)"
           className="gap-2 bg-background hover:bg-accent text-foreground border border-border"
@@ -71,30 +69,16 @@ export function SponsorButton({ className, variant = 'bar' }: SponsorButtonProps
           <span>Sponsor</span>
         </MovingBorderButton>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-80 p-0" 
-        align="end"
-        side="top"
-        sideOffset={8}
-      >
+      <PopoverContent className="w-80 p-0" align="end" side="top" sideOffset={8}>
         <SponsorContent upiId={upiId} copied={copied} onCopy={handleCopy} />
       </PopoverContent>
     </Popover>
   );
 }
 
-function SponsorContent({ 
-  upiId, 
-  copied, 
-  onCopy 
-}: { 
-  upiId: string; 
-  copied: boolean; 
-  onCopy: () => void;
-}) {
+function SponsorContent({ upiId, copied, onCopy }: { upiId: string; copied: boolean; onCopy: () => void }) {
   return (
     <div className="p-4 space-y-3">
-      {/* Buy Me Coffee */}
       <a
         href="https://buymeacoffee.com/code_kartik"
         target="_blank"
@@ -104,12 +88,8 @@ function SponsorContent({
         <div className="h-10 w-10 rounded-lg bg-yellow-400 flex items-center justify-center shrink-0">
           <Coffee02Icon className="h-5 w-5 text-white" />
         </div>
-        <span className="text-sm font-medium text-foreground group-hover:text-foreground">
-          Buy Me Coffee
-        </span>
+        <span className="text-sm font-medium text-foreground group-hover:text-foreground">Buy Me Coffee</span>
       </a>
-
-      {/* PayPal */}
       <a
         href="https://www.paypal.com/paypalme/KartikLabhshetwar"
         target="_blank"
@@ -119,21 +99,15 @@ function SponsorContent({
         <div className="h-10 w-10 rounded-lg bg-blue-500 flex items-center justify-center shrink-0">
           <DollarCircleIcon className="h-5 w-5 text-white" />
         </div>
-        <span className="text-sm font-medium text-foreground group-hover:text-foreground">
-          PayPal
-        </span>
+        <span className="text-sm font-medium text-foreground group-hover:text-foreground">PayPal</span>
       </a>
-
-      {/* UPI Payment */}
       <div className="p-3 rounded-lg border border-border bg-muted">
         <div className="flex items-center gap-3 mb-3">
           <div className="h-10 w-10 rounded-lg bg-green-500 flex items-center justify-center shrink-0">
             <SmartPhone01Icon className="h-5 w-5 text-white" />
           </div>
           <div className="flex-1">
-            <span className="text-sm font-medium text-foreground block">
-              UPI Payment
-            </span>
+            <span className="text-sm font-medium text-foreground block">UPI Payment</span>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-xs text-muted-foreground">Scan QR or copy UPI ID</span>
               <button
@@ -150,18 +124,12 @@ function SponsorContent({
             </div>
           </div>
         </div>
-        
-        {/* QR Code */}
         <div className="bg-background p-4 rounded-lg flex items-center justify-center mb-3">
           <div className="w-48 h-48 border-2 border-border rounded-lg flex items-center justify-center bg-background relative overflow-hidden">
-            <img 
-              src="/qr.jpeg" 
-              alt="UPI QR Code" 
-              className="w-full h-full object-contain rounded-lg"
-            />
+            <img src="/qr.jpeg" alt="UPI QR Code" className="w-full h-full object-contain rounded-lg" />
           </div>
         </div>
-        
+
         <div className="text-center">
           <p className="text-xs font-medium text-foreground mb-1">UPI ID: {upiId}</p>
           <p className="text-xs text-muted-foreground">Scan to pay with any UPI app</p>
@@ -170,4 +138,3 @@ function SponsorContent({
     </div>
   );
 }
-

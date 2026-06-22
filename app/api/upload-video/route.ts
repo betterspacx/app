@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // Cloudflare R2 configuration
 const R2_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || '';
 const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME || '';
-const R2_API_TOKEN = process.env.R2_API_TOKEN || '';  // cfut_xxx format
+const R2_API_TOKEN = process.env.R2_API_TOKEN || ''; // cfut_xxx format
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,11 +38,11 @@ export async function POST(request: NextRequest) {
 
     // Upload to R2 using Cloudflare API
     const uploadUrl = `https://api.cloudflare.com/client/v4/accounts/${R2_ACCOUNT_ID}/r2/buckets/${R2_BUCKET_NAME}/objects/${encodeURIComponent(r2Key)}`;
-    
+
     const uploadResponse = await fetch(uploadUrl, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${R2_API_TOKEN}`,
+        Authorization: `Bearer ${R2_API_TOKEN}`,
         'Content-Type': 'video/webm',
       },
       body: buffer,

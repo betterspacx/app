@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const ALLOWED_DOMAINS = [
-  'pbs.twimg.com',
-  'abs.twimg.com',
-  'ton.twitter.com',
-  'video.twimg.com',
-];
+const ALLOWED_DOMAINS = ['pbs.twimg.com', 'abs.twimg.com', 'ton.twitter.com', 'video.twimg.com'];
 
 export async function GET(req: NextRequest) {
   const url = req.nextUrl.searchParams.get('url');

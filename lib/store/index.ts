@@ -1,21 +1,22 @@
 // Modified by konlyzx (2026) - Changed default background to gradient, removed background reset from clearImage, setImage, and resetCanvasSettings to preserve background state
 // Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
 
-"use client";
+'use client';
 
-import React from "react";
-import { create } from "zustand";
-import { temporal } from "zundo";
-import { exportImageWithGradient } from "./export-utils";
-import { GradientKey } from "@/lib/constants/gradient-colors";
-import { AspectRatioKey } from "@/lib/constants/aspect-ratios";
-import { BackgroundConfig, BackgroundType } from "@/lib/constants/backgrounds";
-import { gradientColors } from "@/lib/constants/gradient-colors";
-import { solidColors } from "@/lib/constants/solid-colors";
-import type { Mockup } from "@/types/mockup";
-import type { TimelineState, AnimationTrack, Keyframe, AnimatableProperties, AnimationClip } from "@/types/animation";
-import { DEFAULT_TIMELINE_STATE } from "@/types/animation";
-import { clonePresetTracks, getPresetById, ANIMATION_PRESETS } from "@/lib/animation/presets";
+import React from 'react';
+import { create } from 'zustand';
+import { temporal } from 'zundo';
+import { exportImageWithGradient } from './export-utils';
+import { GradientKey } from '@/lib/constants/gradient-colors';
+import { AspectRatioKey } from '@/lib/constants/aspect-ratios';
+import { BackgroundConfig, BackgroundType } from '@/lib/constants/backgrounds';
+import { gradientColors } from '@/lib/constants/gradient-colors';
+import { solidColors } from '@/lib/constants/solid-colors';
+import type { Mockup } from '@/types/mockup';
+import type { TimelineState, AnimationTrack, Keyframe, AnimatableProperties, AnimationClip } from '@/types/animation';
+import type { PresetConfig } from '@/lib/constants/presets';
+import { DEFAULT_TIMELINE_STATE } from '@/types/animation';
+import { clonePresetTracks, getPresetById, ANIMATION_PRESETS } from '@/lib/animation/presets';
 import {
   trackImageUpload,
   trackBackgroundChange,
@@ -25,7 +26,7 @@ import {
   trackAspectRatioChange,
   trackPresetApply,
   trackAnimationClipAdd,
-} from "@/lib/analytics";
+} from '@/lib/analytics';
 
 interface TextShadow {
   enabled: boolean;
@@ -36,14 +37,14 @@ interface TextShadow {
 }
 
 export interface ImageFilters {
-  brightness: number;    // 0-200 (100 = normal)
-  contrast: number;      // 0-200 (100 = normal)
-  grayscale: number;     // 0-100
-  blur: number;          // 0-20px
-  hueRotate: number;     // 0-360 degrees
-  invert: number;        // 0-100
-  saturate: number;      // 0-200 (100 = normal)
-  sepia: number;         // 0-100
+  brightness: number; // 0-200 (100 = normal)
+  contrast: number; // 0-200 (100 = normal)
+  grayscale: number; // 0-100
+  blur: number; // 0-20px
+  hueRotate: number; // 0-360 degrees
+  invert: number; // 0-100
+  saturate: number; // 0-200 (100 = normal)
+  sepia: number; // 0-100
 }
 interface Slide {
   id: string;
@@ -61,7 +62,7 @@ export interface TextOverlay {
   color: string;
   opacity: number;
   isVisible: boolean;
-  orientation: "horizontal" | "vertical";
+  orientation: 'horizontal' | 'vertical';
   textShadow: TextShadow;
 }
 
@@ -114,19 +115,19 @@ export interface ImageBorder {
   width: number;
   color: string;
   type:
-    | "none"
-    | "arc-light"
-    | "arc-dark"
-    | "macos-light"
-    | "macos-dark"
-    | "windows-light"
-    | "windows-dark"
-    | "photograph"
-    | "glass-light"
-    | "glass-dark"
-    | "outline-light"
-    | "border-light"
-    | "border-dark";
+    | 'none'
+    | 'arc-light'
+    | 'arc-dark'
+    | 'macos-light'
+    | 'macos-dark'
+    | 'windows-light'
+    | 'windows-dark'
+    | 'photograph'
+    | 'glass-light'
+    | 'glass-dark'
+    | 'outline-light'
+    | 'border-light'
+    | 'border-dark';
   padding?: number;
   title?: string;
   opacity?: number;
@@ -149,8 +150,8 @@ function parseGradientColors(gradientStr: string): {
   direction: number;
 } {
   // Default fallback
-  let colorA = "#4168d0";
-  let colorB = "#c850c0";
+  let colorA = '#4168d0';
+  let colorB = '#c850c0';
   let direction = 43;
 
   try {
@@ -199,7 +200,7 @@ export interface EditorState {
 
   // Background state (for Konva)
   background: {
-    mode: "solid" | "gradient";
+    mode: 'solid' | 'gradient';
     colorA: string;
     colorB: string;
     gradientDirection: number;
@@ -209,7 +210,7 @@ export interface EditorState {
   shadow: {
     enabled: boolean;
     elevation: number;
-    side: "bottom" | "right" | "bottom-right";
+    side: 'bottom' | 'right' | 'bottom-right';
     softness: number;
     spread: number;
     color: string;
@@ -234,19 +235,19 @@ export interface EditorState {
   frame: {
     enabled: boolean;
     type:
-      | "none"
-      | "arc-light"
-      | "arc-dark"
-      | "macos-light"
-      | "macos-dark"
-      | "windows-light"
-      | "windows-dark"
-      | "photograph"
-      | "glass-light"
-      | "glass-dark"
-      | "outline-light"
-      | "border-light"
-      | "border-dark";
+      | 'none'
+      | 'arc-light'
+      | 'arc-dark'
+      | 'macos-light'
+      | 'macos-dark'
+      | 'windows-light'
+      | 'windows-dark'
+      | 'photograph'
+      | 'glass-light'
+      | 'glass-dark'
+      | 'outline-light'
+      | 'border-light'
+      | 'border-dark';
     width: number;
     color: string;
     padding?: number;
@@ -256,7 +257,7 @@ export interface EditorState {
 
   // Canvas state
   canvas: {
-    aspectRatio: "square" | "4:3" | "2:1" | "3:2" | "free";
+    aspectRatio: 'square' | '4:3' | '2:1' | '3:2' | 'free';
     padding: number;
   };
 
@@ -268,13 +269,13 @@ export interface EditorState {
   };
 
   // Setters
-  setScreenshot: (screenshot: Partial<EditorState["screenshot"]>) => void;
-  setBackground: (background: Partial<EditorState["background"]>) => void;
-  setShadow: (shadow: Partial<EditorState["shadow"]>) => void;
-  setPattern: (pattern: Partial<EditorState["pattern"]>) => void;
-  setFrame: (frame: Partial<EditorState["frame"]>) => void;
-  setCanvas: (canvas: Partial<EditorState["canvas"]>) => void;
-  setNoise: (noise: Partial<EditorState["noise"]>) => void;
+  setScreenshot: (screenshot: Partial<EditorState['screenshot']>) => void;
+  setBackground: (background: Partial<EditorState['background']>) => void;
+  setShadow: (shadow: Partial<EditorState['shadow']>) => void;
+  setPattern: (pattern: Partial<EditorState['pattern']>) => void;
+  setFrame: (frame: Partial<EditorState['frame']>) => void;
+  setCanvas: (canvas: Partial<EditorState['canvas']>) => void;
+  setNoise: (noise: Partial<EditorState['noise']>) => void;
 }
 
 // Create editor store
@@ -289,19 +290,19 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   background: {
-    mode: "gradient",
-    colorA: "#4168d0",
-    colorB: "#c850c0",
+    mode: 'gradient',
+    colorA: '#4168d0',
+    colorB: '#c850c0',
     gradientDirection: 43,
   },
 
   shadow: {
     enabled: true,
     elevation: 12,
-    side: "bottom-right",
+    side: 'bottom-right',
     softness: 15,
     spread: 3,
-    color: "rgba(0, 0, 0, 1)",
+    color: 'rgba(0, 0, 0, 1)',
     intensity: 0.5,
     offsetX: 5,
     offsetY: 8,
@@ -309,10 +310,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   pattern: {
     enabled: false,
-    type: "grid",
+    type: 'grid',
     scale: 1,
     spacing: 20,
-    color: "#000000",
+    color: '#000000',
     rotation: 0,
     blur: 0,
     opacity: 0.5,
@@ -320,21 +321,21 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   frame: {
     enabled: false,
-    type: "none",
+    type: 'none',
     width: 8,
-    color: "#000000",
+    color: '#000000',
     padding: 20,
-    title: "",
+    title: '',
   },
 
   canvas: {
-    aspectRatio: "free",
+    aspectRatio: 'free',
     padding: 40,
   },
 
   noise: {
     enabled: false,
-    type: "none",
+    type: 'none',
     opacity: 0.5,
   },
 
@@ -405,34 +406,27 @@ export function useEditorStoreSync() {
 
     // Sync background
     const bgConfig = imageStore.backgroundConfig;
-    if (bgConfig.type === "gradient") {
-      const gradientStr =
-        gradientColors[bgConfig.value as GradientKey] ||
-        gradientColors.vibrant_orange_pink;
+    if (bgConfig.type === 'gradient') {
+      const gradientStr = gradientColors[bgConfig.value as GradientKey] || gradientColors.vibrant_orange_pink;
       const { colorA, colorB, direction } = parseGradientColors(gradientStr);
       if (
-        editorStore.background.mode !== "gradient" ||
+        editorStore.background.mode !== 'gradient' ||
         editorStore.background.colorA !== colorA ||
         editorStore.background.colorB !== colorB ||
         editorStore.background.gradientDirection !== direction
       ) {
         editorStore.setBackground({
-          mode: "gradient",
+          mode: 'gradient',
           colorA,
           colorB,
           gradientDirection: direction,
         });
       }
-    } else if (bgConfig.type === "solid") {
-      const color =
-        (solidColors as Record<string, string>)[bgConfig.value as string] ||
-        "#ffffff";
-      if (
-        editorStore.background.mode !== "solid" ||
-        editorStore.background.colorA !== color
-      ) {
+    } else if (bgConfig.type === 'solid') {
+      const color = (solidColors as Record<string, string>)[bgConfig.value as string] || '#ffffff';
+      if (editorStore.background.mode !== 'solid' || editorStore.background.colorA !== color) {
         editorStore.setBackground({
-          mode: "solid",
+          mode: 'solid',
           colorA: color,
           colorB: color,
         });
@@ -467,11 +461,11 @@ export function useEditorStoreSync() {
     const offsetY = shadow.offsetY || 0;
     const elevation = Math.max(Math.abs(offsetX), Math.abs(offsetY)) || 4;
 
-    let side: "bottom" | "right" | "bottom-right" = "bottom";
+    let side: 'bottom' | 'right' | 'bottom-right' = 'bottom';
     if (Math.abs(offsetX) > Math.abs(offsetY)) {
-      side = "right";
+      side = 'right';
     } else if (Math.abs(offsetX) > 0 && Math.abs(offsetY) > 0) {
-      side = "bottom-right";
+      side = 'bottom-right';
     }
 
     if (
@@ -497,24 +491,20 @@ export function useEditorStoreSync() {
     }
 
     // Sync canvas aspect ratio
-    const aspectRatioMap: Record<
-      AspectRatioKey,
-      "square" | "4:3" | "2:1" | "3:2" | "free"
-    > = {
-      "1_1": "square",
-      "4_3": "4:3",
-      "2_1": "2:1",
-      "3_2": "3:2",
-      "16_9": "free",
-      "9_16": "free",
-      "4_5": "free",
-      "3_4": "free",
-      "2_3": "free",
-      "5_4": "free",
-      "16_10": "free",
+    const aspectRatioMap: Record<AspectRatioKey, 'square' | '4:3' | '2:1' | '3:2' | 'free'> = {
+      '1_1': 'square',
+      '4_3': '4:3',
+      '2_1': '2:1',
+      '3_2': '3:2',
+      '16_9': 'free',
+      '9_16': 'free',
+      '4_5': 'free',
+      '3_4': 'free',
+      '2_3': 'free',
+      '5_4': 'free',
+      '16_10': 'free',
     };
-    const canvasAspectRatio =
-      aspectRatioMap[imageStore.selectedAspectRatio] || "free";
+    const canvasAspectRatio = aspectRatioMap[imageStore.selectedAspectRatio] || 'free';
     if (editorStore.canvas.aspectRatio !== canvasAspectRatio) {
       editorStore.setCanvas({ aspectRatio: canvasAspectRatio });
     }
@@ -548,6 +538,7 @@ export interface ImageState {
   imageScale: number;
   imageBorder: ImageBorder;
   imageShadow: ImageShadow;
+  activePresetId: string | null;
   imageStylePreset: ImageStylePreset;
   shadowPreset: ShadowPreset;
   perspective3D: {
@@ -557,7 +548,10 @@ export interface ImageState {
     rotateZ: number;
     translateX: number;
     translateY: number;
+    translateZ: number;
     scale: number;
+    skewX: number;
+    skewY: number;
   };
   imageFilters: ImageFilters;
   exportSettings: {
@@ -579,15 +573,15 @@ export interface ImageState {
   setBackgroundOpacity: (opacity: number) => void;
   setBackgroundBlur: (blur: number) => void;
   setBackgroundNoise: (noise: number) => void;
-  addTextOverlay: (overlay: Omit<TextOverlay, "id">) => void;
+  addTextOverlay: (overlay: Omit<TextOverlay, 'id'>) => void;
   updateTextOverlay: (id: string, updates: Partial<TextOverlay>) => void;
   removeTextOverlay: (id: string) => void;
   clearTextOverlays: () => void;
-  addImageOverlay: (overlay: Omit<ImageOverlay, "id">) => void;
+  addImageOverlay: (overlay: Omit<ImageOverlay, 'id'>) => void;
   updateImageOverlay: (id: string, updates: Partial<ImageOverlay>) => void;
   removeImageOverlay: (id: string) => void;
   clearImageOverlays: () => void;
-  addMockup: (mockup: Omit<Mockup, "id">) => void;
+  addMockup: (mockup: Omit<Mockup, 'id'>) => void;
   updateMockup: (id: string, updates: Partial<Mockup>) => void;
   removeMockup: (id: string) => void;
   clearMockups: () => void;
@@ -595,13 +589,14 @@ export interface ImageState {
   setImageScale: (scale: number) => void;
   setImageBorder: (border: ImageBorder | Partial<ImageBorder>) => void;
   setImageShadow: (shadow: ImageShadow | Partial<ImageShadow>) => void;
+  applyPresetConfig: (preset: PresetConfig) => void;
   setImageStylePreset: (preset: ImageStylePreset) => void;
   setShadowPreset: (preset: ShadowPreset) => void;
-  setPerspective3D: (perspective: Partial<ImageState["perspective3D"]>) => void;
+  setPerspective3D: (perspective: Partial<ImageState['perspective3D']>) => void;
   setImageFilter: (key: keyof ImageFilters, value: number) => void;
   resetImageFilters: () => void;
   resetCanvasSettings: () => void;
-  setExportSettings: (settings: Partial<ImageState["exportSettings"]>) => void;
+  setExportSettings: (settings: Partial<ImageState['exportSettings']>) => void;
   exportImage: () => Promise<void>;
   // Slideshow
   slides: Slide[];
@@ -610,13 +605,13 @@ export interface ImageState {
   slideshow: {
     enabled: boolean;
     defaultDuration: number;
-    animation: "none" | "fade" | "slide";
+    animation: 'none' | 'fade' | 'slide';
   };
   // Preview
   isPreviewing: boolean;
   previewIndex: number;
   previewStartedAt: number | null;
-  setSlideshow: (updates: Partial<ImageState["slideshow"]>) => void;
+  setSlideshow: (updates: Partial<ImageState['slideshow']>) => void;
   // Slideshow actions
   addImages: (files: File[]) => void;
   setActiveSlide: (id: string) => void;
@@ -695,7 +690,7 @@ export const useImageStore = create<ImageState>()(
     slideshow: {
       enabled: true,
       defaultDuration: 2,
-      animation: "fade", // 'none' | 'fade' | 'slide'
+      animation: 'fade', // 'none' | 'fade' | 'slide'
     },
     setSlideshow: (updates) => {
       set((state) => ({
@@ -708,14 +703,14 @@ export const useImageStore = create<ImageState>()(
 
     uploadedImageUrl: null,
     imageName: null,
-    selectedGradient: "vibrant_orange_pink",
+    selectedGradient: 'vibrant_orange_pink',
     borderRadius: 10,
     backgroundBorderRadius: 10,
-    selectedAspectRatio: "4_3",
+    selectedAspectRatio: '4_3',
     customDimensions: null,
     backgroundConfig: {
-      type: "gradient",
-      value: "vibrant_orange_pink",
+      type: 'gradient',
+      value: 'vibrant_orange_pink',
       opacity: 1,
     },
     backgroundBlur: 0,
@@ -728,10 +723,10 @@ export const useImageStore = create<ImageState>()(
     imageBorder: {
       enabled: false,
       width: 8,
-      color: "#000000",
-      type: "none",
+      color: '#000000',
+      type: 'none',
       padding: 20,
-      title: "",
+      title: '',
     },
     imageShadow: {
       enabled: true,
@@ -739,9 +734,10 @@ export const useImageStore = create<ImageState>()(
       offsetX: 5,
       offsetY: 8,
       spread: 3,
-      color: "rgba(0, 0, 0, 0.6)",
+      color: 'rgba(0, 0, 0, 0.6)',
       opacity: 0.5,
     },
+    activePresetId: null,
     imageStylePreset: 'default' as ImageStylePreset,
     shadowPreset: 'soft' as ShadowPreset,
     perspective3D: {
@@ -751,7 +747,10 @@ export const useImageStore = create<ImageState>()(
       rotateZ: 0,
       translateX: 0,
       translateY: 0,
+      translateZ: 0,
       scale: 1,
+      skewX: 0,
+      skewY: 0,
     },
     imageFilters: {
       brightness: 100,
@@ -807,18 +806,19 @@ export const useImageStore = create<ImageState>()(
           offsetX: 5,
           offsetY: 8,
           spread: 3,
-          color: "rgba(0, 0, 0, 0.6)",
+          color: 'rgba(0, 0, 0, 0.6)',
           opacity: 0.5,
         },
         // Reset border/frame
         imageBorder: {
           enabled: false,
           width: 8,
-          color: "#000000",
-          type: "none",
+          color: '#000000',
+          type: 'none',
           padding: 20,
-          title: "",
+          title: '',
         },
+        activePresetId: null,
         imageStylePreset: 'default' as ImageStylePreset,
         shadowPreset: 'soft' as ShadowPreset,
         // Reset 3D perspective
@@ -829,7 +829,10 @@ export const useImageStore = create<ImageState>()(
           rotateZ: 0,
           translateX: 0,
           translateY: 0,
+          translateZ: 0,
           scale: 1,
+          skewX: 0,
+          skewY: 0,
         },
         // Reset filters
         imageFilters: {
@@ -898,18 +901,19 @@ export const useImageStore = create<ImageState>()(
           offsetX: 5,
           offsetY: 8,
           spread: 3,
-          color: "rgba(0, 0, 0, 0.6)",
+          color: 'rgba(0, 0, 0, 0.6)',
           opacity: 0.5,
         },
         // Reset border/frame
         imageBorder: {
           enabled: false,
           width: 8,
-          color: "#000000",
-          type: "none",
+          color: '#000000',
+          type: 'none',
           padding: 20,
-          title: "",
+          title: '',
         },
+        activePresetId: null,
         imageStylePreset: 'default' as ImageStylePreset,
         shadowPreset: 'soft' as ShadowPreset,
         // Reset 3D perspective
@@ -920,7 +924,10 @@ export const useImageStore = create<ImageState>()(
           rotateZ: 0,
           translateX: 0,
           translateY: 0,
+          translateZ: 0,
           scale: 1,
+          skewX: 0,
+          skewY: 0,
         },
         // Reset filters
         imageFilters: {
@@ -987,22 +994,22 @@ export const useImageStore = create<ImageState>()(
       const { backgroundConfig } = get();
 
       // If switching to 'image' type and current value is not a valid image, set default to radiant9
-      if (type === "image") {
+      if (type === 'image') {
         const currentValue = backgroundConfig.value;
         const isGradientKey = currentValue in gradientColors;
         const isSolidColorKey = currentValue in solidColors;
         const isValidImage =
-          typeof currentValue === "string" &&
-          (currentValue.startsWith("blob:") ||
-            currentValue.startsWith("http") ||
-            currentValue.startsWith("data:") ||
+          typeof currentValue === 'string' &&
+          (currentValue.startsWith('blob:') ||
+            currentValue.startsWith('http') ||
+            currentValue.startsWith('data:') ||
             // Check if it's a Cloudinary public ID (contains '/' but not a gradient/solid key)
-            (currentValue.includes("/") && !isGradientKey && !isSolidColorKey));
+            (currentValue.includes('/') && !isGradientKey && !isSolidColorKey));
 
         // If current value is a gradient or solid color key, or not a valid image, set default to asset-26
         const newValue =
           isGradientKey || isSolidColorKey || !isValidImage
-            ? "backgrounds/raycast/red_distortion_4.webp"
+            ? 'backgrounds/raycast/red_distortion_4.webp'
             : currentValue;
 
         set({
@@ -1052,9 +1059,7 @@ export const useImageStore = create<ImageState>()(
 
     addTextOverlay: (overlay) => {
       trackOverlayAdd('text');
-      const id = `text-${Date.now()}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
+      const id = `text-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       set((state) => ({
         textOverlays: [...state.textOverlays, { ...overlay, id }],
       }));
@@ -1062,9 +1067,7 @@ export const useImageStore = create<ImageState>()(
 
     updateTextOverlay: (id, updates) => {
       set((state) => ({
-        textOverlays: state.textOverlays.map((overlay) =>
-          overlay.id === id ? { ...overlay, ...updates } : overlay
-        ),
+        textOverlays: state.textOverlays.map((overlay) => (overlay.id === id ? { ...overlay, ...updates } : overlay)),
       }));
     },
 
@@ -1080,9 +1083,7 @@ export const useImageStore = create<ImageState>()(
 
     addImageOverlay: (overlay) => {
       trackOverlayAdd('sticker');
-      const id = `overlay-${Date.now()}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
+      const id = `overlay-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       set((state) => ({
         imageOverlays: [...state.imageOverlays, { blur: 0, ...overlay, id }],
       }));
@@ -1090,17 +1091,13 @@ export const useImageStore = create<ImageState>()(
 
     updateImageOverlay: (id, updates) => {
       set((state) => ({
-        imageOverlays: state.imageOverlays.map((overlay) =>
-          overlay.id === id ? { ...overlay, ...updates } : overlay
-        ),
+        imageOverlays: state.imageOverlays.map((overlay) => (overlay.id === id ? { ...overlay, ...updates } : overlay)),
       }));
     },
 
     removeImageOverlay: (id) => {
       set((state) => ({
-        imageOverlays: state.imageOverlays.filter(
-          (overlay) => overlay.id !== id
-        ),
+        imageOverlays: state.imageOverlays.filter((overlay) => overlay.id !== id),
       }));
     },
 
@@ -1138,9 +1135,7 @@ export const useImageStore = create<ImageState>()(
     },
 
     addMockup: (mockup) => {
-      const id = `mockup-${Date.now()}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
+      const id = `mockup-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       set((state) => ({
         mockups: [...state.mockups, { ...mockup, id }],
       }));
@@ -1148,9 +1143,7 @@ export const useImageStore = create<ImageState>()(
 
     updateMockup: (id, updates) => {
       set((state) => ({
-        mockups: state.mockups.map((mockup) =>
-          mockup.id === id ? { ...mockup, ...updates } : mockup
-        ),
+        mockups: state.mockups.map((mockup) => (mockup.id === id ? { ...mockup, ...updates } : mockup)),
       }));
     },
 
@@ -1196,12 +1189,84 @@ export const useImageStore = create<ImageState>()(
       });
     },
 
+    applyPresetConfig: (preset: PresetConfig) => {
+      trackPresetApply(preset.id, preset.name);
+      if (preset.imageBorder.type !== get().imageBorder.type) {
+        trackFrameApply(preset.imageBorder.type);
+      }
+
+      const shadowOverlay = preset.shadowOverlay
+        ? [
+            {
+              id: `preset-shadow-${preset.id}-${Date.now()}`,
+              src: preset.shadowOverlay.src,
+              position: { x: 0, y: 0 },
+              size: 100,
+              rotation: 0,
+              opacity: preset.shadowOverlay.opacity,
+              flipX: false,
+              flipY: false,
+              isVisible: true,
+              layer: 'front' as const,
+            },
+          ]
+        : [];
+
+      const objectOverlays = preset.objectOverlays
+        ? preset.objectOverlays.map((obj, i) => ({
+            id: `preset-obj-${preset.id}-${i}-${Date.now()}`,
+            src: obj.src,
+            position: { x: obj.x, y: obj.y },
+            size: obj.size,
+            rotation: obj.rotation,
+            opacity: obj.opacity,
+            flipX: obj.flipX ?? false,
+            flipY: obj.flipY ?? false,
+            isVisible: true,
+            layer: (obj.layer ?? 'front') as 'front' | 'back',
+          }))
+        : [];
+
+      set((state) => ({
+        activePresetId: preset.id,
+        selectedAspectRatio: preset.aspectRatio,
+        backgroundConfig: preset.backgroundConfig,
+        backgroundBorderRadius: preset.backgroundBorderRadius,
+        backgroundBlur: preset.backgroundBlur ?? 0,
+        backgroundNoise: preset.backgroundNoise ?? 0,
+        borderRadius: preset.borderRadius,
+        imageOpacity: preset.imageOpacity,
+        imageScale: preset.imageScale,
+        imageBorder: preset.imageBorder,
+        imageShadow: preset.imageShadow,
+        perspective3D: preset.perspective3D ?? {
+          perspective: 2400,
+          rotateX: 0,
+          rotateY: 0,
+          rotateZ: 0,
+          translateX: 0,
+          translateY: 0,
+          translateZ: 0,
+          scale: 1,
+          skewX: 0,
+          skewY: 0,
+        },
+        imageOverlays: [
+          ...state.imageOverlays.filter(
+            (overlay) => !overlay.src.includes('/overlay-shadow/') && !overlay.src.includes('/overlay/')
+          ),
+          ...objectOverlays,
+          ...shadowOverlay,
+        ],
+      }));
+    },
+
     setImageStylePreset: (preset: ImageStylePreset) => {
       const borderMap: Record<ImageStylePreset, Partial<ImageBorder>> = {
-        'default': { enabled: false, type: 'none' },
+        default: { enabled: false, type: 'none' },
         'glass-light': { enabled: true, type: 'glass-light', opacity: 0.25, padding: 1 },
         'glass-dark': { enabled: true, type: 'glass-dark', opacity: 0.7, padding: 1 },
-        'outline': { enabled: true, type: 'outline-light', opacity: 0.35, padding: 0.5 },
+        outline: { enabled: true, type: 'outline-light', opacity: 0.35, padding: 0.5 },
         'border-light': { enabled: true, type: 'border-light', padding: 1 },
         'border-dark': { enabled: true, type: 'border-dark', padding: 1 },
       };
@@ -1214,10 +1279,18 @@ export const useImageStore = create<ImageState>()(
 
     setShadowPreset: (preset: ShadowPreset) => {
       const shadowMap: Record<ShadowPreset, ImageShadow> = {
-        'none': { enabled: false, blur: 0, offsetX: 0, offsetY: 0, spread: 0, color: 'rgba(0,0,0,0.6)', opacity: 0 },
-        'hug': { enabled: true, blur: 10, offsetX: 0, offsetY: 2, spread: 0, color: 'rgba(0,0,0,0.6)', opacity: 0.25 },
-        'soft': { enabled: true, blur: 30, offsetX: 0, offsetY: 12, spread: 5, color: 'rgba(0,0,0,0.6)', opacity: 0.5 },
-        'strong': { enabled: true, blur: 60, offsetX: 0, offsetY: 24, spread: 10, color: 'rgba(0,0,0,0.6)', opacity: 0.8 },
+        none: { enabled: false, blur: 0, offsetX: 0, offsetY: 0, spread: 0, color: 'rgba(0,0,0,0.6)', opacity: 0 },
+        hug: { enabled: true, blur: 10, offsetX: 0, offsetY: 2, spread: 0, color: 'rgba(0,0,0,0.6)', opacity: 0.25 },
+        soft: { enabled: true, blur: 30, offsetX: 0, offsetY: 12, spread: 5, color: 'rgba(0,0,0,0.6)', opacity: 0.5 },
+        strong: {
+          enabled: true,
+          blur: 60,
+          offsetX: 0,
+          offsetY: 24,
+          spread: 10,
+          color: 'rgba(0,0,0,0.6)',
+          opacity: 0.8,
+        },
       };
       set({
         shadowPreset: preset,
@@ -1225,7 +1298,7 @@ export const useImageStore = create<ImageState>()(
       });
     },
 
-    setPerspective3D: (perspective: Partial<ImageState["perspective3D"]>) => {
+    setPerspective3D: (perspective: Partial<ImageState['perspective3D']>) => {
       const currentPerspective = get().perspective3D;
       set({
         perspective3D: {
@@ -1273,17 +1346,18 @@ export const useImageStore = create<ImageState>()(
           offsetX: 5,
           offsetY: 8,
           spread: 3,
-          color: "rgba(0, 0, 0, 0.6)",
+          color: 'rgba(0, 0, 0, 0.6)',
           opacity: 0.5,
         },
         imageBorder: {
           enabled: false,
           width: 8,
-          color: "#000000",
-          type: "none",
+          color: '#000000',
+          type: 'none',
           padding: 20,
-          title: "",
+          title: '',
         },
+        activePresetId: null,
         imageStylePreset: 'default' as ImageStylePreset,
         shadowPreset: 'soft' as ShadowPreset,
         perspective3D: {
@@ -1293,7 +1367,10 @@ export const useImageStore = create<ImageState>()(
           rotateZ: 0,
           translateX: 0,
           translateY: 0,
+          translateZ: 0,
           scale: 1,
+          skewX: 0,
+          skewY: 0,
         },
         imageFilters: {
           brightness: 100,
@@ -1314,7 +1391,7 @@ export const useImageStore = create<ImageState>()(
       });
     },
 
-    setExportSettings: (settings: Partial<ImageState["exportSettings"]>) => {
+    setExportSettings: (settings: Partial<ImageState['exportSettings']>) => {
       const currentSettings = get().exportSettings;
       set({
         exportSettings: {
@@ -1326,9 +1403,9 @@ export const useImageStore = create<ImageState>()(
 
     exportImage: async () => {
       try {
-        await exportImageWithGradient("image-render-card");
+        await exportImageWithGradient('image-render-card');
       } catch (error) {
-        console.error("Export failed:", error);
+        console.error('Export failed:', error);
         throw error;
       }
     },
@@ -1384,8 +1461,7 @@ export const useImageStore = create<ImageState>()(
       if (slide) URL.revokeObjectURL(slide.src);
 
       const remaining = slides.filter((s) => s.id !== id);
-      const nextActive =
-        activeSlideId === id ? remaining[0]?.id ?? null : activeSlideId;
+      const nextActive = activeSlideId === id ? (remaining[0]?.id ?? null) : activeSlideId;
       const nextSlide = remaining.find((s) => s.id === nextActive);
 
       set({
@@ -1462,9 +1538,7 @@ export const useImageStore = create<ImageState>()(
         timeline: {
           ...state.timeline,
           tracks: state.timeline.tracks.map((track) =>
-            track.id === trackId
-              ? { ...track, keyframes: [...track.keyframes, { ...keyframe, id }] }
-              : track
+            track.id === trackId ? { ...track, keyframes: [...track.keyframes, { ...keyframe, id }] } : track
           ),
         },
       }));
@@ -1478,9 +1552,7 @@ export const useImageStore = create<ImageState>()(
             track.id === trackId
               ? {
                   ...track,
-                  keyframes: track.keyframes.map((kf) =>
-                    kf.id === keyframeId ? { ...kf, ...updates } : kf
-                  ),
+                  keyframes: track.keyframes.map((kf) => (kf.id === keyframeId ? { ...kf, ...updates } : kf)),
                 }
               : track
           ),
@@ -1493,9 +1565,7 @@ export const useImageStore = create<ImageState>()(
         timeline: {
           ...state.timeline,
           tracks: state.timeline.tracks.map((track) =>
-            track.id === trackId
-              ? { ...track, keyframes: track.keyframes.filter((kf) => kf.id !== keyframeId) }
-              : track
+            track.id === trackId ? { ...track, keyframes: track.keyframes.filter((kf) => kf.id !== keyframeId) } : track
           ),
         },
       }));
@@ -1515,9 +1585,7 @@ export const useImageStore = create<ImageState>()(
       set((state) => ({
         timeline: {
           ...state.timeline,
-          tracks: state.timeline.tracks.map((track) =>
-            track.id === trackId ? { ...track, ...updates } : track
-          ),
+          tracks: state.timeline.tracks.map((track) => (track.id === trackId ? { ...track, ...updates } : track)),
         },
       }));
     },
@@ -1582,7 +1650,7 @@ export const useImageStore = create<ImageState>()(
 
     // Animation clips
     addAnimationClip: (presetId, startTime) => {
-      const preset = ANIMATION_PRESETS.find(p => p.id === presetId);
+      const preset = ANIMATION_PRESETS.find((p) => p.id === presetId);
       if (!preset) return;
 
       trackAnimationClipAdd(presetId, preset.name, preset.duration);
@@ -1616,7 +1684,7 @@ export const useImageStore = create<ImageState>()(
 
     updateAnimationClip: (clipId, updates) => {
       set((state) => {
-        const existingClip = state.animationClips.find(c => c.id === clipId);
+        const existingClip = state.animationClips.find((c) => c.id === clipId);
         if (!existingClip) return state;
 
         const newClip = { ...existingClip, ...updates };
@@ -1659,9 +1727,7 @@ export const useImageStore = create<ImageState>()(
         }
 
         return {
-          animationClips: state.animationClips.map((clip) =>
-            clip.id === clipId ? newClip : clip
-          ),
+          animationClips: state.animationClips.map((clip) => (clip.id === clipId ? newClip : clip)),
           timeline: {
             ...state.timeline,
             tracks: updatedTracks,
@@ -1702,9 +1768,7 @@ export const useImageStore = create<ImageState>()(
     },
     updateAnnotation: (id, updates) => {
       set((state) => ({
-        annotations: state.annotations.map((a) =>
-          a.id === id ? { ...a, ...updates } : a
-        ),
+        annotations: state.annotations.map((a) => (a.id === id ? { ...a, ...updates } : a)),
       }));
     },
     removeAnnotation: (id) => {
@@ -1732,9 +1796,7 @@ export const useImageStore = create<ImageState>()(
     },
     updateBlurRegion: (id, updates) => {
       set((state) => ({
-        blurRegions: state.blurRegions.map((r) =>
-          r.id === id ? { ...r, ...updates } : r
-        ),
+        blurRegions: state.blurRegions.map((r) => (r.id === id ? { ...r, ...updates } : r)),
       }));
     },
     removeBlurRegion: (id) => {
@@ -1758,7 +1820,9 @@ export const useImageStore = create<ImageState>()(
       const currentBorder = get().imageBorder;
       if (mode === 'browser') {
         // Apply default browser frame (Chrome Dark) if no browser frame is active
-        const isBrowserFrame = ['macos-light', 'macos-dark', 'windows-light', 'windows-dark'].includes(currentBorder.type);
+        const isBrowserFrame = ['macos-light', 'macos-dark', 'windows-light', 'windows-dark'].includes(
+          currentBorder.type
+        );
         if (!isBrowserFrame) {
           set({
             editorMode: mode,
@@ -1773,7 +1837,9 @@ export const useImageStore = create<ImageState>()(
         }
       } else {
         // Switching back to screenshot: disable browser frame
-        const isBrowserFrame = ['macos-light', 'macos-dark', 'windows-light', 'windows-dark'].includes(currentBorder.type);
+        const isBrowserFrame = ['macos-light', 'macos-dark', 'windows-light', 'windows-dark'].includes(
+          currentBorder.type
+        );
         if (isBrowserFrame) {
           set({
             editorMode: mode,

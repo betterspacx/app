@@ -4,7 +4,14 @@ import * as React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { onAuthStateChanged, updateProfile, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { signInWithGithub, signInWithEmail, signUpWithEmail, signOut, getUserProfile, saveUserProfile } from '@/lib/auth-service';
+import {
+  signInWithGithub,
+  signInWithEmail,
+  signUpWithEmail,
+  signOut,
+  getUserProfile,
+  saveUserProfile,
+} from '@/lib/auth-service';
 import type { UserProfile } from '@/lib/r2-storage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,7 +75,12 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
   );
 }
 
-function ProfileCard({ user, profile, onProfileUpdate, onClose }: {
+function ProfileCard({
+  user,
+  profile,
+  onProfileUpdate,
+  onClose,
+}: {
   user: User;
   profile: UserProfile | null;
   onProfileUpdate: (p: UserProfile) => void;
@@ -109,16 +121,31 @@ function ProfileCard({ user, profile, onProfileUpdate, onClose }: {
       >
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-3 pb-2 border-b border-border/40">
-            <button onClick={() => setEditing(false)} className="p-1 -ml-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5" /><polyline points="12 19 5 12 12 5" />
+            <button
+              onClick={() => setEditing(false)}
+              className="p-1 -ml-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M19 12H5" />
+                <polyline points="12 19 5 12 12 5" />
               </svg>
             </button>
             <p className="text-sm font-semibold text-foreground">Edit Profile</p>
           </div>
 
           {error && (
-            <div className="text-xs text-destructive bg-destructive/10 p-2.5 rounded-lg border border-destructive/20">{error}</div>
+            <div className="text-xs text-destructive bg-destructive/10 p-2.5 rounded-lg border border-destructive/20">
+              {error}
+            </div>
           )}
 
           <div className="flex flex-col items-center gap-3">
@@ -126,8 +153,19 @@ function ProfileCard({ user, profile, onProfileUpdate, onClose }: {
               <img src={photoURL} alt="" className="w-16 h-16 rounded-full ring-2 ring-primary/30 object-cover" />
             ) : (
               <div className="w-16 h-16 rounded-full bg-primary/10 ring-2 ring-primary/30 flex items-center justify-center">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                  <circle cx="12" cy="8" r="4" /><path d="M20 21a8 8 0 1 0-16 0" />
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-primary"
+                >
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M20 21a8 8 0 1 0-16 0" />
                 </svg>
               </div>
             )}
@@ -197,16 +235,24 @@ function ProfileCard({ user, profile, onProfileUpdate, onClose }: {
             <img src={user.photoURL} alt="" className="w-16 h-16 rounded-full ring-2 ring-primary/30" />
           ) : (
             <div className="w-16 h-16 rounded-full bg-primary/10 ring-2 ring-primary/30 flex items-center justify-center">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-primary"
+              >
                 <circle cx="12" cy="8" r="4" />
                 <path d="M20 21a8 8 0 1 0-16 0" />
               </svg>
             </div>
           )}
           <div className="text-center">
-            {profile && (
-              <p className="text-xs text-muted-foreground/60">@{profile.username}</p>
-            )}
+            {profile && <p className="text-xs text-muted-foreground/60">@{profile.username}</p>}
             <p className="text-sm font-semibold text-foreground">{user.displayName || 'User'}</p>
             <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
@@ -217,7 +263,17 @@ function ProfileCard({ user, profile, onProfileUpdate, onClose }: {
             onClick={() => setEditing(true)}
             className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-border/40 bg-muted/30 hover:bg-muted/60 transition-all text-sm text-left cursor-pointer"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-muted-foreground"
+            >
               <path d="M17 12a5 5 0 0 1-5 5m-5-5a5 5 0 0 1 5-5" />
               <path d="M12 7V3m0 18v-4" />
               <path d="M7 12H3m18 0h-4" />
@@ -231,7 +287,17 @@ function ProfileCard({ user, profile, onProfileUpdate, onClose }: {
             }}
             className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-border/40 bg-muted/30 hover:bg-destructive/10 hover:border-destructive/30 transition-all text-sm text-left cursor-pointer"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-muted-foreground"
+            >
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
               <polyline points="16 17 21 12 16 7" />
               <line x1="21" x2="9" y1="12" y2="12" />
@@ -240,7 +306,10 @@ function ProfileCard({ user, profile, onProfileUpdate, onClose }: {
           </button>
         </div>
 
-        <button onClick={onClose} className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+        <button
+          onClick={onClose}
+          className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
           Close
         </button>
       </div>
@@ -266,9 +335,8 @@ function AuthCard({ onClose }: { onClose: () => void }) {
     setError('');
     setLoading(true);
     try {
-      const result = tab === 'login'
-        ? await signInWithEmail(email, password)
-        : await signUpWithEmail(email, password, name);
+      const result =
+        tab === 'login' ? await signInWithEmail(email, password) : await signUpWithEmail(email, password, name);
       if (!result.ok) {
         setError(result.error);
         return;
@@ -306,7 +374,10 @@ function AuthCard({ onClose }: { onClose: () => void }) {
         >
           Sign In
           {tab === 'login' && (
-            <motion.div layoutId="auth-tab" className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
+            <motion.div
+              layoutId="auth-tab"
+              className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full"
+            />
           )}
         </button>
         <button
@@ -318,7 +389,10 @@ function AuthCard({ onClose }: { onClose: () => void }) {
         >
           Sign Up
           {tab === 'signup' && (
-            <motion.div layoutId="auth-tab" className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
+            <motion.div
+              layoutId="auth-tab"
+              className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full"
+            />
           )}
         </button>
       </div>
@@ -339,7 +413,7 @@ function AuthCard({ onClose }: { onClose: () => void }) {
                 className="w-full flex items-center justify-center gap-2.5 py-2.5 rounded-xl bg-[#1a1a2e] hover:bg-[#2a2a4e] border border-[#3c3c5e] transition-all text-sm font-medium text-white disabled:opacity-50 cursor-pointer"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                 </svg>
                 Continue with GitHub
               </button>
@@ -352,31 +426,89 @@ function AuthCard({ onClose }: { onClose: () => void }) {
 
               <form onSubmit={handleEmailAuth} className="space-y-3">
                 {error && (
-                  <div className="text-xs text-destructive bg-destructive/10 p-2.5 rounded-lg border border-destructive/20">{error}</div>
+                  <div className="text-xs text-destructive bg-destructive/10 p-2.5 rounded-lg border border-destructive/20">
+                    {error}
+                  </div>
                 )}
                 {tab === 'signup' && (
                   <div className="space-y-1.5">
-                    <Label htmlFor="auth-name" className="text-xs text-muted-foreground">Name</Label>
-                    <Input id="auth-name" type="text" autoComplete="name" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} className="h-9 text-sm" required />
+                    <Label htmlFor="auth-name" className="text-xs text-muted-foreground">
+                      Name
+                    </Label>
+                    <Input
+                      id="auth-name"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Your name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="h-9 text-sm"
+                      required
+                    />
                   </div>
                 )}
                 <div className="space-y-1.5">
-                  <Label htmlFor="auth-email" className="text-xs text-muted-foreground">Email</Label>
-                  <Input id="auth-email" type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="h-9 text-sm" required />
+                  <Label htmlFor="auth-email" className="text-xs text-muted-foreground">
+                    Email
+                  </Label>
+                  <Input
+                    id="auth-email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-9 text-sm"
+                    required
+                  />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="auth-password" className="text-xs text-muted-foreground">Password</Label>
+                  <Label htmlFor="auth-password" className="text-xs text-muted-foreground">
+                    Password
+                  </Label>
                   <div className="relative">
-                    <Input id="auth-password" type={showPassword ? 'text' : 'password'} autoComplete={tab === 'login' ? 'current-password' : 'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} className="h-9 text-sm pr-9" required minLength={8} />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" tabIndex={-1}>
+                    <Input
+                      id="auth-password"
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-9 text-sm pr-9"
+                      required
+                      minLength={8}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      tabIndex={-1}
+                    >
                       {showPassword ? (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
                           <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
                           <line x1="1" x2="23" y1="1" y2="23" />
                         </svg>
                       ) : (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                           <circle cx="12" cy="12" r="3" />
                         </svg>
@@ -384,7 +516,11 @@ function AuthCard({ onClose }: { onClose: () => void }) {
                     </button>
                   </div>
                 </div>
-                <Button type="submit" disabled={loading} className="w-full h-9 text-sm font-semibold text-white rounded-lg transition-all bg-[linear-gradient(110deg,#c9d4ff_0%,#e0d4ff_45%,#f5d4e8_100%)] hover:opacity-90">
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-9 text-sm font-semibold text-white rounded-lg transition-all bg-[linear-gradient(110deg,#c9d4ff_0%,#e0d4ff_45%,#f5d4e8_100%)] hover:opacity-90"
+                >
                   {loading ? 'Please wait...' : tab === 'login' ? 'Sign In' : 'Create Account'}
                 </Button>
               </form>

@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import { useImageStore, type ImageBorder } from '@/lib/store'
-import { Input } from '@/components/ui/input'
-import { Slider } from '@/components/ui/slider'
+import * as React from 'react';
+import { useImageStore, type ImageBorder } from '@/lib/store';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 
 const frameOptions = [
   { value: 'none', label: 'None' },
@@ -14,9 +14,9 @@ const frameOptions = [
   { value: 'windows-light', label: 'Windows Light' },
   { value: 'windows-dark', label: 'Windows Dark' },
   { value: 'photograph', label: 'Photograph' },
-] as const
+] as const;
 
-type FrameType = (typeof frameOptions)[number]['value']
+type FrameType = (typeof frameOptions)[number]['value'];
 
 function FramePreview({
   type,
@@ -24,10 +24,10 @@ function FramePreview({
   onSelect,
   children,
 }: {
-  type: FrameType
-  selected: boolean
-  onSelect: () => void
-  children: React.ReactNode
+  type: FrameType;
+  selected: boolean;
+  onSelect: () => void;
+  children: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col items-center gap-2">
@@ -42,17 +42,13 @@ function FramePreview({
       </button>
       <div className="text-xs text-muted-foreground">{frameOptions.find((f) => f.value === type)?.label}</div>
     </div>
-  )
+  );
 }
 
 const framePreviews: Record<FrameType, React.ReactNode> = {
   none: <div className="size-full rounded-md border-2 border-dashed border-muted-foreground/50" />,
-  'arc-light': (
-    <div className="size-full rounded-lg bg-white border border-neutral-200 p-0.5" />
-  ),
-  'arc-dark': (
-    <div className="size-full rounded-lg bg-neutral-900 border border-neutral-700 p-0.5" />
-  ),
+  'arc-light': <div className="size-full rounded-lg bg-white border border-neutral-200 p-0.5" />,
+  'arc-dark': <div className="size-full rounded-lg bg-neutral-900 border border-neutral-700 p-0.5" />,
   'macos-light': (
     <div className="flex size-full flex-col">
       <div className="flex h-2.5 items-center gap-0.5 rounded-t-md bg-neutral-200 px-1">
@@ -77,7 +73,10 @@ const framePreviews: Record<FrameType, React.ReactNode> = {
         <div className="w-1 h-px bg-neutral-600" />
         <div className="size-1 border border-neutral-600" />
         <div className="size-1 relative">
-          <div className="absolute inset-0 rotate-45 bg-neutral-600" style={{ width: '1px', height: '6px', top: '-1px', left: '2px' }} />
+          <div
+            className="absolute inset-0 rotate-45 bg-neutral-600"
+            style={{ width: '1px', height: '6px', top: '-1px', left: '2px' }}
+          />
         </div>
       </div>
     </div>
@@ -88,7 +87,10 @@ const framePreviews: Record<FrameType, React.ReactNode> = {
         <div className="w-1 h-px bg-neutral-400" />
         <div className="size-1 border border-neutral-400" />
         <div className="size-1 relative">
-          <div className="absolute inset-0 rotate-45 bg-neutral-400" style={{ width: '1px', height: '6px', top: '-1px', left: '2px' }} />
+          <div
+            className="absolute inset-0 rotate-45 bg-neutral-400"
+            style={{ width: '1px', height: '6px', top: '-1px', left: '2px' }}
+          />
         </div>
       </div>
     </div>
@@ -98,35 +100,37 @@ const framePreviews: Record<FrameType, React.ReactNode> = {
       <div className="size-full bg-neutral-300 rounded-[1px]" />
     </div>
   ),
-}
+};
 
 export function BorderControls() {
-  const { imageBorder, setImageBorder } = useImageStore()
+  const { imageBorder, setImageBorder } = useImageStore();
 
   const handleSelect = (value: FrameType) => {
     const next: Partial<ImageBorder> = {
       type: value,
       enabled: value !== 'none',
-    }
+    };
 
-    const isArcType = value === 'arc-light' || value === 'arc-dark'
-    const wasArcType = imageBorder.type === 'arc-light' || imageBorder.type === 'arc-dark'
+    const isArcType = value === 'arc-light' || value === 'arc-dark';
+    const wasArcType = imageBorder.type === 'arc-light' || imageBorder.type === 'arc-dark';
 
     if (isArcType && !wasArcType) {
-      next.width = 8
-      next.opacity = value === 'arc-light' ? 0.5 : 0.7
+      next.width = 8;
+      next.opacity = value === 'arc-light' ? 0.5 : 0.7;
     }
 
-    setImageBorder(next)
-  }
+    setImageBorder(next);
+  };
 
   const isSelected = (value: FrameType) => {
-    return imageBorder.type === value
-  }
+    return imageBorder.type === value;
+  };
 
-  const showTitleInput = ['macos-light', 'macos-dark', 'windows-light', 'windows-dark', 'photograph'].includes(imageBorder.type)
-  const showThicknessControl = ['arc-light', 'arc-dark'].includes(imageBorder.type)
-  const isPhotograph = imageBorder.type === 'photograph'
+  const showTitleInput = ['macos-light', 'macos-dark', 'windows-light', 'windows-dark', 'photograph'].includes(
+    imageBorder.type
+  );
+  const showThicknessControl = ['arc-light', 'arc-dark'].includes(imageBorder.type);
+  const isPhotograph = imageBorder.type === 'photograph';
 
   return (
     <div className="space-y-4">
@@ -136,12 +140,7 @@ export function BorderControls() {
           <label className="mb-2 block text-xs text-muted-foreground">Style</label>
           <div className="grid grid-cols-4 gap-x-2 gap-y-4">
             {frameOptions.map(({ value }) => (
-              <FramePreview
-                key={value}
-                type={value}
-                selected={isSelected(value)}
-                onSelect={() => handleSelect(value)}
-              >
+              <FramePreview key={value} type={value} selected={isSelected(value)} onSelect={() => handleSelect(value)}>
                 {framePreviews[value]}
               </FramePreview>
             ))}
@@ -173,9 +172,7 @@ export function BorderControls() {
 
         {showTitleInput && (
           <div>
-            <label className="text-xs text-muted-foreground mb-2 block">
-              {isPhotograph ? 'Caption' : 'Title'}
-            </label>
+            <label className="text-xs text-muted-foreground mb-2 block">{isPhotograph ? 'Caption' : 'Title'}</label>
             <Input
               type="text"
               value={imageBorder.title || ''}
@@ -186,5 +183,5 @@ export function BorderControls() {
         )}
       </div>
     </div>
-  )
+  );
 }

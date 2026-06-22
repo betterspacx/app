@@ -10,13 +10,7 @@ interface SnapAlignmentGuidesProps {
 
 const SNAP_THRESHOLD = 6;
 
-export function SnapAlignmentGuides({
-  canvasW,
-  canvasH,
-  offsetX,
-  offsetY,
-  isDragging,
-}: SnapAlignmentGuidesProps) {
+export function SnapAlignmentGuides({ canvasW, canvasH, offsetX, offsetY, isDragging }: SnapAlignmentGuidesProps) {
   if (!isDragging) return null;
 
   const showVertical = Math.abs(offsetX) < SNAP_THRESHOLD;

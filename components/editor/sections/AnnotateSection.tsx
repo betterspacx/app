@@ -27,8 +27,21 @@ const TOOLS: { id: AnnotationToolType; label: string; svg: React.ReactNode }[] =
     label: 'Curve',
     svg: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M5 14C5 14 6 6 11 6C14 6 15 8 15 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-        <path d="M12.5 6.5L15.5 8L13 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <path
+          d="M5 14C5 14 6 6 11 6C14 6 15 8 15 8"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <path
+          d="M12.5 6.5L15.5 8L13 10"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
       </svg>
     ),
   },
@@ -64,7 +77,16 @@ const TOOLS: { id: AnnotationToolType; label: string; svg: React.ReactNode }[] =
     label: 'Blur',
     svg: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <rect x="3.5" y="5" width="13" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2.5 2" />
+        <rect
+          x="3.5"
+          y="5"
+          width="13"
+          height="10"
+          rx="2"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeDasharray="2.5 2"
+        />
         <path d="M7.5 9h5M7 11h6" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.4" />
       </svg>
     ),
@@ -106,7 +128,7 @@ export function AnnotateSection() {
   } = useImageStore();
 
   const selectedAnnotation = selectedAnnotationId
-    ? annotations.find((a) => a.id === selectedAnnotationId) ?? null
+    ? (annotations.find((a) => a.id === selectedAnnotationId) ?? null)
     : null;
 
   const currentColor = selectedAnnotation?.strokeColor ?? annotationDefaults.strokeColor;
@@ -136,8 +158,6 @@ export function AnnotateSection() {
   return (
     <SectionWrapper title="Draw & Markup" defaultOpen={true}>
       <div className="space-y-3">
-
-        {/* ── Tool grid ── */}
         <div className="grid grid-cols-3 gap-1.5 p-1">
           {TOOLS.map((tool) => {
             const isActive = activeAnnotationTool === tool.id;
@@ -159,8 +179,6 @@ export function AnnotateSection() {
             );
           })}
         </div>
-
-        {/* ── Active tool hint ── */}
         {activeAnnotationTool && (
           <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-primary/8 border border-primary/15">
             <span className="relative flex h-2 w-2 shrink-0">
@@ -174,21 +192,17 @@ export function AnnotateSection() {
             </span>
           </div>
         )}
-
-        {/* ── Editing hint (when annotation selected, no tool active) ── */}
         {selectedAnnotation && !activeAnnotationTool && (
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/6 border border-primary/12">
             <div className="w-2.5 h-2.5 rounded-full bg-primary/60 shrink-0" />
             <span className="text-xs text-primary/80">
-              Editing <span className="font-medium capitalize">{selectedAnnotation.type}</span> — click canvas to deselect
+              Editing <span className="font-medium capitalize">{selectedAnnotation.type}</span> — click canvas to
+              deselect
             </span>
           </div>
         )}
-
-        {/* ── Color + stroke (only for non-blur tools) ── */}
         {activeAnnotationTool !== 'blur' && (
           <div className="space-y-3">
-            {/* Color palette */}
             <div className="space-y-2">
               <span className="text-xs font-medium text-muted-foreground">Color</span>
               <div className="flex items-center gap-1.5 flex-wrap">
@@ -205,9 +219,8 @@ export function AnnotateSection() {
                     )}
                     style={{
                       backgroundColor: value,
-                      boxShadow: value === '#ffffff'
-                        ? 'inset 0 0 0 1.5px hsl(var(--border))'
-                        : '0 1px 2px rgba(0,0,0,0.15)',
+                      boxShadow:
+                        value === '#ffffff' ? 'inset 0 0 0 1.5px hsl(var(--border))' : '0 1px 2px rgba(0,0,0,0.15)',
                     }}
                   />
                 ))}
@@ -221,8 +234,6 @@ export function AnnotateSection() {
                 />
               </div>
             </div>
-
-            {/* Stroke width */}
             <div className="space-y-1.5">
               <span className="text-xs font-medium text-muted-foreground">Stroke</span>
               <Slider
@@ -236,8 +247,6 @@ export function AnnotateSection() {
             </div>
           </div>
         )}
-
-        {/* ── Blur regions list ── */}
         {blurRegions.length > 0 && (
           <div className="space-y-1.5">
             <span className="text-xs font-medium text-muted-foreground">Blur Regions</span>
@@ -249,9 +258,7 @@ export function AnnotateSection() {
                 <span className="text-[11px] text-muted-foreground shrink-0 w-8">#{index + 1}</span>
                 <Slider
                   value={[region.blurAmount]}
-                  onValueChange={(v) =>
-                    updateBlurRegion(region.id, { blurAmount: v[0] })
-                  }
+                  onValueChange={(v) => updateBlurRegion(region.id, { blurAmount: v[0] })}
                   min={2}
                   max={30}
                   step={1}
@@ -268,8 +275,6 @@ export function AnnotateSection() {
             ))}
           </div>
         )}
-
-        {/* ── Footer: count + clear ── */}
         {totalItems > 0 && (
           <div className="flex items-center justify-between pt-2 border-t border-border/30">
             <span className="text-xs text-muted-foreground tabular-nums">
@@ -278,7 +283,10 @@ export function AnnotateSection() {
               {blurRegions.length > 0 && `${blurRegions.length} blur region${blurRegions.length !== 1 ? 's' : ''}`}
             </span>
             <button
-              onClick={() => { clearAnnotations(); clearBlurRegions(); }}
+              onClick={() => {
+                clearAnnotations();
+                clearBlurRegions();
+              }}
               className="text-xs font-medium text-muted-foreground hover:text-destructive transition-colors px-2 py-1 rounded-md hover:bg-destructive/10 cursor-pointer"
             >
               Clear all

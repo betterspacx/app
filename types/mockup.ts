@@ -20,6 +20,7 @@ export interface MockupDefinition {
   name: string
   type: MockupType
   src: string
+  aspectRatio: number
   screenArea: MockupScreenArea
   preview?: string
 }

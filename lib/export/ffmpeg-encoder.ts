@@ -30,9 +30,9 @@ export interface FFmpegEncoderOptions {
 
 // Quality presets (CRF values - lower = better quality, larger file)
 const QUALITY_CRF: Record<FFmpegQuality, number> = {
-  high: 18,    // Visually lossless
-  medium: 23,  // Good quality, reasonable size
-  low: 28,     // Smaller file, some quality loss
+  high: 18, // Visually lossless
+  medium: 23, // Good quality, reasonable size
+  low: 28, // Smaller file, some quality loss
 };
 
 // Singleton FFmpeg instance
@@ -83,9 +83,7 @@ async function cachedToBlobURL(url: string, mimeType: string): Promise<string> {
  * Uses multi-threaded core when cross-origin isolated, single-threaded otherwise.
  * Caches WASM binaries via Cache API for fast reload across sessions.
  */
-export async function loadFFmpeg(
-  _onProgress?: (progress: number) => void
-): Promise<FFmpeg> {
+export async function loadFFmpeg(_onProgress?: (progress: number) => void): Promise<FFmpeg> {
   // Return existing instance if loaded
   if (ffmpegInstance && ffmpegInstance.loaded) {
     return ffmpegInstance;
@@ -196,7 +194,9 @@ export class FFmpegVideoEncoder {
   async initialize(): Promise<void> {
     // Wait for any in-progress export to finish (prevents VFS corruption)
     let releaseLock: () => void;
-    const lockPromise = new Promise<void>((resolve) => { releaseLock = resolve; });
+    const lockPromise = new Promise<void>((resolve) => {
+      releaseLock = resolve;
+    });
     const previousLock = exportLock;
     exportLock = lockPromise;
     await previousLock;
@@ -296,11 +296,16 @@ export class FFmpegVideoEncoder {
       outputFile = 'output.mp4';
       ffmpegArgs = [
         ...inputArgs,
-        '-c:v', 'libx264',
-        '-preset', 'ultrafast',
-        '-crf', String(crf),
-        '-pix_fmt', 'yuv420p',
-        '-movflags', '+faststart',
+        '-c:v',
+        'libx264',
+        '-preset',
+        'ultrafast',
+        '-crf',
+        String(crf),
+        '-pix_fmt',
+        'yuv420p',
+        '-movflags',
+        '+faststart',
         '-y',
         outputFile,
       ];
@@ -308,12 +313,18 @@ export class FFmpegVideoEncoder {
       outputFile = 'output.webm';
       ffmpegArgs = [
         ...inputArgs,
-        '-c:v', 'libvpx-vp9',
-        '-crf', String(crf + 10),
-        '-b:v', '0',
-        '-pix_fmt', 'yuv420p',
-        '-deadline', 'realtime',
-        '-cpu-used', '8',
+        '-c:v',
+        'libvpx-vp9',
+        '-crf',
+        String(crf + 10),
+        '-b:v',
+        '0',
+        '-pix_fmt',
+        'yuv420p',
+        '-deadline',
+        'realtime',
+        '-cpu-used',
+        '8',
         '-y',
         outputFile,
       ];
@@ -321,8 +332,10 @@ export class FFmpegVideoEncoder {
       outputFile = 'output.gif';
       ffmpegArgs = [
         ...inputArgs,
-        '-vf', `fps=${Math.min(fps, 30)},scale=${width}:${height}:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=256[p];[s1][p]paletteuse=dither=bayer`,
-        '-loop', '0',
+        '-vf',
+        `fps=${Math.min(fps, 30)},scale=${width}:${height}:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=256[p];[s1][p]paletteuse=dither=bayer`,
+        '-loop',
+        '0',
         '-y',
         outputFile,
       ];
@@ -350,9 +363,7 @@ export class FFmpegVideoEncoder {
         gif: 'image/gif',
       };
 
-      const blobData = typeof data === 'string'
-        ? new TextEncoder().encode(data)
-        : new Uint8Array(data);
+      const blobData = typeof data === 'string' ? new TextEncoder().encode(data) : new Uint8Array(data);
 
       return new Blob([blobData], { type: mimeTypes[format] });
     } finally {
@@ -419,10 +430,7 @@ export class FFmpegVideoEncoder {
 /**
  * High-level function to encode canvas frames to video using FFmpeg
  */
-export async function encodeWithFFmpeg(
-  canvases: HTMLCanvasElement[],
-  options: FFmpegEncoderOptions
-): Promise<Blob> {
+export async function encodeWithFFmpeg(canvases: HTMLCanvasElement[], options: FFmpegEncoderOptions): Promise<Blob> {
   const encoder = new FFmpegVideoEncoder(options);
   await encoder.initialize();
 

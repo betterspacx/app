@@ -182,10 +182,8 @@ function DraggableBlurRegion({
         userSelect: 'none',
       }}
     >
-      {/* Resize handles + delete button */}
       {isSelected && (
         <>
-          {/* Delete button */}
           <div
             onPointerDown={(e) => {
               e.preventDefault();
@@ -214,8 +212,6 @@ function DraggableBlurRegion({
               <path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </div>
-
-          {/* Corner resize handles */}
           {(['tl', 'tr', 'bl', 'br'] as const).map((handle) => {
             const isTop = handle.includes('t');
             const isLeft = handle.includes('l');
@@ -247,8 +243,6 @@ function DraggableBlurRegion({
               />
             );
           })}
-
-          {/* Edge resize handles */}
           {(['t', 'r', 'b', 'l'] as const).map((handle) => {
             const isHorizontal = handle === 't' || handle === 'b';
             return (

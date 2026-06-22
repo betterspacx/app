@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import { useEditorStore } from "@/lib/store";
-import { useImageStore } from "@/lib/store";
-import { CleanUploadState } from "@/components/controls/CleanUploadState";
-import { useState } from "react";
-import React from "react";
-import { ExportSlideshowDialog } from "@/lib/export-slideshow-dialog";
-import { aspectRatios } from "@/lib/constants/aspect-ratios";
+import dynamic from 'next/dynamic';
+import { useEditorStore } from '@/lib/store';
+import { useImageStore } from '@/lib/store';
+import { CleanUploadState } from '@/components/controls/CleanUploadState';
+import { useState } from 'react';
+import React from 'react';
+import { ExportSlideshowDialog } from '@/lib/export-slideshow-dialog';
+import { aspectRatios } from '@/lib/constants/aspect-ratios';
 
-const ClientCanvas = dynamic(() => import("@/components/canvas/ClientCanvas"), {
+const ClientCanvas = dynamic(() => import('@/components/canvas/ClientCanvas'), {
   ssr: false,
   loading: () => (
     <div className="flex-1 flex items-center justify-center min-h-[400px]">
@@ -95,16 +95,11 @@ export function EditorCanvas() {
   return (
     <>
       <div className="flex flex-col h-full w-full relative">
-        <ExportSlideshowDialog
-          open={exportOpen}
-          onOpenChange={setExportOpen}
-        />
+        <ExportSlideshowDialog open={exportOpen} onOpenChange={setExportOpen} />
 
         <div className="flex-1 flex items-center justify-center overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6">
           <ClientCanvas />
         </div>
-
-        {/* Bottom filmstrip — only shown when timeline is NOT visible */}
         {slides.length > 1 && !showTimeline && (
           <div className="border-t border-border/30 bg-card p-2 shrink-0 overflow-x-auto">
             <div className="flex gap-2 overflow-x-auto">
@@ -113,19 +108,12 @@ export function EditorCanvas() {
                   key={slide.id}
                   className={`relative w-28 shrink-0 h-16 rounded-lg overflow-hidden border cursor-pointer transition-all duration-200 ${
                     slide.id === activeSlideId
-                      ? "ring-2 ring-foreground/50 border-foreground/30"
-                      : "border-border/30 hover:border-border"
+                      ? 'ring-2 ring-foreground/50 border-foreground/30'
+                      : 'border-border/30 hover:border-border'
                   }`}
                 >
-                  <button
-                    onClick={() => setActiveSlide(slide.id)}
-                    className="h-full w-full"
-                  >
-                    <img
-                      src={slide.src}
-                      className="h-full w-full object-cover"
-                      draggable={false}
-                    />
+                  <button onClick={() => setActiveSlide(slide.id)} className="h-full w-full">
+                    <img src={slide.src} className="h-full w-full object-cover" draggable={false} />
                   </button>
 
                   <button

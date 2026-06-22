@@ -41,7 +41,7 @@ export const aspectRatios: AspectRatio[] = [
     description: 'Full-screen vertical stories and reels',
     useCase: 'Instagram Stories, Reels, TikTok',
   },
-  
+
   // Social Media
   {
     id: '16_9',
@@ -123,7 +123,7 @@ export const aspectRatios: AspectRatio[] = [
     description: 'LinkedIn profile/company banner format (1584×396px)',
     useCase: 'LinkedIn Profile & Company Banners',
   },
-  
+
   // Standard Formats
   {
     id: '3_2',
@@ -276,4 +276,3 @@ export const aspectRatios: AspectRatio[] = [
 ];
 
 export type AspectRatioKey = (typeof aspectRatios)[number]['id'];
-

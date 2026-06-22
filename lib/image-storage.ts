@@ -22,10 +22,7 @@ async function blobToBase64(blob: Blob): Promise<string> {
  * Save an image blob to localStorage (if small enough)
  * Returns the imageId for retrieval
  */
-export async function saveImageBlob(
-  blob: Blob,
-  imageId: string
-): Promise<string> {
+export async function saveImageBlob(blob: Blob, imageId: string): Promise<string> {
   // Only persist small images to avoid localStorage quota issues
   if (blob.size > MAX_IMAGE_SIZE) {
     console.warn(`Image ${imageId} too large for localStorage (${blob.size} bytes), skipping persistence`);
@@ -80,9 +77,7 @@ export async function hasImageBlob(imageId: string): Promise<boolean> {
 /**
  * Generate a blob URL from a stored image ID
  */
-export async function getBlobUrlFromStored(
-  imageId: string
-): Promise<string | null> {
+export async function getBlobUrlFromStored(imageId: string): Promise<string | null> {
   const blob = await getImageBlob(imageId);
   if (!blob) return null;
   return URL.createObjectURL(blob);

@@ -16,13 +16,7 @@ interface QualitySliderProps {
   step?: number;
 }
 
-export function QualitySlider({ 
-  quality, 
-  onQualityChange,
-  min = 0.1,
-  max = 1,
-  step = 0.01,
-}: QualitySliderProps) {
+export function QualitySlider({ quality, onQualityChange, min = 0.1, max = 1, step = 0.01 }: QualitySliderProps) {
   return (
     <div className="p-3 rounded-lg bg-white border border-border/50">
       <Slider
@@ -37,4 +31,3 @@ export function QualitySlider({
     </div>
   );
 }
-

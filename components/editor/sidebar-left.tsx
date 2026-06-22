@@ -1,12 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarFooter,
-} from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
 import { useImageStore } from '@/lib/store';
 import { ExportDialog } from '@/components/canvas/dialogs/ExportDialog';
 import { StyleTabs } from './style-tabs';
@@ -14,11 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Download04Icon, GithubIcon } from 'hugeicons-react';
 import { useExport } from '@/hooks/useExport';
 
-export function SidebarLeft({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
-  const { 
-    uploadedImageUrl, 
+export function SidebarLeft({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const {
+    uploadedImageUrl,
     selectedAspectRatio,
     selectedGradient,
     borderRadius,
@@ -44,9 +37,9 @@ export function SidebarLeft({
 
   return (
     <>
-      <Sidebar 
+      <Sidebar
         collapsible="none"
-        className="border-r border-sidebar-border bg-sidebar backdrop-blur-xl h-screen flex flex-col" 
+        className="border-r border-sidebar-border bg-sidebar backdrop-blur-xl h-screen flex flex-col"
         {...props}
       >
         <SidebarHeader className="p-4 sm:p-5 border-b border-sidebar-border min-w-0 bg-sidebar/50 shrink-0">
@@ -69,12 +62,7 @@ export function SidebarLeft({
           <StyleTabs />
         </SidebarContent>
         <SidebarFooter className="p-4 sm:p-5 border-t border-sidebar-border">
-          <a
-            href="https://github.com/konlyzx/betterflow"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full"
-          >
+          <a href="https://github.com/konlyzx/betterflow" target="_blank" rel="noopener noreferrer" className="w-full">
             <Button
               variant="outline"
               className="w-full h-10 justify-center gap-2.5 rounded-lg bg-background hover:bg-accent text-foreground border border-border hover:border-border/80  transition-all duration-200 font-medium text-sm px-4 overflow-hidden"

@@ -81,10 +81,7 @@ function useStarCount() {
           const count = data.stargazers_count;
           setStars(count);
           try {
-            localStorage.setItem(
-              CACHE_KEY,
-              JSON.stringify({ count, timestamp: Date.now() })
-            );
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ count, timestamp: Date.now() }));
           } catch {}
         }
       })
@@ -108,19 +105,12 @@ export function GitHubStarButton({ compact }: { compact?: boolean }) {
       )}
     >
       <GitHubIcon className={compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
-      {!compact && (
-        <span className="font-medium hidden sm:inline">Star</span>
-      )}
+      {!compact && <span className="font-medium hidden sm:inline">Star</span>}
       {stars !== null && stars > 0 && (
         <>
           <span className="w-px h-3.5 bg-border/60" />
           <span className="font-medium flex items-center gap-0.5 tabular-nums">
-            <StarIcon
-              className={cn(
-                'text-amber-400',
-                compact ? 'w-2.5 h-2.5' : 'w-3 h-3'
-              )}
-            />
+            <StarIcon className={cn('text-amber-400', compact ? 'w-2.5 h-2.5' : 'w-3 h-3')} />
             <AnimatedNumber value={stars} />
           </span>
         </>

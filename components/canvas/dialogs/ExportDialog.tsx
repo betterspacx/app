@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ScaleSlider, FormatSelector, QualityPresetSelector } from "@/components/export";
-import { Download01Icon } from "hugeicons-react";
-import { ImageExportProgressView } from "./ImageProgressView";
-import type { ExportFormat, QualityPreset } from "@/lib/export/types";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScaleSlider, FormatSelector, QualityPresetSelector } from '@/components/export';
+import { Download01Icon } from 'hugeicons-react';
+import { ImageExportProgressView } from './ImageProgressView';
+import type { ExportFormat, QualityPreset } from '@/lib/export/types';
 
 interface ExportDialogProps {
   open: boolean;
@@ -43,7 +43,7 @@ export function ExportDialog({
       await onExport();
       onOpenChange(false);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to export image. Please try again.";
+      const errorMessage = err instanceof Error ? err.message : 'Failed to export image. Please try again.';
       setError(errorMessage);
     }
   };
@@ -56,12 +56,10 @@ export function ExportDialog({
         <div className="p-6 pb-4">
           <DialogHeader className="pb-1">
             <DialogTitle className="text-xl font-semibold text-foreground">
-              {isExporting ? "Exporting Image" : "Export Canvas"}
+              {isExporting ? 'Exporting Image' : 'Export Canvas'}
             </DialogTitle>
             {isExporting && (
-              <p className="text-sm text-muted-foreground pt-1">
-                Sit back while we render your creation
-              </p>
+              <p className="text-sm text-muted-foreground pt-1">Sit back while we render your creation</p>
             )}
           </DialogHeader>
         </div>

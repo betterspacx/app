@@ -1,78 +1,78 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Slider } from '@/components/ui/slider'
-import { useImageStore } from '@/lib/store'
-import { Delete02Icon, ViewIcon, ViewOffSlashIcon, RotateRight01Icon, RotateLeft01Icon, RefreshIcon } from 'hugeicons-react'
-import { getR2ImageUrl } from '@/lib/r2'
-import { OVERLAY_PATHS, isOverlayPath } from '@/lib/r2-overlays'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { useImageStore } from '@/lib/store';
+import {
+  Delete02Icon,
+  ViewIcon,
+  ViewOffSlashIcon,
+  RotateRight01Icon,
+  RotateLeft01Icon,
+  RefreshIcon,
+} from 'hugeicons-react';
+import { getR2ImageUrl } from '@/lib/r2';
+import { OVERLAY_PATHS, isOverlayPath } from '@/lib/r2-overlays';
 
 export function OverlayControls() {
-  const {
-    imageOverlays,
-    updateImageOverlay,
-    removeImageOverlay,
-    clearImageOverlays,
-  } = useImageStore()
+  const { imageOverlays, updateImageOverlay, removeImageOverlay, clearImageOverlays } = useImageStore();
 
-  const [selectedOverlayId, setSelectedOverlayId] = useState<string | null>(null)
+  const [selectedOverlayId, setSelectedOverlayId] = useState<string | null>(null);
 
-  const selectedOverlay = imageOverlays.find(
-    (overlay) => overlay.id === selectedOverlayId
-  )
+  const selectedOverlay = imageOverlays.find((overlay) => overlay.id === selectedOverlayId);
 
   const handleUpdateSize = (value: number[]) => {
     if (selectedOverlay) {
-      updateImageOverlay(selectedOverlay.id, { size: value[0] })
+      updateImageOverlay(selectedOverlay.id, { size: value[0] });
     }
-  }
+  };
 
   // Normalize rotation to -180 to 180 range
   const normalizeRotation = (rotation: number): number => {
-    let normalized = rotation % 360
-    if (normalized > 180) normalized -= 360
-    if (normalized < -180) normalized += 360
-    return normalized
-  }
+    let normalized = rotation % 360;
+    if (normalized > 180) normalized -= 360;
+    if (normalized < -180) normalized += 360;
+    return normalized;
+  };
 
   const handleUpdateRotation = (value: number[]) => {
     if (selectedOverlay) {
-      updateImageOverlay(selectedOverlay.id, { rotation: value[0] })
+      updateImageOverlay(selectedOverlay.id, { rotation: value[0] });
     }
-  }
+  };
 
   const handleRotateBy = (degrees: number) => {
     if (selectedOverlay) {
-      const newRotation = normalizeRotation(selectedOverlay.rotation + degrees)
-      updateImageOverlay(selectedOverlay.id, { rotation: newRotation })
+      const newRotation = normalizeRotation(selectedOverlay.rotation + degrees);
+      updateImageOverlay(selectedOverlay.id, { rotation: newRotation });
     }
-  }
+  };
 
   const handleUpdateOpacity = (value: number[]) => {
     if (selectedOverlay) {
-      updateImageOverlay(selectedOverlay.id, { opacity: value[0] })
+      updateImageOverlay(selectedOverlay.id, { opacity: value[0] });
     }
-  }
+  };
 
   const handleToggleFlipX = () => {
     if (selectedOverlay) {
-      updateImageOverlay(selectedOverlay.id, { flipX: !selectedOverlay.flipX })
+      updateImageOverlay(selectedOverlay.id, { flipX: !selectedOverlay.flipX });
     }
-  }
+  };
 
   const handleToggleFlipY = () => {
     if (selectedOverlay) {
-      updateImageOverlay(selectedOverlay.id, { flipY: !selectedOverlay.flipY })
+      updateImageOverlay(selectedOverlay.id, { flipY: !selectedOverlay.flipY });
     }
-  }
+  };
 
   const handleToggleVisibility = (id: string) => {
-    const overlay = imageOverlays.find((o) => o.id === id)
+    const overlay = imageOverlays.find((o) => o.id === id);
     if (overlay) {
-      updateImageOverlay(id, { isVisible: !overlay.isVisible })
+      updateImageOverlay(id, { isVisible: !overlay.isVisible });
     }
-  }
+  };
 
   const handleUpdatePosition = (axis: 'x' | 'y', value: number[]) => {
     if (selectedOverlay) {
@@ -81,9 +81,9 @@ export function OverlayControls() {
           ...selectedOverlay.position,
           [axis]: value[0],
         },
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="space-y-5">
@@ -118,27 +118,23 @@ export function OverlayControls() {
                   variant="ghost"
                   size="sm"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    handleToggleVisibility(overlay.id)
+                    e.stopPropagation();
+                    handleToggleVisibility(overlay.id);
                   }}
                   className="h-6 w-6 p-0"
                 >
-                  {overlay.isVisible ? (
-                    <ViewIcon className="h-3 w-3" />
-                  ) : (
-                    <ViewOffSlashIcon className="h-3 w-3" />
-                  )}
+                  {overlay.isVisible ? <ViewIcon className="h-3 w-3" /> : <ViewOffSlashIcon className="h-3 w-3" />}
                 </Button>
                 <div className="relative w-8 h-8 shrink-0 rounded overflow-hidden">
                   {(() => {
                     // Check if this is an R2 overlay path or a custom upload
-                    const isR2Overlay = isOverlayPath(overlay.src) ||
-                                       (typeof overlay.src === 'string' && overlay.src.startsWith('overlays/'))
+                    const isR2Overlay =
+                      isOverlayPath(overlay.src) ||
+                      (typeof overlay.src === 'string' && overlay.src.startsWith('overlays/'));
 
                     // Get the image URL - use R2 if it's a known path, otherwise use the src directly
-                    const imageUrl = isR2Overlay && !overlay.isCustom
-                      ? getR2ImageUrl({ src: overlay.src })
-                      : overlay.src
+                    const imageUrl =
+                      isR2Overlay && !overlay.isCustom ? getR2ImageUrl({ src: overlay.src }) : overlay.src;
 
                     // Use regular img tag
                     return (
@@ -148,17 +144,17 @@ export function OverlayControls() {
                         className="object-contain w-full h-full"
                         style={{ display: 'block' }}
                       />
-                    )
+                    );
                   })()}
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    removeImageOverlay(overlay.id)
+                    e.stopPropagation();
+                    removeImageOverlay(overlay.id);
                     if (selectedOverlayId === overlay.id) {
-                      setSelectedOverlayId(null)
+                      setSelectedOverlayId(null);
                     }
                   }}
                   className="h-6 w-6 p-0 text-destructive hover:text-destructive ml-auto"
@@ -174,11 +170,7 @@ export function OverlayControls() {
       {selectedOverlay && (
         <div className="space-y-5 border-t pt-5">
           <div className="space-y-5">
-            <p className="text-sm font-semibold text-foreground">
-              Edit Overlay
-            </p>
-
-            {/* Size */}
+            <p className="text-sm font-semibold text-foreground">Edit Overlay</p>
             <div className="p-3 rounded-xl bg-muted border border-border">
               <Slider
                 value={[selectedOverlay.size]}
@@ -190,8 +182,6 @@ export function OverlayControls() {
                 valueDisplay={`${selectedOverlay.size}px`}
               />
             </div>
-
-            {/* Rotation */}
             <div className="p-3 rounded-xl bg-muted border border-border space-y-3">
               <Slider
                 value={[selectedOverlay.rotation]}
@@ -232,8 +222,6 @@ export function OverlayControls() {
                 </Button>
               </div>
             </div>
-
-            {/* Opacity */}
             <div className="p-3 rounded-xl bg-muted border border-border">
               <Slider
                 value={[selectedOverlay.opacity]}
@@ -245,8 +233,6 @@ export function OverlayControls() {
                 valueDisplay={`${Math.round(selectedOverlay.opacity * 100)}%`}
               />
             </div>
-
-            {/* Blur */}
             <div className="p-3 rounded-xl bg-muted border border-border">
               <Slider
                 value={[selectedOverlay.blur ?? 0]}
@@ -258,8 +244,6 @@ export function OverlayControls() {
                 valueDisplay={`${selectedOverlay.blur ?? 0}px`}
               />
             </div>
-
-            {/* Flip Controls */}
             <div className="flex gap-2">
               <Button
                 variant={selectedOverlay.flipX ? 'default' : 'outline'}
@@ -278,11 +262,8 @@ export function OverlayControls() {
                 Flip Y
               </Button>
             </div>
-
-            {/* Position */}
             <div className="space-y-4">
               <p className="text-sm font-semibold text-foreground">Position</p>
-              {/* X position */}
               <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
                 <Slider
                   value={[selectedOverlay.position.x]}
@@ -294,8 +275,6 @@ export function OverlayControls() {
                   valueDisplay={`${Math.round(selectedOverlay.position.x)}px`}
                 />
               </div>
-
-              {/* Y position */}
               <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
                 <Slider
                   value={[selectedOverlay.position.y]}
@@ -308,14 +287,12 @@ export function OverlayControls() {
                 />
               </div>
             </div>
-
-            {/* Remove Button */}
             <Button
               variant="destructive"
               size="sm"
               onClick={() => {
-                removeImageOverlay(selectedOverlay.id)
-                setSelectedOverlayId(null)
+                removeImageOverlay(selectedOverlay.id);
+                setSelectedOverlayId(null);
               }}
               className="w-full h-10 rounded-xl"
             >
@@ -326,6 +303,5 @@ export function OverlayControls() {
         </div>
       )}
     </div>
-  )
+  );
 }
-

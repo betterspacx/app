@@ -24,14 +24,11 @@ function BorderPreview({ radius, selected }: { radius: number; selected: boolean
         'relative w-full aspect-square rounded-xl overflow-hidden transition-all duration-200',
         selected
           ? 'ring-2 ring-primary ring-offset-2 ring-offset-card shadow-lg shadow-primary/10'
-          : 'ring-1 ring-white/10 hover:ring-white/20',
+          : 'ring-1 ring-white/10 hover:ring-white/20'
       )}
       style={{ backgroundColor: 'rgb(45, 45, 50)' }}
     >
-      <div
-        className="absolute"
-        style={{ top: '19.5%', left: '19.5%', width: '95.5%', height: '95.5%' }}
-      >
+      <div className="absolute" style={{ top: '19.5%', left: '19.5%', width: '95.5%', height: '95.5%' }}>
         <div
           className="w-full h-full bg-gradient-to-br from-white to-gray-100 shadow-sm"
           style={{ borderRadius: previewRadius }}
@@ -61,7 +58,7 @@ export function BorderSection() {
                 <span
                   className={cn(
                     'text-[10px] leading-tight transition-colors',
-                    isSelected ? 'text-foreground font-medium' : 'text-muted-foreground group-hover:text-foreground/70',
+                    isSelected ? 'text-foreground font-medium' : 'text-muted-foreground group-hover:text-foreground/70'
                   )}
                 >
                   {label}

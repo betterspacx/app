@@ -1,6 +1,6 @@
 /**
  * Export Worker Service
- * 
+ *
  * Provides a clean API for main thread to communicate with the export web worker.
  * Handles worker lifecycle, message passing, and provides Promise-based APIs.
  */
@@ -14,18 +14,11 @@ import type {
   OpacityPayload,
   CompositePayload,
   ConvertFormatPayload,
-  ConvertFormatResult
+  ConvertFormatResult,
 } from './export.worker';
 
 // Re-export types for consumers
-export type {
-  NoisePayload,
-  BlurPayload,
-  OpacityPayload,
-  CompositePayload,
-  ConvertFormatPayload,
-  ConvertFormatResult
-};
+export type { NoisePayload, BlurPayload, OpacityPayload, CompositePayload, ConvertFormatPayload, ConvertFormatResult };
 
 type PendingRequest = {
   resolve: (result: any) => void;
@@ -66,10 +59,7 @@ class ExportWorkerService {
     this.readyPromise = new Promise((resolve, reject) => {
       try {
         // Create worker using Webpack's worker-loader syntax
-        this.worker = new Worker(
-          new URL('./export.worker.ts', import.meta.url),
-          { type: 'module' }
-        );
+        this.worker = new Worker(new URL('./export.worker.ts', import.meta.url), { type: 'module' });
 
         const timeout = setTimeout(() => {
           console.warn('Worker initialization timeout, falling back to main thread');
@@ -91,10 +81,10 @@ class ExportWorkerService {
           // Handle response messages
           const response = data as ExportWorkerResponse;
           const pending = this.pendingRequests.get(response.id);
-          
+
           if (pending) {
             this.pendingRequests.delete(response.id);
-            
+
             if (response.success) {
               // Reconstruct ImageData from transferred buffer if needed
               if (response.result && response.result.data && response.result.width && response.result.height) {
@@ -102,7 +92,7 @@ class ExportWorkerService {
                 try {
                   // Create a new Uint8ClampedArray with a fresh ArrayBuffer
                   let clampedArray: Uint8ClampedArray;
-                  
+
                   if (dataArray instanceof Uint8ClampedArray) {
                     // Copy to a new array to ensure we have an ArrayBuffer
                     clampedArray = new Uint8ClampedArray(dataArray.length);
@@ -119,9 +109,13 @@ class ExportWorkerService {
                     pending.resolve(response.result);
                     return;
                   }
-                  
+
                   // Use type assertion to handle TypeScript strict mode
-                  const imageData = new ImageData(clampedArray as unknown as Uint8ClampedArray<ArrayBuffer>, width, height);
+                  const imageData = new ImageData(
+                    clampedArray as unknown as Uint8ClampedArray<ArrayBuffer>,
+                    width,
+                    height
+                  );
                   pending.resolve(imageData);
                 } catch {
                   pending.resolve(response.result);
@@ -139,13 +133,13 @@ class ExportWorkerService {
           clearTimeout(timeout);
           console.error('Worker error:', error);
           this.isReady = false;
-          
+
           // Reject all pending requests
           for (const [id, pending] of this.pendingRequests) {
             pending.reject(new Error('Worker encountered an error'));
             this.pendingRequests.delete(id);
           }
-          
+
           resolve(); // Resolve initialization so fallback can be used
         };
       } catch (error) {
@@ -200,7 +194,7 @@ class ExportWorkerService {
         reject: (error) => {
           clearTimeout(timeout);
           reject(error);
-        }
+        },
       });
 
       if (transferables && transferables.length > 0) {
@@ -223,11 +217,7 @@ class ExportWorkerService {
    * Generate noise texture using worker
    * Falls back to main thread if worker unavailable
    */
-  async generateNoiseTexture(
-    width: number,
-    height: number,
-    intensity: number
-  ): Promise<ImageData> {
+  async generateNoiseTexture(width: number, height: number, intensity: number): Promise<ImageData> {
     await this.initializeWorker();
 
     // If worker not available, run on main thread
@@ -239,7 +229,7 @@ class ExportWorkerService {
       return await this.sendMessage<ImageData>('generateNoise', {
         width,
         height,
-        intensity
+        intensity,
       } as NoisePayload);
     } catch (error) {
       console.warn('Worker noise generation failed, using fallback:', error);
@@ -250,17 +240,14 @@ class ExportWorkerService {
   /**
    * Fallback noise generation on main thread
    */
-  private generateNoiseTextureFallback(
-    width: number,
-    height: number,
-    intensity: number
-  ): ImageData {
+  private generateNoiseTextureFallback(width: number, height: number, intensity: number): ImageData {
     const imageData = new ImageData(width, height);
     const data = imageData.data;
     const stdDev = intensity * 50;
 
     for (let i = 0; i < data.length; i += 4) {
-      let u = 0, v = 0;
+      let u = 0,
+        v = 0;
       while (u === 0) u = Math.random();
       while (v === 0) v = Math.random();
       const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
@@ -280,10 +267,7 @@ class ExportWorkerService {
    * Apply blur to image data using worker
    * Falls back to main thread if worker unavailable
    */
-  async applyBlur(
-    imageData: ImageData,
-    blurAmount: number
-  ): Promise<ImageData> {
+  async applyBlur(imageData: ImageData, blurAmount: number): Promise<ImageData> {
     if (blurAmount <= 0) {
       return imageData;
     }
@@ -301,11 +285,11 @@ class ExportWorkerService {
         imageData: {
           data: dataCopy,
           width: imageData.width,
-          height: imageData.height
+          height: imageData.height,
         } as unknown as ImageData,
         blurAmount,
         width: imageData.width,
-        height: imageData.height
+        height: imageData.height,
       };
 
       return await this.sendMessage<ImageData>('applyBlur', payload, [dataCopy.buffer]);
@@ -345,10 +329,7 @@ class ExportWorkerService {
    * Apply opacity to image data using worker
    * Falls back to main thread if worker unavailable
    */
-  async applyOpacity(
-    imageData: ImageData,
-    opacity: number
-  ): Promise<ImageData> {
+  async applyOpacity(imageData: ImageData, opacity: number): Promise<ImageData> {
     if (opacity >= 1) {
       return imageData;
     }
@@ -365,11 +346,11 @@ class ExportWorkerService {
         imageData: {
           data: dataCopy,
           width: imageData.width,
-          height: imageData.height
+          height: imageData.height,
         } as unknown as ImageData,
         opacity,
         width: imageData.width,
-        height: imageData.height
+        height: imageData.height,
       };
 
       return await this.sendMessage<ImageData>('applyOpacity', payload, [dataCopy.buffer]);
@@ -416,28 +397,25 @@ class ExportWorkerService {
     try {
       const baseDataCopy = new Uint8ClampedArray(baseImageData.data);
       const overlayDataCopy = new Uint8ClampedArray(overlayImageData.data);
-      
+
       const payload: CompositePayload = {
         baseImageData: {
           data: baseDataCopy,
           width: baseImageData.width,
-          height: baseImageData.height
+          height: baseImageData.height,
         } as unknown as ImageData,
         overlayImageData: {
           data: overlayDataCopy,
           width: overlayImageData.width,
-          height: overlayImageData.height
+          height: overlayImageData.height,
         } as unknown as ImageData,
         blendMode,
         overlayOpacity,
         width: baseImageData.width,
-        height: baseImageData.height
+        height: baseImageData.height,
       };
 
-      return await this.sendMessage<ImageData>('composite', payload, [
-        baseDataCopy.buffer,
-        overlayDataCopy.buffer
-      ]);
+      return await this.sendMessage<ImageData>('composite', payload, [baseDataCopy.buffer, overlayDataCopy.buffer]);
     } catch (error) {
       console.warn('Worker composite failed, using fallback:', error);
       return this.compositeFallback(baseImageData, overlayImageData, blendMode, overlayOpacity);
@@ -475,7 +453,7 @@ class ExportWorkerService {
 
     // Create pattern for tiling
     const pattern = ctx.createPattern(overlayCanvas, 'repeat');
-    
+
     if (pattern) {
       ctx.save();
       ctx.globalCompositeOperation = blendMode as GlobalCompositeOperation;
@@ -517,19 +495,15 @@ class ExportWorkerService {
         imageData: {
           data: dataCopy,
           width: imageData.width,
-          height: imageData.height
+          height: imageData.height,
         } as unknown as ImageData,
         format,
         quality,
         width: canvas.width,
-        height: canvas.height
+        height: canvas.height,
       };
 
-      const result = await this.sendMessage<ConvertFormatResult>(
-        'convertFormat',
-        payload,
-        [dataCopy.buffer]
-      );
+      const result = await this.sendMessage<ConvertFormatResult>('convertFormat', payload, [dataCopy.buffer]);
 
       // Convert ArrayBuffer back to Blob
       const blob = new Blob([result.blob], { type: result.mimeType });
@@ -537,7 +511,7 @@ class ExportWorkerService {
       return {
         blob,
         mimeType: result.mimeType,
-        fileSize: result.fileSize
+        fileSize: result.fileSize,
       };
     } catch (error) {
       console.warn('Worker format conversion failed, using fallback:', error);
@@ -553,8 +527,7 @@ class ExportWorkerService {
     format: 'png' | 'jpeg' | 'webp',
     quality: number
   ): Promise<{ blob: Blob; mimeType: string; fileSize: number }> {
-    const mimeType = format === 'png' ? 'image/png' :
-                     format === 'webp' ? 'image/webp' : 'image/jpeg';
+    const mimeType = format === 'png' ? 'image/png' : format === 'webp' ? 'image/webp' : 'image/jpeg';
 
     return new Promise((resolve, reject) => {
       canvas.toBlob(
@@ -563,7 +536,7 @@ class ExportWorkerService {
             resolve({
               blob,
               mimeType,
-              fileSize: blob.size
+              fileSize: blob.size,
             });
           } else {
             reject(new Error('Failed to convert canvas to blob'));

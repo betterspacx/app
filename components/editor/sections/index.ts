@@ -15,4 +15,5 @@ export { TweetImportSection } from './TweetImportSection';
 export { CodeSnippetSection } from './CodeSnippetSection';
 export { PositionSection } from './PositionSection';
 export { BrowserMockupSection } from './BrowserMockupSection';
+export { DeviceFramesSection } from './DeviceFramesSection';
 export { ImagePositionSection } from './ImagePositionSection';

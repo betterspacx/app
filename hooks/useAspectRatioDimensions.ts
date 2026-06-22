@@ -11,28 +11,20 @@ import { getAspectRatioPreset, calculateFitDimensions, getAspectRatioCSS } from 
  * Hook to get canvas dimensions based on selected aspect ratio
  * Returns dimensions that fit within viewport constraints
  */
-export function useAspectRatioDimensions(options?: {
-  maxWidth?: number;
-  maxHeight?: number;
-}) {
+export function useAspectRatioDimensions(options?: { maxWidth?: number; maxHeight?: number }) {
   const { selectedAspectRatio } = useImageStore();
-  
+
   const dimensions = useMemo(() => {
     const preset = getAspectRatioPreset(selectedAspectRatio);
     if (!preset) {
       return { width: 1920, height: 1080, aspectRatio: '16/9' };
     }
-    
+
     const { maxWidth, maxHeight } = options || {};
-    
+
     // If constraints provided, calculate fit dimensions
     if (maxWidth || maxHeight) {
-      const fitDimensions = calculateFitDimensions(
-        preset.width,
-        preset.height,
-        maxWidth,
-        maxHeight
-      );
+      const fitDimensions = calculateFitDimensions(preset.width, preset.height, maxWidth, maxHeight);
       return {
         ...fitDimensions,
         aspectRatio: getAspectRatioCSS(preset.width, preset.height),
@@ -40,7 +32,7 @@ export function useAspectRatioDimensions(options?: {
         originalHeight: preset.height,
       };
     }
-    
+
     // Return original dimensions
     return {
       width: preset.width,
@@ -50,7 +42,7 @@ export function useAspectRatioDimensions(options?: {
       originalHeight: preset.height,
     };
   }, [selectedAspectRatio, options]);
-  
+
   return dimensions;
 }
 
@@ -62,7 +54,7 @@ export function useAspectRatioDimensions(options?: {
 export function useResponsiveCanvasDimensions() {
   const { selectedAspectRatio } = useImageStore();
   const [viewportSize, setViewportSize] = useState({ width: 1920, height: 1080 });
-  
+
   // Track viewport size changes
   useEffect(() => {
     const updateViewportSize = () => {
@@ -71,21 +63,21 @@ export function useResponsiveCanvasDimensions() {
         height: window.innerHeight,
       });
     };
-    
+
     // Set initial size
     updateViewportSize();
-    
+
     // Listen for resize events
     window.addEventListener('resize', updateViewportSize);
     return () => window.removeEventListener('resize', updateViewportSize);
   }, []);
-  
+
   const dimensions = useMemo(() => {
     const preset = getAspectRatioPreset(selectedAspectRatio);
     if (!preset) {
       return { width: 1920, height: 1080, aspectRatio: '16/9' };
     }
-    
+
     // Determine layout constraints based on viewport size.
     // On mobile the side panels are hidden inside sheets, so we should not
     // subtract their desktop width (otherwise calculations go negative and
@@ -109,14 +101,9 @@ export function useResponsiveCanvasDimensions() {
     const heightScale = isMobileViewport ? 1 : 1.1;
     const maxWidth = Math.min(availableWidth * widthScale, 3000);
     const maxHeight = Math.min(availableHeight * heightScale, 1500);
-    
-    const fitDimensions = calculateFitDimensions(
-      preset.width,
-      preset.height,
-      maxWidth,
-      maxHeight
-    );
-    
+
+    const fitDimensions = calculateFitDimensions(preset.width, preset.height, maxWidth, maxHeight);
+
     return {
       ...fitDimensions,
       aspectRatio: getAspectRatioCSS(preset.width, preset.height),
@@ -124,7 +111,6 @@ export function useResponsiveCanvasDimensions() {
       originalHeight: preset.height,
     };
   }, [selectedAspectRatio, viewportSize.width, viewportSize.height]);
-  
+
   return dimensions;
 }
-

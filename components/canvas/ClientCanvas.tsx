@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState, useCallback } from "react";
-import { motion } from "motion/react";
-import { useEditorStore } from "@/lib/store";
-import { useImageStore } from "@/lib/store";
-import { generatePattern } from "@/lib/patterns";
-import { useResponsiveCanvasDimensions } from "@/hooks/useAspectRatioDimensions";
-import { generateNoiseTexture } from "@/lib/export/export-utils";
-import { MockupRenderer } from "@/components/mockups/MockupRenderer";
-import { calculateCanvasDimensions } from "./utils/canvas-dimensions";
-import { Perspective3DOverlay } from "./overlays/Perspective3DOverlay";
-import { useBackgroundImage, useOverlayImages } from "./hooks/useImageLoading";
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion } from 'motion/react';
+import { useEditorStore } from '@/lib/store';
+import { useImageStore } from '@/lib/store';
+import { generatePattern } from '@/lib/patterns';
+import { useResponsiveCanvasDimensions } from '@/hooks/useAspectRatioDimensions';
+import { generateNoiseTexture } from '@/lib/export/export-utils';
+import { MockupRenderer } from '@/components/mockups/MockupRenderer';
+import { calculateCanvasDimensions } from './utils/canvas-dimensions';
+import { Perspective3DOverlay } from './overlays/Perspective3DOverlay';
+import { useBackgroundImage, useOverlayImages } from './hooks/useImageLoading';
 import {
   HTMLCanvasRenderer,
   HTMLBackgroundLayer,
@@ -22,7 +22,7 @@ import {
   SVGAnnotationLayer,
   HTMLBlurRegionLayer,
   SnapAlignmentGuides,
-} from "./html";
+} from './html';
 
 // Reference to the HTML canvas container for export
 let globalCanvasContainer: HTMLDivElement | null = null;
@@ -98,17 +98,11 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
     height: 1080,
   });
 
-  const [patternImage, setPatternImage] = useState<HTMLCanvasElement | null>(
-    null
-  );
+  const [patternImage, setPatternImage] = useState<HTMLCanvasElement | null>(null);
   const [noiseImage, setNoiseImage] = useState<HTMLImageElement | null>(null);
-  const [noiseTexture, setNoiseTexture] = useState<HTMLCanvasElement | null>(
-    null
-  );
+  const [noiseTexture, setNoiseTexture] = useState<HTMLCanvasElement | null>(null);
 
-  const [selectedOverlayId, setSelectedOverlayId] = useState<string | null>(
-    null
-  );
+  const [selectedOverlayId, setSelectedOverlayId] = useState<string | null>(null);
   const [isMainImageSelected, setIsMainImageSelected] = useState(false);
   const [selectedTextId, setSelectedTextId] = useState<string | null>(null);
   const [isDraggingMainImage, setIsDraggingMainImage] = useState(false);
@@ -118,8 +112,10 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
   const [is3DDragging, setIs3DDragging] = useState(false);
   const [is3DPointerDown, setIs3DPointerDown] = useState(false);
   const drag3DStartRef = useRef<{
-    clientX: number; clientY: number;
-    tX: number; tY: number;
+    clientX: number;
+    clientY: number;
+    tX: number;
+    tY: number;
     moved: boolean;
   } | null>(null);
 
@@ -186,11 +182,7 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
   const containerWidth = responsiveDimensions.width;
   const containerHeight = responsiveDimensions.height;
 
-  const bgImage = useBackgroundImage(
-    backgroundConfig,
-    containerWidth,
-    containerHeight
-  );
+  const bgImage = useBackgroundImage(backgroundConfig, containerWidth, containerHeight);
   const loadedOverlayImages = useOverlayImages(imageOverlays);
 
   // Update global reference for export
@@ -216,7 +208,12 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
         // Don't deselect when interacting with editor panel controls
         // (sliders, inputs, buttons, etc.) so users can tweak selected items
         const el = target as HTMLElement;
-        if (el.closest?.('[data-slot="slider"], input, button, [role="button"], [data-radix-collection-item], .moveable-control-box, [data-resize-handle]')) return;
+        if (
+          el.closest?.(
+            '[data-slot="slider"], input, button, [role="button"], [data-radix-collection-item], .moveable-control-box, [data-resize-handle]'
+          )
+        )
+          return;
 
         setSelectedOverlayId(null);
         setIsMainImageSelected(false);
@@ -237,13 +234,10 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Ignore if user is typing in an input, textarea, or contenteditable
       const target = e.target as HTMLElement;
-      const isTyping =
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable;
+      const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
 
       // Delete overlay (only when not typing)
-      if ((e.key === "Delete" || e.key === "Backspace") && !isTyping) {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && !isTyping) {
         if (selectedOverlayId) {
           e.preventDefault();
           removeImageOverlay(selectedOverlayId);
@@ -252,7 +246,7 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
       }
 
       // Undo/Redo (only when not typing)
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z" && !isTyping) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !isTyping) {
         e.preventDefault();
         const { undo, redo } = useImageStore.temporal.getState();
         if (e.shiftKey) {
@@ -263,14 +257,12 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedOverlayId, removeImageOverlay]);
 
   // Get selected overlay for toolbar positioning
-  const selectedOverlay = selectedOverlayId
-    ? imageOverlays.find(o => o.id === selectedOverlayId)
-    : null;
+  const selectedOverlay = selectedOverlayId ? imageOverlays.find((o) => o.id === selectedOverlayId) : null;
 
   // Handle duplicate overlay
   const handleDuplicateOverlay = () => {
@@ -313,8 +305,8 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
     };
 
     updateViewportSize();
-    window.addEventListener("resize", updateViewportSize);
-    return () => window.removeEventListener("resize", updateViewportSize);
+    window.addEventListener('resize', updateViewportSize);
+    return () => window.removeEventListener('resize', updateViewportSize);
   }, []);
 
   useEffect(() => {
@@ -343,13 +335,13 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
   ]);
 
   useEffect(() => {
-    if (!noise.enabled || noise.type === "none") {
+    if (!noise.enabled || noise.type === 'none') {
       setNoiseImage(null);
       return;
     }
 
     const img = new window.Image();
-    img.crossOrigin = "anonymous";
+    img.crossOrigin = 'anonymous';
     img.onload = () => setNoiseImage(img);
     img.onerror = () => setNoiseImage(null);
     img.src = `/${noise.type}.jpg`;
@@ -387,7 +379,7 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
     setCanvasDimensions({ canvasW, canvasH, framedW, framedH });
   }, [canvasW, canvasH, framedW, framedH, setCanvasDimensions]);
 
-  const showFrame = frame.enabled && frame.type !== "none";
+  const showFrame = frame.enabled && frame.type !== 'none';
 
   const has3DTransform =
     perspective3D.rotateX !== 0 ||
@@ -422,16 +414,16 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
         height: containerHeight,
       }}
       transition={{
-        type: "spring",
+        type: 'spring',
         stiffness: 200,
         damping: 25,
         mass: 0.8,
       }}
       style={{
         maxWidth: `${containerWidth}px`,
-        maxHeight: "calc(100vh - 200px)",
-        backgroundColor: "transparent",
-        padding: "0px",
+        maxHeight: 'calc(100vh - 200px)',
+        backgroundColor: 'transparent',
+        padding: '0px',
       }}
     >
       <HTMLCanvasRenderer
@@ -441,10 +433,9 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
         borderRadius={backgroundBorderRadius}
         onPointerDown={handleCanvasDeselect}
         style={{
-          isolation: "isolate",
+          isolation: 'isolate',
         }}
       >
-        {/* Background Layer */}
         <HTMLBackgroundLayer
           backgroundConfig={backgroundConfig}
           backgroundBlur={backgroundBlur}
@@ -454,24 +445,13 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
           noiseTexture={noiseTexture}
           backgroundNoise={backgroundNoise}
         />
-
-        {/* Pattern Layer */}
         <HTMLPatternLayer
           patternImage={patternImage}
           width={canvasW}
           height={canvasH}
           patternOpacity={patternStyle.opacity}
         />
-
-        {/* Noise Layer */}
-        <HTMLNoiseLayer
-          noiseImage={noiseImage}
-          width={canvasW}
-          height={canvasH}
-          noiseOpacity={noise.opacity}
-        />
-
-        {/* 3D Transform Overlay - renders when 3D transforms are active */}
+        <HTMLNoiseLayer noiseImage={noiseImage} width={canvasW} height={canvasH} noiseOpacity={noise.opacity} />
         <Perspective3DOverlay
           has3DTransform={has3DTransform}
           perspective3D={perspective3D}
@@ -495,8 +475,6 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
           imageOpacity={imageOpacity}
           imageFilters={imageFilters}
         />
-
-        {/* 3D Drag Layer - allows dragging image when 3D transforms are active */}
         {has3DTransform && (
           <div
             onPointerDown={handle3DDragDown}
@@ -512,8 +490,6 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
             }}
           />
         )}
-
-        {/* Back Image Overlays - rendered behind the main image */}
         {backOverlays.length > 0 && (
           <HTMLImageOverlayLayer
             imageOverlays={backOverlays}
@@ -528,8 +504,6 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
             zIndex={10}
           />
         )}
-
-        {/* Main Image Layer - renders when no 3D transform and no mockups */}
         {!hasMockups && !has3DTransform && (
           <>
             <SnapAlignmentGuides
@@ -565,18 +539,9 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
             />
           </>
         )}
-
-        {/* Mockups Layer */}
         {mockups.map((mockup) => (
-          <MockupRenderer
-            key={mockup.id}
-            mockup={mockup}
-            canvasWidth={canvasW}
-            canvasHeight={canvasH}
-          />
+          <MockupRenderer key={mockup.id} mockup={mockup} canvasWidth={canvasW} canvasHeight={canvasH} />
         ))}
-
-        {/* Text Overlay Layer */}
         <HTMLTextOverlayLayer
           textOverlays={textOverlays}
           canvasW={canvasW}
@@ -587,8 +552,6 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
           setIsMainImageSelected={setIsMainImageSelected}
           updateTextOverlay={updateTextOverlay}
         />
-
-        {/* Front Image Overlay Layer */}
         <HTMLImageOverlayLayer
           imageOverlays={frontOverlays}
           loadedOverlayImages={loadedOverlayImages}
@@ -600,8 +563,6 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
           onDuplicate={handleDuplicateOverlay}
           onDelete={handleDeleteOverlay}
         />
-
-        {/* Blur Region Layer */}
         <HTMLBlurRegionLayer
           blurRegions={blurRegions}
           selectedBlurId={selectedBlurId}
@@ -609,8 +570,6 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
           updateBlurRegion={updateBlurRegion}
           removeBlurRegion={removeBlurRegion}
         />
-
-        {/* SVG Annotation Layer */}
         <SVGAnnotationLayer
           annotations={annotations}
           activeAnnotationTool={activeAnnotationTool}
@@ -632,8 +591,6 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
             });
           }}
         />
-
-        {/* Toolbar is now integrated inside HTMLImageOverlayLayer */}
       </HTMLCanvasRenderer>
     </motion.div>
   );
@@ -647,7 +604,7 @@ export function getCanvasContainer(): HTMLDivElement | null {
 function isVideoFile(url: string): boolean {
   const videoExtensions = ['.webm', '.mp4', '.mov', '.avi', '.mkv'];
   const lowerUrl = url.toLowerCase();
-  return videoExtensions.some(ext => lowerUrl.includes(ext));
+  return videoExtensions.some((ext) => lowerUrl.includes(ext));
 }
 
 export default function ClientCanvas() {
@@ -674,13 +631,13 @@ export default function ClientCanvas() {
     }
 
     const img = new window.Image();
-    img.crossOrigin = "anonymous";
+    img.crossOrigin = 'anonymous';
 
     const timeoutId = setTimeout(() => {
       if (!img.complete) {
         console.warn('Image load timeout');
         setLoadError(true);
-        setScreenshot({ src: null });
+        useImageStore.getState().setUploadedImageUrl(null, null);
       }
     }, 10000);
 
@@ -693,7 +650,7 @@ export default function ClientCanvas() {
       clearTimeout(timeoutId);
       console.warn('Image load error');
       setLoadError(true);
-      setScreenshot({ src: null });
+      useImageStore.getState().setUploadedImageUrl(null, null);
     };
 
     img.src = screenshot.src;

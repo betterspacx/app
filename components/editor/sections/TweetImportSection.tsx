@@ -135,9 +135,7 @@ function TweetCard({ tweet, theme }: { tweet: TweetData; theme: 'light' | 'dark'
     ? { bg: '#000000', text: '#e7e9ea', secondary: '#71767b', border: '#2f3336' }
     : { bg: '#ffffff', text: '#0f1419', secondary: '#536471', border: '#cfd9de' };
 
-  const avatarUrl = proxyUrl(
-    tweet.user.profile_image_url_https.replace('_normal', '_200x200')
-  );
+  const avatarUrl = proxyUrl(tweet.user.profile_image_url_https.replace('_normal', '_200x200'));
   const displayText = processText(tweet);
   const date = formatDate(tweet.created_at);
 
@@ -158,13 +156,11 @@ function TweetCard({ tweet, theme }: { tweet: TweetData; theme: 'light' | 'dark'
         backgroundColor: colors.bg,
         color: colors.text,
         padding: '20px 24px',
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         width: '100%',
         boxSizing: 'border-box',
       }}
     >
-      {/* Header */}
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
         <img
           src={avatarUrl}
@@ -196,16 +192,12 @@ function TweetCard({ tweet, theme }: { tweet: TweetData; theme: 'light' | 'dark'
             </span>
             {(tweet.user.is_blue_verified || tweet.user.verified) && <VerifiedBadge />}
           </div>
-          <div style={{ color: colors.secondary, fontSize: 14, lineHeight: 1.25 }}>
-            @{tweet.user.screen_name}
-          </div>
+          <div style={{ color: colors.secondary, fontSize: 14, lineHeight: 1.25 }}>@{tweet.user.screen_name}</div>
         </div>
         <div style={{ flexShrink: 0 }}>
           <XLogo color={colors.text} />
         </div>
       </div>
-
-      {/* Tweet text */}
       <div
         style={{
           fontSize: 17,
@@ -218,8 +210,6 @@ function TweetCard({ tweet, theme }: { tweet: TweetData; theme: 'light' | 'dark'
       >
         {displayText}
       </div>
-
-      {/* Media */}
       {photos.length > 0 && (
         <div
           style={{
@@ -249,8 +239,6 @@ function TweetCard({ tweet, theme }: { tweet: TweetData; theme: 'light' | 'dark'
           ))}
         </div>
       )}
-
-      {/* Footer */}
       <div
         style={{
           marginTop: 12,
@@ -323,35 +311,32 @@ export function TweetImportSection() {
   }, [tweetData, tweetTheme]);
 
   // ── Fetch tweet ──
-  const fetchTweet = React.useCallback(
-    async (input: string) => {
-      const id = parseTweetId(input);
-      if (!id) {
-        setError('Enter a valid tweet URL or ID');
-        return;
-      }
+  const fetchTweet = React.useCallback(async (input: string) => {
+    const id = parseTweetId(input);
+    if (!id) {
+      setError('Enter a valid tweet URL or ID');
+      return;
+    }
 
-      setStatus('loading');
-      setError(null);
-      setTweetData(null);
+    setStatus('loading');
+    setError(null);
+    setTweetData(null);
 
-      try {
-        const res = await fetch(`/api/tweet/${id}`);
-        const json = await res.json();
-        if (!res.ok || !json.data) {
-          setError(json.error || 'Tweet not found');
-          setStatus('idle');
-        } else {
-          setTweetData(json.data as TweetData);
-          setStatus('loaded');
-        }
-      } catch {
-        setError('Failed to fetch tweet');
+    try {
+      const res = await fetch(`/api/tweet/${id}`);
+      const json = await res.json();
+      if (!res.ok || !json.data) {
+        setError(json.error || 'Tweet not found');
         setStatus('idle');
+      } else {
+        setTweetData(json.data as TweetData);
+        setStatus('loaded');
       }
-    },
-    []
-  );
+    } catch {
+      setError('Failed to fetch tweet');
+      setStatus('idle');
+    }
+  }, []);
 
   // ── Auto-fetch on paste ──
   const handlePaste = React.useCallback(
@@ -396,9 +381,7 @@ export function TweetImportSection() {
         backgroundColor: captureBg,
       });
 
-      const blob = await new Promise<Blob | null>((resolve) =>
-        canvas.toBlob(resolve, 'image/png')
-      );
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
 
       if (blob) {
         const url = URL.createObjectURL(blob);
@@ -419,171 +402,165 @@ export function TweetImportSection() {
 
   return (
     <>
-    <SectionWrapper title="Add Tweet" defaultOpen={false}>
-      <div className="space-y-2.5">
-        {/* URL input */}
-        <div className="relative">
-          <LinkSquare02Icon size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-          <input
-            type="text"
-            value={urlInput}
-            onChange={(e) => {
-              setUrlInput(e.target.value);
-              if (error) setError(null);
-            }}
-            onPaste={handlePaste}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') fetchTweet(urlInput);
-            }}
-            placeholder="Paste tweet URL or ID\u2026"
-            spellCheck={false}
-            autoComplete="off"
-            className="w-full h-9 pl-8 pr-16 rounded-lg border border-border/50 bg-muted/50 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-primary/40 transition-colors"
-          />
-          {urlInput && (
-            <button
-              onClick={() => { setUrlInput(''); setError(null); setTweetData(null); setStatus('idle'); }}
-              aria-label="Clear input"
-              className="absolute right-[52px] top-1/2 -translate-y-1/2 p-0.5 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
-            >
-              <Cancel01Icon size={12} />
-            </button>
-          )}
-          <button
-            onClick={() => fetchTweet(urlInput)}
-            disabled={status === 'loading' || !urlInput.trim()}
-            aria-label="Fetch tweet"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 h-6 px-2.5 rounded-md bg-primary text-primary-foreground text-[10px] font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-1 focus-visible:ring-primary/40"
-          >
-            {status === 'loading' ? (
-              <Loading03Icon size={12} className="animate-spin" />
-            ) : (
-              'Fetch'
-            )}
-          </button>
-        </div>
-
-        {error && <p className="text-[10px] text-destructive">{error}</p>}
-
-        {/* Loading skeleton */}
-        {status === 'loading' && (
-          <div className="rounded-lg border border-border/30 bg-muted/30 p-3 animate-pulse">
-            <div className="flex gap-2.5 items-center">
-              <div className="w-8 h-8 rounded-full bg-border/40" />
-              <div className="flex-1 min-w-0 space-y-1.5">
-                <div className="h-2.5 w-20 rounded-full bg-border/40" />
-                <div className="h-2 w-14 rounded-full bg-border/40" />
-              </div>
-            </div>
-            <div className="mt-2.5 space-y-1.5">
-              <div className="h-2 w-full rounded-full bg-border/40" />
-              <div className="h-2 w-2/3 rounded-full bg-border/40" />
-            </div>
-          </div>
-        )}
-
-        {/* Tweet loaded */}
-        {tweetData && status !== 'loading' && (
-          <div className="space-y-2.5">
-            {/* Theme toggle + dismiss */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex p-0.5 bg-muted/80 dark:bg-muted/50 rounded-lg border border-border/20">
-                {(['light', 'dark'] as const).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setTweetTheme(t)}
-                    className={cn(
-                      'px-3 py-1 rounded-md text-[10px] font-medium transition-all',
-                      tweetTheme === t
-                        ? 'bg-background dark:bg-accent text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {t === 'light' ? 'Light' : 'Dark'}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => { setTweetData(null); setUrlInput(''); setStatus('idle'); }}
-                aria-label="Remove tweet"
-                className="p-1 rounded-md text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 transition-colors"
-              >
-                <Cancel01Icon size={14} />
-              </button>
-            </div>
-
-            {/* Sidebar preview — renders at TWEET_WIDTH, scaled down to fit */}
-            <div
-              ref={previewWrapRef}
-              className="rounded-lg border border-border/30"
-              style={{
-                overflow: 'hidden',
-                height: previewHeight,
-                backgroundColor: tweetTheme === 'dark' ? '#000000' : '#ffffff',
+      <SectionWrapper title="Add Tweet" defaultOpen={false}>
+        <div className="space-y-2.5">
+          <div className="relative">
+            <LinkSquare02Icon
+              size={14}
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50"
+            />
+            <input
+              type="text"
+              value={urlInput}
+              onChange={(e) => {
+                setUrlInput(e.target.value);
+                if (error) setError(null);
               }}
+              onPaste={handlePaste}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') fetchTweet(urlInput);
+              }}
+              placeholder="Paste tweet URL or ID\u2026"
+              spellCheck={false}
+              autoComplete="off"
+              className="w-full h-9 pl-8 pr-16 rounded-lg border border-border/50 bg-muted/50 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-primary/40 transition-colors"
+            />
+            {urlInput && (
+              <button
+                onClick={() => {
+                  setUrlInput('');
+                  setError(null);
+                  setTweetData(null);
+                  setStatus('idle');
+                }}
+                aria-label="Clear input"
+                className="absolute right-[52px] top-1/2 -translate-y-1/2 p-0.5 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+              >
+                <Cancel01Icon size={12} />
+              </button>
+            )}
+            <button
+              onClick={() => fetchTweet(urlInput)}
+              disabled={status === 'loading' || !urlInput.trim()}
+              aria-label="Fetch tweet"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 h-6 px-2.5 rounded-md bg-primary text-primary-foreground text-[10px] font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:ring-1 focus-visible:ring-primary/40"
             >
+              {status === 'loading' ? <Loading03Icon size={12} className="animate-spin" /> : 'Fetch'}
+            </button>
+          </div>
+
+          {error && <p className="text-[10px] text-destructive">{error}</p>}
+          {status === 'loading' && (
+            <div className="rounded-lg border border-border/30 bg-muted/30 p-3 animate-pulse">
+              <div className="flex gap-2.5 items-center">
+                <div className="w-8 h-8 rounded-full bg-border/40" />
+                <div className="flex-1 min-w-0 space-y-1.5">
+                  <div className="h-2.5 w-20 rounded-full bg-border/40" />
+                  <div className="h-2 w-14 rounded-full bg-border/40" />
+                </div>
+              </div>
+              <div className="mt-2.5 space-y-1.5">
+                <div className="h-2 w-full rounded-full bg-border/40" />
+                <div className="h-2 w-2/3 rounded-full bg-border/40" />
+              </div>
+            </div>
+          )}
+          {tweetData && status !== 'loading' && (
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex p-0.5 bg-muted/80 dark:bg-muted/50 rounded-lg border border-border/20">
+                  {(['light', 'dark'] as const).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setTweetTheme(t)}
+                      className={cn(
+                        'px-3 py-1 rounded-md text-[10px] font-medium transition-all',
+                        tweetTheme === t
+                          ? 'bg-background dark:bg-accent text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      {t === 'light' ? 'Light' : 'Dark'}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => {
+                    setTweetData(null);
+                    setUrlInput('');
+                    setStatus('idle');
+                  }}
+                  aria-label="Remove tweet"
+                  className="p-1 rounded-md text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 transition-colors"
+                >
+                  <Cancel01Icon size={14} />
+                </button>
+              </div>
               <div
-                ref={previewInnerRef}
+                ref={previewWrapRef}
+                className="rounded-lg border border-border/30"
                 style={{
-                  width: TWEET_WIDTH,
-                  transform: `scale(${previewScale})`,
-                  transformOrigin: 'top left',
+                  overflow: 'hidden',
+                  height: previewHeight,
+                  backgroundColor: tweetTheme === 'dark' ? '#000000' : '#ffffff',
                 }}
               >
-                <TweetCard tweet={tweetData} theme={tweetTheme} />
+                <div
+                  ref={previewInnerRef}
+                  style={{
+                    width: TWEET_WIDTH,
+                    transform: `scale(${previewScale})`,
+                    transformOrigin: 'top left',
+                  }}
+                >
+                  <TweetCard tweet={tweetData} theme={tweetTheme} />
+                </div>
               </div>
+              <button
+                onClick={handleAddToCanvas}
+                disabled={status === 'capturing'}
+                className="w-full h-8 rounded-lg text-[11px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 focus-visible:ring-1 focus-visible:ring-primary/40"
+              >
+                {status === 'capturing' ? (
+                  <>
+                    <Loading03Icon size={12} className="animate-spin" />
+                    Adding{'\u2026'}
+                  </>
+                ) : (
+                  'Add to Canvas'
+                )}
+              </button>
             </div>
-
-            {/* Action button */}
-            <button
-              onClick={handleAddToCanvas}
-              disabled={status === 'capturing'}
-              className="w-full h-8 rounded-lg text-[11px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 focus-visible:ring-1 focus-visible:ring-primary/40"
-            >
-              {status === 'capturing' ? (
-                <>
-                  <Loading03Icon size={12} className="animate-spin" />
-                  Adding{'\u2026'}
-                </>
-              ) : (
-                'Add to Canvas'
-              )}
-            </button>
-          </div>
-        )}
-
-        {/* Hint when idle */}
-        {status === 'idle' && !tweetData && !error && (
-          <p className="text-[10px] text-muted-foreground/50 leading-relaxed">
-            Paste any X/Twitter post URL to capture it as a screenshot.
-          </p>
-        )}
-      </div>
-    </SectionWrapper>
-
-    {/* Hidden off-screen capture element at full TWEET_WIDTH (598px) */}
-    {tweetData && (
-      <div
-        aria-hidden
-        style={{
-          position: 'fixed',
-          left: '-99999px',
-          top: 0,
-          pointerEvents: 'none',
-          zIndex: -1,
-        }}
-      >
+          )}
+          {status === 'idle' && !tweetData && !error && (
+            <p className="text-[10px] text-muted-foreground/50 leading-relaxed">
+              Paste any X/Twitter post URL to capture it as a screenshot.
+            </p>
+          )}
+        </div>
+      </SectionWrapper>
+      {tweetData && (
         <div
-          ref={hiddenCaptureRef}
+          aria-hidden
           style={{
-            width: TWEET_WIDTH,
-            backgroundColor: tweetTheme === 'dark' ? '#000000' : '#ffffff',
+            position: 'fixed',
+            left: '-99999px',
+            top: 0,
+            pointerEvents: 'none',
+            zIndex: -1,
           }}
         >
-          <TweetCard tweet={tweetData} theme={tweetTheme} />
+          <div
+            ref={hiddenCaptureRef}
+            style={{
+              width: TWEET_WIDTH,
+              backgroundColor: tweetTheme === 'dark' ? '#000000' : '#ffffff',
+            }}
+          >
+            <TweetCard tweet={tweetData} theme={tweetTheme} />
+          </div>
         </div>
-      </div>
-    )}
+      )}
     </>
   );
 }

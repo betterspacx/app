@@ -88,13 +88,7 @@ export function KeyframeMarker({
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}
     >
-      {/* Inner indicator */}
-      <div
-        className={cn(
-          'absolute inset-[3px] rounded-[1px]',
-          isSelected ? 'bg-white' : 'bg-white/60'
-        )}
-      />
+      <div className={cn('absolute inset-[3px] rounded-[1px]', isSelected ? 'bg-white' : 'bg-white/60')} />
     </div>
   );
 }

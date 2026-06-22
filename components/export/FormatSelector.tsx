@@ -55,19 +55,19 @@ export function FormatSelector({ format, onFormatChange, hasAnimation = false }:
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 flex-1'
               )}
             >
-              <span className={cn(
-                'transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
-                isSelected ? 'text-sm' : 'text-xs'
-              )}>
+              <span
+                className={cn(
+                  'transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
+                  isSelected ? 'text-sm' : 'text-xs'
+                )}
+              >
                 {isSelected ? f.full : f.short}
               </span>
             </button>
           );
         })}
       </div>
-      <p className="text-xs text-muted-foreground">
-        {formats.find((f) => f.value === displayFormat)?.description}
-      </p>
+      <p className="text-xs text-muted-foreground">{formats.find((f) => f.value === displayFormat)?.description}</p>
     </div>
   );
 }

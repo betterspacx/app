@@ -22,7 +22,7 @@ interface FirebaseUser {
 async function verifyToken(idToken: string): Promise<FirebaseUser | null> {
   try {
     const res = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAqF68jH-gwjjULF0kJAQR3imu1gP85hyI`,
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

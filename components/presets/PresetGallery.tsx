@@ -1,547 +1,300 @@
-// Modified by konlyzx (2026) - Added cursor-pointer to preset cards; changed primary colors to blue
+// Modified by konlyzx (2026) - Zero-lag CSS template previews and atomic preset application
 // Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
 
 'use client';
 
 import * as React from 'react';
-import { useImageStore, useEditorStore } from '@/lib/store';
-import { presets, type PresetConfig } from '@/lib/constants/presets';
-import { aspectRatios, type AspectRatioKey } from '@/lib/constants/aspect-ratios';
-import { getBackgroundCSS } from '@/lib/constants/backgrounds';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+import { useImageStore } from '@/lib/store';
+import { presets, type PresetCategory, type PresetConfig } from '@/lib/constants/presets';
 import { cn } from '@/lib/utils';
-import { trackPresetApply } from '@/lib/analytics';
 import { useCustomPresets } from '@/hooks/useCustomPresets';
 import { Delete02Icon } from 'hugeicons-react';
-import { Input } from '@/components/ui/input';
 
 interface PresetGalleryProps {
   onPresetSelect?: (preset: PresetConfig) => void;
 }
 
-// Convert aspect ratio ID to CSS aspect-ratio value
-function getAspectRatioValue(aspectRatioId: AspectRatioKey): string {
-  const ar = aspectRatios.find((a) => a.id === aspectRatioId);
-  if (!ar) return '16 / 9'; // fallback
-  return `${ar.width} / ${ar.height}`;
-}
+const PREVIEW_COUNT = 2;
 
-// Get frame image style (matching Frame3DOverlay.tsx)
-function getFrameImageStyle(
-  borderConfig: PresetConfig['imageBorder'],
-  borderRadius: number
-): React.CSSProperties | null {
-  if (!borderConfig.enabled || borderConfig.type === 'none') {
-    return null;
-  }
+const CATEGORY_ORDER: PresetCategory[] = ['Product Promotion', 'Abstract Shapes', 'Browser'];
 
-  const arcBorderWidth = borderConfig.width || 8;
+const CATEGORY_LABELS: Record<PresetCategory, string> = {
+  'Product Promotion': 'Product promotion',
+  'Abstract Shapes': 'Abstract Shapes',
+  Browser: 'Browser',
+};
 
-  switch (borderConfig.type) {
-    case 'arc-light': {
-      const lightOpacity = borderConfig.opacity ?? 0.5;
-      return {
-        border: `${arcBorderWidth}px solid rgba(255, 255, 255, ${lightOpacity})`,
-        borderRadius: `${borderRadius}px`,
-        overflow: 'hidden',
-        boxSizing: 'border-box' as const,
-      };
-    }
-
-    case 'arc-dark': {
-      const darkOpacity = borderConfig.opacity ?? 0.7;
-      return {
-        border: `${arcBorderWidth}px solid rgba(0, 0, 0, ${darkOpacity})`,
-        borderRadius: `${borderRadius}px`,
-        overflow: 'hidden',
-        boxSizing: 'border-box' as const,
-      };
-    }
-
-    case 'photograph':
-      return {
-        borderWidth: '8px 8px 24px 8px',
-        borderStyle: 'solid' as const,
-        borderColor: 'white',
-        borderRadius: '8px',
-        overflow: 'hidden',
-        boxSizing: 'border-box' as const,
-      };
-
-    default:
-      return {
-        border: `${borderConfig.width}px solid ${borderConfig.color}`,
-        borderRadius: `${borderRadius}px`,
-        overflow: 'hidden',
-        boxSizing: 'border-box' as const,
-      };
-  }
-}
-
-// Build shadow filter for 3D transforms (matching Perspective3DOverlay.tsx)
-function buildShadowFilter(shadow: PresetConfig['imageShadow']): string {
-  if (!shadow.enabled) {
-    return '';
-  }
-
-  const baseBlur = shadow.blur || 25;
-  const baseOffset = Math.max(shadow.offsetX || 0, shadow.offsetY || 0) || 15;
-
-  // Parse shadow color
-  let r = 0, g = 0, b = 0;
-  const colorMatch = shadow.color.match(/rgba?\(([^)]+)\)/);
-
-  if (colorMatch) {
-    const parts = colorMatch[1].split(',').map((s) => s.trim());
-    r = parseInt(parts[0]) || 0;
-    g = parseInt(parts[1]) || 0;
-    b = parseInt(parts[2]) || 0;
-  } else if (shadow.color.startsWith('#')) {
-    const hex = shadow.color.replace('#', '');
-    r = parseInt(hex.slice(0, 2), 16) || 0;
-    g = parseInt(hex.slice(2, 4), 16) || 0;
-    b = parseInt(hex.slice(4, 6), 16) || 0;
-  }
-
-  const shadowR = Math.floor(r * 0.3);
-  const shadowG = Math.floor(g * 0.3);
-  const shadowB = Math.floor(b * 0.3);
-
-  // Create layered shadows for depth
-  const shadows = [
-    `drop-shadow(${baseOffset * 0.5}px ${baseOffset * 0.6}px ${baseBlur * 0.5}px rgba(${shadowR}, ${shadowG}, ${shadowB}, 0.5))`,
-    `drop-shadow(${baseOffset * 0.25}px ${baseOffset * 0.4}px ${baseBlur * 0.75}px rgba(${shadowR}, ${shadowG}, ${shadowB}, 0.35))`,
-    `drop-shadow(${baseOffset * 0.1}px ${baseOffset * 0.2}px ${baseBlur}px rgba(0, 0, 0, 0.25))`,
-  ];
-
-  return shadows.join(' ');
-}
-
-// Check if preset has 3D transform active
-function has3DTransform(perspective3D?: PresetConfig['perspective3D']): boolean {
-  if (!perspective3D) return false;
+const StaticPresetThumbnail = React.memo(function StaticPresetThumbnail({ preset }: { preset: PresetConfig }) {
   return (
-    perspective3D.rotateX !== 0 ||
-    perspective3D.rotateY !== 0 ||
-    perspective3D.rotateZ !== 0 ||
-    perspective3D.translateX !== 0 ||
-    perspective3D.translateY !== 0 ||
-    perspective3D.scale !== 1
-  );
-}
+    <div className="relative overflow-hidden rounded-xl border border-white/8 aspect-[5/4]">
+      <img
+        src={preset.previewImage}
+        alt={preset.name}
+        loading="lazy"
+        draggable={false}
+        className="block w-full h-full object-cover"
+      />
 
-function PresetCard({
+      {preset.isNew && (
+        <span className="absolute right-2 top-2 rounded-md bg-white/90 px-1.5 py-0.5 text-[10px] font-semibold text-black">
+          New
+        </span>
+      )}
+    </div>
+  );
+});
+
+const PresetCardButton = React.memo(function PresetCardButton({
   preset,
   isActive,
-  previewImageUrl,
   onApply,
 }: {
   preset: PresetConfig;
   isActive: boolean;
-  previewImageUrl: string | null;
   onApply: () => void;
 }) {
-  const bgStyle = getBackgroundCSS(preset.backgroundConfig);
-  const frameStyle = getFrameImageStyle(preset.imageBorder, preset.borderRadius);
-  const is3D = has3DTransform(preset.perspective3D);
-  const shadowFilter = is3D ? buildShadowFilter(preset.imageShadow) : '';
-
-  const transform3D = preset.perspective3D
-    ? `translate(${preset.perspective3D.translateX}%, ${preset.perspective3D.translateY}%) scale(${preset.perspective3D.scale}) rotateX(${preset.perspective3D.rotateX}deg) rotateY(${preset.perspective3D.rotateY}deg) rotateZ(${preset.perspective3D.rotateZ}deg)`
-    : 'translate(0%, 0%) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
-
   return (
     <button
+      type="button"
       onClick={onApply}
       className={cn(
-        'w-full rounded-lg border transition-all overflow-hidden text-left cursor-pointer',
-        'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-        isActive
-          ? 'border-blue-500/50 ring-1 ring-blue-500/30'
-          : 'border-border/50 hover:border-border'
+        'group relative min-w-0 shrink-0 w-[200px] text-left outline-none cursor-pointer',
+        'transition-transform duration-150 ease-out',
+        'hover:-translate-y-0.5'
       )}
+      aria-pressed={isActive}
     >
-      <div
-        style={{
-          position: 'relative',
-          aspectRatio: getAspectRatioValue(preset.aspectRatio),
-          overflow: 'hidden',
-          borderRadius: `${preset.backgroundBorderRadius}px`,
-          isolation: 'isolate',
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            ...bgStyle,
-            filter: (preset.backgroundBlur ?? 0) > 0 ? `blur(${preset.backgroundBlur}px)` : undefined,
-            transform: 'scale(1.1)',
-            zIndex: 0,
-          }}
-        />
-
-        {preset.shadowOverlay && (
+      <div className="relative rounded-xl overflow-hidden">
+        <StaticPresetThumbnail preset={preset} />
+        {isActive && (
           <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              opacity: preset.shadowOverlay.opacity,
-              pointerEvents: 'none',
-              zIndex: 5,
-            }}
-          >
-            <img
-              src={preset.shadowOverlay.src}
-              alt=""
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
-          </div>
-        )}
-
-        {previewImageUrl && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              perspective: `${preset.perspective3D?.perspective || 2400}px`,
-              transformStyle: 'preserve-3d',
-              zIndex: 15,
-              pointerEvents: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <div
-              style={{
-                width: '75%',
-                transform: transform3D,
-                transformOrigin: 'center center',
-                willChange: 'transform',
-                transition: 'transform 0.125s linear',
-                filter: shadowFilter || undefined,
-              }}
-            >
-              <div
-                style={{
-                  position: 'relative',
-                  borderRadius: `${preset.borderRadius}px`,
-                  overflow: 'hidden',
-                  ...frameStyle,
-                  boxShadow: preset.imageShadow.enabled && !is3D
-                    ? `${preset.imageShadow.offsetX}px ${preset.imageShadow.offsetY}px ${preset.imageShadow.blur}px ${preset.imageShadow.spread}px ${preset.imageShadow.color}`
-                    : undefined,
-                }}
-              >
-                <img
-                  src={previewImageUrl}
-                  alt={preset.name}
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    display: 'block',
-                    opacity: preset.imageOpacity,
-                    transform: `scale(${preset.imageScale / 100})`,
-                    transformOrigin: 'center center',
-                    borderRadius: frameStyle ? undefined : `${preset.borderRadius}px`,
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!previewImageUrl && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 10,
-            }}
-          >
-            <div className="text-xs text-muted-foreground/50">{preset.name}</div>
-          </div>
+            className="pointer-events-none absolute inset-0 rounded-xl"
+            style={{ boxShadow: 'inset 0 0 0 2px hsl(var(--primary))' }}
+          />
         )}
       </div>
-
-      <div className={cn(
-        "p-3 backdrop-blur-sm border-t",
-        isActive
-          ? "bg-blue-500/5 border-blue-500/20"
-          : "bg-background/95 border-border/50"
-      )}>
-        <div className="flex items-center gap-2">
-          {isActive && (
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
-          )}
-          <div className="text-sm font-medium text-foreground">{preset.name}</div>
-        </div>
-        <div className={cn("text-xs text-muted-foreground mt-0.5", isActive && "ml-3.5")}>{preset.description}</div>
+      <div className="mt-2 px-1">
+        <span className={cn('truncate text-xs font-medium', isActive ? 'text-white' : 'text-white/70')}>
+          {preset.name}
+        </span>
       </div>
     </button>
   );
-}
+});
 
-export function PresetGallery({ onPresetSelect }: PresetGalleryProps) {
-  const {
-    uploadedImageUrl,
-    selectedAspectRatio,
-    backgroundConfig,
-    backgroundBorderRadius,
-    backgroundBlur,
-    backgroundNoise,
-    borderRadius,
-    imageOpacity,
-    imageScale,
-    imageBorder,
-    imageShadow,
-    imageOverlays,
-    perspective3D,
-    setAspectRatio,
-    setBackgroundConfig,
-    setBackgroundType,
-    setBackgroundValue,
-    setBackgroundOpacity,
-    setBorderRadius,
-    setBackgroundBorderRadius,
-    setBackgroundBlur,
-    setBackgroundNoise,
-    setImageOpacity,
-    setImageScale,
-    setImageBorder,
-    setImageShadow,
-    setPerspective3D,
-    addImageOverlay,
-    removeImageOverlay,
-  } = useImageStore();
+gsap.registerPlugin(useGSAP);
 
-  const { screenshot } = useEditorStore();
-  const { customPresets, savePreset, deletePreset } = useCustomPresets();
-  const [showSaveForm, setShowSaveForm] = React.useState(false);
-  const [presetName, setPresetName] = React.useState('');
+const CategorySection = React.memo(function CategorySection({
+  category,
+  allPresets,
+  activePresetId,
+  expanded,
+  onToggle,
+  onApply,
+}: {
+  category: PresetCategory;
+  allPresets: PresetConfig[];
+  activePresetId: string | null;
+  expanded: boolean;
+  onToggle: () => void;
+  onApply: (preset: PresetConfig) => void;
+}) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const isFirstRender = React.useRef(true);
+  const previewPresets = allPresets.slice(0, PREVIEW_COUNT);
+  const extraPresets = allPresets.slice(PREVIEW_COUNT);
+  const hasMore = extraPresets.length > 0;
 
-  const isPresetActive = React.useCallback((preset: PresetConfig) => {
-    return (
-      preset.aspectRatio === selectedAspectRatio &&
-      preset.backgroundConfig.type === backgroundConfig.type &&
-      preset.backgroundConfig.value === backgroundConfig.value &&
-      preset.backgroundBorderRadius === backgroundBorderRadius &&
-      preset.borderRadius === borderRadius &&
-      preset.imageOpacity === imageOpacity &&
-      preset.imageScale === imageScale &&
-      preset.imageBorder.enabled === imageBorder.enabled &&
-      preset.imageShadow.enabled === imageShadow.enabled &&
-      (preset.backgroundBlur ?? 0) === backgroundBlur &&
-      (preset.backgroundNoise ?? 0) === backgroundNoise
-    );
-  }, [
-    selectedAspectRatio,
-    backgroundConfig,
-    backgroundBorderRadius,
-    backgroundBlur,
-    backgroundNoise,
-    borderRadius,
-    imageOpacity,
-    imageScale,
-    imageBorder.enabled,
-    imageShadow.enabled,
-  ]);
-
-  const applyPreset = React.useCallback((preset: PresetConfig) => {
-    trackPresetApply(preset.id, preset.name);
-
-    setBackgroundConfig(preset.backgroundConfig);
-    setBackgroundType(preset.backgroundConfig.type);
-    setBackgroundValue(preset.backgroundConfig.value);
-    setBackgroundOpacity(preset.backgroundConfig.opacity ?? 1);
-    setAspectRatio(preset.aspectRatio);
-    setBorderRadius(preset.borderRadius);
-    setBackgroundBorderRadius(preset.backgroundBorderRadius);
-    setImageOpacity(preset.imageOpacity);
-    setImageScale(preset.imageScale);
-    setImageBorder(preset.imageBorder);
-    setImageShadow(preset.imageShadow);
-    setBackgroundBlur(preset.backgroundBlur ?? 0);
-    setBackgroundNoise(preset.backgroundNoise ?? 0);
-    setPerspective3D(preset.perspective3D ?? {
-      perspective: 2400,
-      rotateX: 0,
-      rotateY: 0,
-      rotateZ: 0,
-      translateX: 0,
-      translateY: 0,
-      scale: 1,
-    });
-
-    imageOverlays.forEach((overlay) => {
-      if (typeof overlay.src === 'string' && overlay.src.includes('overlay-shadow')) {
-        removeImageOverlay(overlay.id);
+  useGSAP(
+    () => {
+      if (!containerRef.current) return;
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+        gsap.set(containerRef.current, { height: 0, opacity: 0 });
+        return;
       }
-    });
-
-    if (preset.shadowOverlay) {
-      addImageOverlay({
-        src: preset.shadowOverlay.src,
-        position: { x: 0, y: 0 },
-        size: 100,
-        rotation: 0,
-        opacity: preset.shadowOverlay.opacity,
-        flipX: false,
-        flipY: false,
-        isVisible: true,
-      });
-    }
-
-    onPresetSelect?.(preset);
-  }, [
-    setAspectRatio,
-    setBackgroundConfig,
-    setBackgroundType,
-    setBackgroundValue,
-    setBackgroundOpacity,
-    setBorderRadius,
-    setBackgroundBorderRadius,
-    setBackgroundBlur,
-    setBackgroundNoise,
-    setImageOpacity,
-    setImageScale,
-    setImageBorder,
-    setImageShadow,
-    setPerspective3D,
-    imageOverlays,
-    addImageOverlay,
-    removeImageOverlay,
-    onPresetSelect,
-  ]);
-
-  const handleSavePreset = React.useCallback(() => {
-    if (!presetName.trim()) return;
-
-    savePreset(presetName.trim(), {
-      aspectRatio: selectedAspectRatio,
-      backgroundConfig,
-      borderRadius,
-      backgroundBorderRadius,
-      imageOpacity,
-      imageScale,
-      imageBorder,
-      imageShadow,
-      backgroundBlur,
-      backgroundNoise,
-      perspective3D,
-    });
-
-    setPresetName('');
-    setShowSaveForm(false);
-  }, [
-    presetName,
-    savePreset,
-    selectedAspectRatio,
-    backgroundConfig,
-    borderRadius,
-    backgroundBorderRadius,
-    imageOpacity,
-    imageScale,
-    imageBorder,
-    imageShadow,
-    backgroundBlur,
-    backgroundNoise,
-    perspective3D,
-  ]);
-
-  const previewImageUrl = uploadedImageUrl || (screenshot?.src ?? null);
+      if (expanded) {
+        gsap.to(containerRef.current, {
+          height: 'auto',
+          opacity: 1,
+          duration: 0.35,
+          ease: 'power3.out',
+        });
+      } else {
+        gsap.to(containerRef.current, {
+          height: 0,
+          opacity: 0,
+          duration: 0.28,
+          ease: 'power3.inOut',
+        });
+      }
+    },
+    { dependencies: [expanded], scope: containerRef }
+  );
 
   return (
-    <div className="space-y-3">
-      {/* Save Current as Preset */}
-      <div>
-        {!showSaveForm ? (
+    <section id={`preset-category-${category}`} className="space-y-3 scroll-mt-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-base font-semibold text-white/86">{CATEGORY_LABELS[category]}</h3>
+        {hasMore && (
           <button
-            onClick={() => setShowSaveForm(true)}
-            className="w-full rounded-lg border-2 border-dashed border-border/60 hover:border-border p-4 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            type="button"
+            onClick={onToggle}
+            className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/86 transition-colors hover:bg-white/16 cursor-pointer"
           >
-            + Save Current as Preset
+            {expanded ? 'Hide' : 'See all'}
           </button>
-        ) : (
-          <div className="flex gap-2">
-            <Input
-              autoFocus
-              type="text"
-              value={presetName}
-              onChange={(e) => setPresetName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSavePreset();
-                if (e.key === 'Escape') { setShowSaveForm(false); setPresetName(''); }
-              }}
-              placeholder="Preset name"
-              className="h-9 text-sm"
-            />
-            <button
-              onClick={handleSavePreset}
-              disabled={!presetName.trim()}
-              className="shrink-0 h-9 px-3 rounded-md bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
-            >
-              Save
-            </button>
-          </div>
         )}
       </div>
 
-      {/* My Presets */}
-      {customPresets.length > 0 && (
-        <>
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-            My Presets
-          </div>
-          {customPresets.map((preset) => (
-            <div key={preset.id} className="group relative">
-              <PresetCard
+      <div className="flex flex-wrap gap-3">
+        {previewPresets.map((preset) => (
+          <PresetCardButton
+            key={preset.id}
+            preset={preset}
+            isActive={activePresetId === preset.id}
+            onApply={() => onApply(preset)}
+          />
+        ))}
+      </div>
+
+      {hasMore && (
+        <div ref={containerRef} className="overflow-hidden">
+          <div className="flex flex-wrap gap-3 pt-0">
+            {extraPresets.map((preset) => (
+              <PresetCardButton
+                key={preset.id}
                 preset={preset}
-                isActive={isPresetActive(preset)}
-                previewImageUrl={previewImageUrl}
-                onApply={() => applyPreset(preset)}
+                isActive={activePresetId === preset.id}
+                onApply={() => onApply(preset)}
               />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deletePreset(preset.id);
-                }}
-                className="absolute top-2 right-2 z-10 p-1.5 rounded-md bg-background/80 backdrop-blur-sm border border-border/50 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
-              >
-                <Delete02Icon size={14} />
-              </button>
-            </div>
-          ))}
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-            Built-in Presets
+            ))}
           </div>
-        </>
+        </div>
+      )}
+    </section>
+  );
+});
+
+export function PresetGallery({ onPresetSelect }: PresetGalleryProps) {
+  const activePresetId = useImageStore((state) => state.activePresetId);
+  const uploadedImageUrl = useImageStore((state) => state.uploadedImageUrl);
+  const applyPresetConfig = useImageStore((state) => state.applyPresetConfig);
+  const { customPresets, deletePreset } = useCustomPresets();
+  const [expanded, setExpanded] = React.useState<Record<string, boolean>>(
+    Object.fromEntries(CATEGORY_ORDER.map((cat) => [cat, false]))
+  );
+  const [toast, setToast] = React.useState<string | null>(null);
+  const toastRef = React.useRef<HTMLDivElement>(null);
+  const toastTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const toggleCategory = React.useCallback((category: string) => {
+    setExpanded((prev) => ({ ...prev, [category]: !prev[category] }));
+  }, []);
+
+  const showToast = React.useCallback((message: string) => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast(message);
+    toastTimer.current = setTimeout(() => setToast(null), 2000);
+  }, []);
+
+  const filteredPresetsByCategory = React.useMemo(() => {
+    const map = new Map<PresetCategory, PresetConfig[]>();
+    for (const cat of CATEGORY_ORDER) {
+      const list = presets.filter((p) => p.category === cat);
+      if (list.length) map.set(cat, list);
+    }
+    return map;
+  }, []);
+
+  const applyPreset = React.useCallback(
+    (preset: PresetConfig) => {
+      applyPresetConfig(preset);
+      onPresetSelect?.(preset);
+      showToast(`${preset.name} applied`);
+    },
+    [applyPresetConfig, onPresetSelect, showToast]
+  );
+
+  useGSAP(
+    () => {
+      if (!toastRef.current) return;
+      if (toast) {
+        gsap.fromTo(toastRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: 'power3.out' });
+      }
+    },
+    { dependencies: [toast] }
+  );
+
+  return (
+    <div className="space-y-6 text-white">
+      {customPresets.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-white/88">My Presets</h3>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {customPresets.map((preset) => (
+              <div key={preset.id} className="group relative">
+                <PresetCardButton
+                  preset={preset}
+                  isActive={activePresetId === preset.id}
+                  onApply={() => applyPreset(preset)}
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deletePreset(preset.id);
+                  }}
+                  className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white/70 opacity-0 transition-opacity hover:text-white group-hover:opacity-100"
+                  aria-label={`Delete ${preset.name}`}
+                >
+                  <Delete02Icon size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
-      {/* Built-in Presets */}
-      {presets.map((preset) => (
-        <PresetCard
-          key={preset.id}
-          preset={preset}
-          isActive={isPresetActive(preset)}
-          previewImageUrl={previewImageUrl}
-          onApply={() => applyPreset(preset)}
-        />
+      {Array.from(filteredPresetsByCategory.entries()).map(([category, categoryPresets], idx) => (
+        <React.Fragment key={category}>
+          {idx > 0 && (
+            <div
+              className="h-px w-full"
+              style={{
+                background:
+                  'linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 30%, rgba(255,255,255,0.12) 70%, transparent)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+              }}
+            />
+          )}
+          <CategorySection
+            category={category as PresetCategory}
+            allPresets={categoryPresets}
+            activePresetId={activePresetId}
+            expanded={!!expanded[category]}
+            onToggle={() => toggleCategory(category)}
+            onApply={applyPreset}
+          />
+        </React.Fragment>
       ))}
 
-      {!uploadedImageUrl && !screenshot?.src && (
-        <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
-          <p className="text-xs text-muted-foreground">
-            Upload an image to see preset previews
-          </p>
+      {!uploadedImageUrl && (
+        <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4 text-center">
+          <p className="text-xs text-white/50">Upload media to apply templates to the canvas.</p>
+        </div>
+      )}
+
+      {toast && (
+        <div
+          ref={toastRef}
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-full bg-primary px-4 py-2 text-sm font-medium text-white shadow-lg"
+        >
+          {toast}
         </div>
       )}
     </div>

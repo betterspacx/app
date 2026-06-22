@@ -28,24 +28,15 @@ export async function POST(request: NextRequest) {
     const qualityPreset = formData.get('qualityPreset') as string | null;
 
     if (!imageFile) {
-      return NextResponse.json(
-        { error: 'Missing image file' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing image file' }, { status: 400 });
     }
 
     if (!format || !isValidFormat(format)) {
-      return NextResponse.json(
-        { error: 'Invalid format. Must be "png", "jpeg", or "webp"' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid format. Must be "png", "jpeg", or "webp"' }, { status: 400 });
     }
 
     if (!qualityPreset || !isValidQualityPreset(qualityPreset)) {
-      return NextResponse.json(
-        { error: 'Invalid qualityPreset. Must be "high", "medium", or "low"' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid qualityPreset. Must be "high", "medium", or "low"' }, { status: 400 });
     }
 
     const inputBuffer = Buffer.from(await imageFile.arrayBuffer());

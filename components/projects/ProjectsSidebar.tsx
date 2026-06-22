@@ -41,8 +41,18 @@ export function ProjectsSidebar({ open, onClose, projects, loading, onLoad, onDe
                 onClick={onClose}
                 className="flex items-center justify-center w-8 h-8 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" x2="6" y1="6" y2="18" /><line x1="6" x2="18" y1="6" y2="18" />
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" x2="6" y1="6" y2="18" />
+                  <line x1="6" x2="18" y1="6" y2="18" />
                 </svg>
               </button>
             </div>
@@ -54,7 +64,17 @@ export function ProjectsSidebar({ open, onClose, projects, loading, onLoad, onDe
                 </div>
               ) : projects.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/30 mb-3">
+                  <svg
+                    width="40"
+                    height="40"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-muted-foreground/30 mb-3"
+                  >
                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
                   </svg>
                   <p className="text-sm text-muted-foreground">No saved projects</p>
@@ -84,7 +104,15 @@ export function ProjectsSidebar({ open, onClose, projects, loading, onLoad, onDe
                           }}
                         />
                       ) : (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/40">
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          className="text-muted-foreground/40"
+                        >
                           <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                           <circle cx="8.5" cy="8.5" r="1.5" />
                           <polyline points="21 15 16 10 5 21" />
@@ -94,13 +122,14 @@ export function ProjectsSidebar({ open, onClose, projects, loading, onLoad, onDe
 
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
                       <p className="text-sm font-medium text-foreground truncate leading-tight">{project.name}</p>
-                      <p className="text-xs text-muted-foreground/60 mt-0.5">
-                        {project.imageName || 'No image'}
-                      </p>
+                      <p className="text-xs text-muted-foreground/60 mt-0.5">{project.imageName || 'No image'}</p>
                       <p className="text-[11px] text-muted-foreground/40 mt-0.5">
                         {new Date(project.updatedAt).toLocaleDateString(undefined, {
-                          month: 'short', day: 'numeric', year: 'numeric',
-                          hour: '2-digit', minute: '2-digit'
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
                         })}
                       </p>
                     </div>
@@ -115,7 +144,10 @@ export function ProjectsSidebar({ open, onClose, projects, loading, onLoad, onDe
                       {confirmDelete === project.id ? (
                         <div className="flex gap-1">
                           <button
-                            onClick={() => { onDelete(project.id); setConfirmDelete(null); }}
+                            onClick={() => {
+                              onDelete(project.id);
+                              setConfirmDelete(null);
+                            }}
                             className="flex-1 px-2 py-1.5 text-xs font-medium rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive transition-all cursor-pointer"
                           >
                             Delete

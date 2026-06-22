@@ -17,8 +17,7 @@ export const TextOverlayRenderer = () => {
             }
           : {};
 
-        const writingMode =
-          overlay.orientation === 'vertical' ? 'vertical-rl' : 'horizontal-tb';
+        const writingMode = overlay.orientation === 'vertical' ? 'vertical-rl' : 'horizontal-tb';
 
         return (
           <div
@@ -46,4 +45,3 @@ export const TextOverlayRenderer = () => {
     </>
   );
 };
-

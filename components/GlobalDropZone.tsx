@@ -171,15 +171,12 @@ export function GlobalDropZone({ children }: GlobalDropZoneProps) {
             className="fixed inset-0 z-[9999] flex items-center justify-center"
             style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
           >
-            {/* Dark overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-background/80"
             />
-
-            {/* Drop zone content */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -187,25 +184,18 @@ export function GlobalDropZone({ children }: GlobalDropZoneProps) {
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className="relative z-10 flex flex-col items-center gap-6"
             >
-              {/* Animated dashed border box */}
               <motion.div
                 className="w-[420px] h-[280px] rounded-2xl flex flex-col items-center justify-center gap-4"
                 style={{
                   border: '2.5px dashed',
                   borderColor: isProcessing ? 'var(--primary)' : 'var(--border)',
-                  background: isProcessing
-                    ? 'hsl(var(--primary) / 0.05)'
-                    : 'hsl(var(--muted) / 0.5)',
+                  background: isProcessing ? 'hsl(var(--primary) / 0.05)' : 'hsl(var(--muted) / 0.5)',
                 }}
                 animate={
                   isProcessing
                     ? {}
                     : {
-                        borderColor: [
-                          'hsl(var(--border))',
-                          'hsl(var(--primary))',
-                          'hsl(var(--border))',
-                        ],
+                        borderColor: ['hsl(var(--border))', 'hsl(var(--primary))', 'hsl(var(--border))'],
                       }
                 }
                 transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -221,7 +211,6 @@ export function GlobalDropZone({ children }: GlobalDropZoneProps) {
                   </>
                 ) : (
                   <>
-                    {/* Animated arrow icon */}
                     <motion.svg
                       width="48"
                       height="48"
@@ -250,18 +239,12 @@ export function GlobalDropZone({ children }: GlobalDropZoneProps) {
                     </motion.svg>
 
                     <div className="text-center">
-                      <p className="text-lg font-semibold text-foreground">
-                        Drop your media here
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        PNG, JPG, WEBP, MP4, WEBM, MOV
-                      </p>
+                      <p className="text-lg font-semibold text-foreground">Drop your media here</p>
+                      <p className="text-sm text-muted-foreground mt-1">PNG, JPG, WEBP, MP4, WEBM, MOV</p>
                     </div>
                   </>
                 )}
               </motion.div>
-
-              {/* Error message */}
               <AnimatePresence>
                 {error && (
                   <motion.div

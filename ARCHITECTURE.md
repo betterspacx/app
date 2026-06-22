@@ -10,32 +10,38 @@ Better Flow is a modern web-based canvas editor built with Next.js 16 and React 
 ## Tech Stack
 
 ### Core Framework
+
 - **Next.js 16** - React framework with App Router
 - **React 19** - UI library with React Compiler enabled
 - **TypeScript** - Type safety throughout the codebase
 
 ### Canvas & Rendering
+
 - **Konva/React-Konva** - 2D canvas rendering engine for user images and overlays
 - **html2canvas** - DOM-to-canvas conversion for background rendering
 - **modern-screenshot** - 3D transform capture for perspective effects
 
 ### State Management
+
 - **Zustand** - Lightweight state management with two main stores:
   - `useImageStore` - Main image and design state (with Zundo undo/redo)
   - `useEditorStore` - Canvas rendering state (synced with image store)
 
 ### Animation & Video
+
 - **Custom Animation Engine** - Keyframe interpolation with 8 easing functions
 - **FFmpeg WASM** - Multi-threaded video encoding (H.264, WebM, GIF)
 - **WebCodecs API** - Hardware-accelerated H.264 encoding with mp4-muxer
 - **MediaRecorder API** - Native WebM recording fallback
 
 ### Styling
+
 - **Tailwind CSS 4** - Utility-first CSS framework
 - **Radix UI** - Accessible component primitives
 - **Hugeicons** - Icon library
 
 ### Image Processing & Storage
+
 - **Cloudflare R2** - Object storage for assets (backgrounds, videos)
 - **IndexedDB** - Client-side storage for drafts and exports
 - **Sharp** - Server-side image processing (dev dependency)
@@ -134,7 +140,9 @@ better-flow/
 The application uses a dual-store pattern with Zustand:
 
 #### 1. Image Store (`useImageStore`)
+
 Manages the main design state:
+
 - Uploaded image URL and metadata
 - Background configuration (gradient, solid, image)
 - Text overlays array
@@ -148,7 +156,9 @@ Manages the main design state:
 - **Slides** (multi-slide support for slideshows)
 
 #### 2. Editor Store (`useEditorStore`)
+
 Manages canvas rendering state:
+
 - Screenshot/image state (for Konva)
 - Background mode (solid/gradient)
 - Shadow configuration
@@ -168,6 +178,7 @@ The canvas rendering uses a hybrid approach:
 3. **Overlay Layer** - Text and image overlays rendered separately, composited on top
 
 This separation allows:
+
 - High-quality background rendering with CSS effects
 - Precise image positioning with Konva
 - Proper layering of overlays above user content
@@ -213,6 +224,7 @@ Images are stored using a hybrid approach:
    - Export preferences
 
 When an image is uploaded:
+
 - A blob URL is created for immediate use
 - The blob is saved to IndexedDB with a unique ID
 - The ID is stored in canvas objects for persistence
@@ -220,17 +232,20 @@ When an image is uploaded:
 ### Component Architecture
 
 #### Layout Components
+
 - `EditorLayout` - Main editor container with responsive panels
 - `EditorLeftPanel` - Left sidebar with controls
 - `EditorRightPanel` - Right sidebar with style options
 - `EditorBottomBar` - Bottom bar with export/actions
 
 #### Canvas Components
+
 - `EditorCanvas` - Wrapper that shows upload UI or canvas
 - `ClientCanvas` - Main Konva canvas renderer (client-only)
 - `CanvasContext` - Context provider for canvas operations
 
 #### Control Components
+
 - `BorderControls` - Border style and configuration
 - `ShadowControls` - Shadow customization
 - `Perspective3DControls` - 3D transform controls
@@ -239,6 +254,7 @@ When an image is uploaded:
 ## Key Features Implementation
 
 ### 1. Image Upload
+
 - **File Upload**: Uses `react-dropzone` for drag-and-drop
 - **Website Screenshot**: API route calls [Screen-Shot.xyz](https://screen-shot.xyz) service
   - Supports desktop (1920x1080) and mobile (375x667) viewport sizes
@@ -248,16 +264,20 @@ When an image is uploaded:
 - **Storage**: Blob URL creation + IndexedDB persistence
 
 ### 2. Background System
+
 Supports three background types:
+
 - **Gradient**: CSS linear gradients with customizable colors and angles
 - **Solid**: Single color backgrounds
 - **Image**: Cloudinary-hosted images or uploaded images
 
 Background effects:
+
 - **Blur**: Applied via CSS filter, captured in export
 - **Noise**: Generated noise texture with overlay blend mode
 
 ### 3. Text Overlays
+
 - Multiple text overlays with independent positioning
 - Custom fonts, colors, sizes, weights
 - Text shadows with customizable properties
@@ -265,12 +285,14 @@ Background effects:
 - Position stored as percentage for responsive scaling
 
 ### 4. Image Overlays
+
 - Decorative overlays from Cloudinary gallery
 - Custom uploaded overlays
 - Position, size, rotation, flip controls
 - Opacity and visibility toggles
 
 ### 5. Image Transformations
+
 - **Scale**: Percentage-based scaling
 - **Opacity**: 0-100% opacity control
 - **Border Radius**: Rounded corners
@@ -279,6 +301,7 @@ Background effects:
 - **3D Perspective**: CSS 3D transforms with perspective
 
 ### 6. Export System
+
 - **Format**: PNG (with transparency support)
 - **Quality**: 0-1 quality slider
 - **Scale**: Up to 5x scaling for high-resolution exports
@@ -286,7 +309,9 @@ Background effects:
 - **Storage**: Exported images saved to IndexedDB
 
 ### 7. Presets
+
 Pre-configured design presets that apply:
+
 - Aspect ratio
 - Background configuration
 - Border and shadow settings
@@ -301,6 +326,7 @@ The animation system enables keyframe-based animations on canvas properties with
 #### Animation Engine (`lib/animation/`)
 
 **Interpolation** (`interpolation.ts`):
+
 - `getInterpolatedProperties()` - Interpolate values between keyframes at a given time
 - `getClipInterpolatedProperties()` - Multi-clip aware interpolation (later clips override earlier)
 - `findSurroundingKeyframes()` - Locate keyframe context for smooth transitions
@@ -314,13 +340,13 @@ The animation system enables keyframe-based animations on canvas properties with
 
 20+ presets organized in 5 categories:
 
-| Category | Presets |
-|----------|---------|
-| Reveal | Hero Landing, Slide In 3D, Rise & Settle, Drop In |
-| Flip | Flip X, Flip Y, Peek |
+| Category    | Presets                                               |
+| ----------- | ----------------------------------------------------- |
+| Reveal      | Hero Landing, Slide In 3D, Rise & Settle, Drop In     |
+| Flip        | Flip X, Flip Y, Peek                                  |
 | Perspective | Showcase Tilt, Isometric, Hover Float, Parallax Drift |
-| Orbit | Orbit Left, Orbit Right, Turntable |
-| Depth | Push Away, Pull Close, Dramatic Zoom, Breathe 3D |
+| Orbit       | Orbit Left, Orbit Right, Turntable                    |
+| Depth       | Push Away, Pull Close, Dramatic Zoom, Breathe 3D      |
 
 #### Timeline Components (`components/timeline/`)
 
@@ -334,6 +360,7 @@ The animation system enables keyframe-based animations on canvas properties with
 #### Playback Engine (`hooks/useTimelinePlayback`)
 
 The playback hook manages the animation loop:
+
 1. Runs via `requestAnimationFrame` to update the playhead every frame
 2. Applies interpolated properties to the store's `perspective3D` and `imageOpacity`
 3. Supports scrubbing (when paused, updates properties on playhead change)
@@ -344,39 +371,39 @@ The playback hook manages the animation loop:
 
 ```typescript
 interface Keyframe {
-  id: string
-  time: number            // milliseconds
-  properties: Partial<AnimatableProperties>
-  easing: EasingFunction
+  id: string;
+  time: number; // milliseconds
+  properties: Partial<AnimatableProperties>;
+  easing: EasingFunction;
 }
 
 interface AnimationTrack {
-  id: string
-  name: string
-  type: 'transform' | 'opacity'
-  keyframes: Keyframe[]
-  isLocked: boolean
-  isVisible: boolean
-  clipId?: string         // Links to animation clip
+  id: string;
+  name: string;
+  type: 'transform' | 'opacity';
+  keyframes: Keyframe[];
+  isLocked: boolean;
+  isVisible: boolean;
+  clipId?: string; // Links to animation clip
 }
 
 interface AnimationClip {
-  id: string
-  presetId: string
-  name: string
-  startTime: number       // ms
-  duration: number        // ms
-  color: string
+  id: string;
+  presetId: string;
+  name: string;
+  startTime: number; // ms
+  duration: number; // ms
+  color: string;
 }
 
 interface TimelineState {
-  duration: number
-  playhead: number
-  isPlaying: boolean
-  isLooping: boolean
-  tracks: AnimationTrack[]
-  zoom: number
-  snapToKeyframes: boolean
+  duration: number;
+  playhead: number;
+  isPlaying: boolean;
+  isLooping: boolean;
+  tracks: AnimationTrack[];
+  zoom: number;
+  snapToKeyframes: boolean;
 }
 ```
 
@@ -412,21 +439,22 @@ Format=MP4   → WebCodecs (if available) → FFmpeg (fallback)
 
 #### Encoders
 
-| Encoder | File | Use Case |
-|---------|------|----------|
-| FFmpeg WASM | `ffmpeg-encoder.ts` | H.264/GIF, multi-threaded via SharedArrayBuffer |
-| WebCodecs | `webcodecs-encoder.ts` | Hardware-accelerated H.264 with mp4-muxer |
-| MediaRecorder | `video-encoder.ts` | Native WebM via browser API |
+| Encoder       | File                   | Use Case                                        |
+| ------------- | ---------------------- | ----------------------------------------------- |
+| FFmpeg WASM   | `ffmpeg-encoder.ts`    | H.264/GIF, multi-threaded via SharedArrayBuffer |
+| WebCodecs     | `webcodecs-encoder.ts` | Hardware-accelerated H.264 with mp4-muxer       |
+| MediaRecorder | `video-encoder.ts`     | Native WebM via browser API                     |
 
 #### Quality Presets
 
 | Quality | Bitrate | CRF |
-|---------|---------|-----|
-| High | 25 Mbps | 18 |
-| Medium | 10 Mbps | 23 |
-| Low | 5 Mbps | 28 |
+| ------- | ------- | --- |
+| High    | 25 Mbps | 18  |
+| Medium  | 10 Mbps | 23  |
+| Low     | 5 Mbps  | 28  |
 
 #### Performance Optimizations
+
 - FFmpeg uses JPEG frames (~5x faster than PNG)
 - WASM binaries cached via Cache API across sessions
 - Streaming frame processing to prevent memory bloat
@@ -490,16 +518,19 @@ ClientCanvas re-renders with new state
 ## Performance Considerations
 
 ### Canvas Rendering
+
 - Konva stage uses `batchDraw()` to minimize redraws
 - Pattern and noise textures are cached
 - Background images are loaded once and reused
 
 ### Export Performance
+
 - Background and overlays exported separately to optimize memory
 - High-resolution exports use scaling instead of large canvas dimensions
 - Export operations are async to prevent UI blocking
 
 ### Image Loading
+
 - Cloudinary images use optimized URLs with auto-format and quality
 - Images are cached in browser cache
 - IndexedDB provides persistent storage for offline access
@@ -531,6 +562,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ## API Routes
 
 ### `/api/upload-url`
+
 - **Method**: POST
 - **Purpose**: Generate presigned R2 upload URLs for Chrome extension
 - **Body**:
@@ -549,6 +581,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
   ```
 
 ### `/api/upload-video`
+
 - **Method**: POST
 - **Purpose**: Direct video upload from Chrome extension to R2
 - **Body**:
@@ -567,15 +600,18 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
   ```
 
 ### `/api/image-proxy`
+
 - **Method**: GET
 - **Purpose**: Proxy R2 images to avoid CORS issues
 - **Query**: `?url=<encoded-r2-url>`
 
 ### `/api/cleanup-cache`
+
 - **Method**: POST
 - **Purpose**: Clear cached images from R2
 
 ### `/api/export`
+
 - **Method**: POST
 - **Purpose**: Server-side image export with FFmpeg
 
@@ -603,6 +639,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ## Dependencies Overview
 
 ### Production Dependencies
+
 - **next** (16.0.1) - React framework
 - **react** (19.2.0) - UI library
 - **konva** (10.0.8) - Canvas library
@@ -615,6 +652,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 - **tailwindcss** (4) - Styling
 
 ### Development Dependencies
+
 - **typescript** (5) - Type checking
 - **sharp** (0.34.4) - Image processing
 - **tsx** (4.20.6) - TypeScript execution
@@ -630,6 +668,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ## Future Architecture Considerations
 
 ### Potential Improvements
+
 1. **Web Workers**: Move heavy export operations to web workers
 2. **Service Worker**: Cache assets and enable offline functionality
 3. **Virtual Scrolling**: For large overlay galleries
@@ -641,16 +680,19 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ## Testing Strategy
 
 ### Unit Tests
+
 - Store logic (Zustand stores)
 - Utility functions (export, image processing)
 - Component logic (hooks)
 
 ### Integration Tests
+
 - Export pipeline
 - Store synchronization
 - Image upload flow
 
 ### E2E Tests
+
 - Complete user workflows
 - Export functionality
 - Cross-browser compatibility
@@ -658,6 +700,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ## Deployment
 
 ### Vercel Configuration
+
 - Serverless functions for API routes
 - Edge functions for static assets
 - Environment variables configured in Vercel dashboard
@@ -669,6 +712,7 @@ npm run build  # Next.js production build
 ```
 
 ### Runtime Configuration
+
 - `vercel.json` configures function timeouts and memory
 - Screenshot API route has 60s timeout (maxDuration) for external API calls
 
@@ -681,4 +725,3 @@ npm run build  # Next.js production build
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed contribution guidelines.
-

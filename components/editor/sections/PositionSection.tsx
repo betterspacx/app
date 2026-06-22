@@ -22,7 +22,7 @@ const positionPresets = [
 export function PositionSection() {
   const { perspective3D, setPerspective3D } = useImageStore();
 
-  const handlePositionPreset = (preset: typeof positionPresets[0]) => {
+  const handlePositionPreset = (preset: (typeof positionPresets)[0]) => {
     setPerspective3D({
       translateX: preset.translateX,
       translateY: preset.translateY,
@@ -32,8 +32,7 @@ export function PositionSection() {
   const getActivePosition = () => {
     return positionPresets.findIndex(
       (p) =>
-        Math.abs(p.translateX - perspective3D.translateX) < 1 &&
-        Math.abs(p.translateY - perspective3D.translateY) < 1
+        Math.abs(p.translateX - perspective3D.translateX) < 1 && Math.abs(p.translateY - perspective3D.translateY) < 1
     );
   };
 
@@ -41,7 +40,6 @@ export function PositionSection() {
 
   return (
     <SectionWrapper title="Position" defaultOpen={false}>
-      {/* Position Grid (3x3) */}
       <div className="flex flex-col items-center">
         <span className="text-xs text-muted-foreground mb-2">Quick Position</span>
         <div className="grid grid-cols-3 gap-1.5 w-24">

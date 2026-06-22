@@ -75,22 +75,26 @@ screenshot-studio/
 ## Coding Standards
 
 ### TypeScript
+
 - Use TypeScript for all new code
 - Avoid `any` — use `unknown` if type is truly unknown
 - Be explicit for function parameters and return types
 
 ### React
+
 - Functional components with hooks only
 - Named exports over default exports
 - `'use client'` directive for client components
 - Keep components focused and single-purpose
 
 ### Styling
+
 - **Always use CSS theme variables** via Tailwind classes (`bg-background`, `text-foreground`, `bg-card`, `border-border`, `bg-primary`, etc.)
 - **Never use hardcoded colors** (`bg-white`, `text-black`, `bg-neutral-*`, hex values)
 - See `app/globals.css` for all available theme tokens
 
 ### File Naming
+
 - Components: `PascalCase.tsx` (e.g., `EditorCanvas.tsx`)
 - Utilities: `kebab-case.ts` (e.g., `export-utils.ts`)
 - Types: PascalCase interfaces (e.g., `CanvasObject`)
@@ -107,12 +111,14 @@ Always run lint before committing.
 ## Common Tasks
 
 ### Adding a New Control
+
 1. Create component in `components/controls/`
 2. Add to the appropriate editor panel
 3. Connect to Zustand store (`lib/store/`)
 4. Update types if needed
 
 ### Adding a Browser Mockup Style
+
 1. Add toolbar component in `components/canvas/frames/BrowserToolbar.tsx`
 2. The toolbar is shared between 2D (`HTMLMainImageLayer`) and 3D (`Frame3DOverlay`) views
 3. Add frame type to `FrameConfig` in `Frame3DOverlay.tsx`
@@ -120,15 +126,18 @@ Always run lint before committing.
 5. Add preview card in `components/editor/sections/BrowserMockupSection.tsx`
 
 ### Adding a New Background
+
 1. Add definition to `lib/constants/backgrounds.ts`
 2. Update `BackgroundConfig` type if needed
 
 ### Adding an Animation Preset
+
 1. Add preset to `lib/animation/presets.ts`
 2. Define keyframes with timing, properties, and easing
 3. Use `clonePresetTracks()` when applying to ensure unique IDs
 
 ### Modifying Export Logic
+
 - Image export: `lib/export/export-service.ts`
 - Video export: `lib/export/video-encoder.ts`, `webcodecs-encoder.ts`, `ffmpeg-encoder.ts`
 
@@ -184,6 +193,7 @@ Before submitting, verify:
 ## Bug Reports
 
 Include:
+
 - Steps to reproduce
 - Expected vs actual behavior
 - Browser, OS, device

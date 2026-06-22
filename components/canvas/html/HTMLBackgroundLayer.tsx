@@ -1,10 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect, useRef } from 'react';
-import {
-  getBackgroundCSS,
-  type BackgroundConfig,
-} from '@/lib/constants/backgrounds';
+import { getBackgroundCSS, type BackgroundConfig } from '@/lib/constants/backgrounds';
 
 interface HTMLBackgroundLayerProps {
   backgroundConfig: BackgroundConfig;
@@ -24,11 +21,7 @@ const RETRY_DELAY = 800;
  * Preload an image URL with retry + cache-busting for R2 404s.
  * Returns the successfully loaded URL (may have cache-bust param).
  */
-function preloadImage(
-  url: string,
-  retries = 0,
-  signal?: AbortSignal
-): Promise<string> {
+function preloadImage(url: string, retries = 0, signal?: AbortSignal): Promise<string> {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
       reject(new DOMException('Aborted', 'AbortError'));
@@ -43,10 +36,10 @@ function preloadImage(
       }
       if (retries < MAX_RETRIES) {
         setTimeout(() => {
-          const bustUrl = url.includes('?')
-            ? `${url}&_r=${Date.now()}`
-            : `${url}?_r=${Date.now()}`;
-          preloadImage(bustUrl, retries + 1, signal).then(resolve).catch(reject);
+          const bustUrl = url.includes('?') ? `${url}&_r=${Date.now()}` : `${url}?_r=${Date.now()}`;
+          preloadImage(bustUrl, retries + 1, signal)
+            .then(resolve)
+            .catch(reject);
         }, RETRY_DELAY);
       } else {
         reject(new Error(`Failed to load: ${url}`));
@@ -81,17 +74,12 @@ export function HTMLBackgroundLayer({
   noiseTexture,
   backgroundNoise,
 }: HTMLBackgroundLayerProps) {
-  const backgroundStyle = useMemo(
-    () => getBackgroundCSS(backgroundConfig),
-    [backgroundConfig]
-  );
+  const backgroundStyle = useMemo(() => getBackgroundCSS(backgroundConfig), [backgroundConfig]);
 
   // Track which layer (A or B) is active for crossfade
   const [activeLayer, setActiveLayer] = useState<'a' | 'b'>('a');
-  const [layerAStyle, setLayerAStyle] =
-    useState<React.CSSProperties>(backgroundStyle);
-  const [layerBStyle, setLayerBStyle] =
-    useState<React.CSSProperties>(backgroundStyle);
+  const [layerAStyle, setLayerAStyle] = useState<React.CSSProperties>(backgroundStyle);
+  const [layerBStyle, setLayerBStyle] = useState<React.CSSProperties>(backgroundStyle);
   const [showTransition, setShowTransition] = useState(false);
   const prevConfigRef = useRef(backgroundConfig);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -109,9 +97,7 @@ export function HTMLBackgroundLayer({
     }
 
     const prev = prevConfigRef.current;
-    const changed =
-      prev.type !== backgroundConfig.type ||
-      prev.value !== backgroundConfig.value;
+    const changed = prev.type !== backgroundConfig.type || prev.value !== backgroundConfig.value;
 
     if (changed) {
       prevConfigRef.current = backgroundConfig;
@@ -195,15 +181,18 @@ export function HTMLBackgroundLayer({
     borderRadius: `${backgroundBorderRadius}px`,
     overflow: 'hidden',
     filter: backgroundBlur > 0 ? `blur(${backgroundBlur}px)` : undefined,
+    transform: backgroundBlur > 0 ? 'translate3d(0, 0, 0) scale(1.04)' : 'translate3d(0, 0, 0)',
+    transformOrigin: 'center center',
+    willChange: backgroundBlur > 0 ? 'opacity, filter, transform' : 'opacity, transform',
+    backfaceVisibility: 'hidden',
+    contain: 'paint',
+    isolation: 'isolate',
   };
 
-  const transitionStyle = showTransition
-    ? `opacity ${TRANSITION_DURATION}ms ease-in-out`
-    : undefined;
+  const transitionStyle = showTransition ? `opacity ${TRANSITION_DURATION}ms ease-in-out` : undefined;
 
   return (
     <>
-      {/* Layer A */}
       <div
         id={activeLayer === 'a' ? 'canvas-background' : undefined}
         style={{
@@ -214,8 +203,6 @@ export function HTMLBackgroundLayer({
           opacity: activeLayer === 'a' ? (layerAStyle.opacity ?? 1) : 0,
         }}
       />
-
-      {/* Layer B */}
       <div
         id={activeLayer === 'b' ? 'canvas-background' : undefined}
         style={{
@@ -226,8 +213,6 @@ export function HTMLBackgroundLayer({
           opacity: activeLayer === 'b' ? (layerBStyle.opacity ?? 1) : 0,
         }}
       />
-
-      {/* Noise overlay */}
       {noiseDataUrl && backgroundNoise > 0 && (
         <div
           id="canvas-noise-overlay"

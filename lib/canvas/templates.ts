@@ -1,15 +1,18 @@
-import type { Template } from "@/types/canvas";
-import { DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from "@/lib/constants";
+import type { Template } from '@/types/canvas';
+import { DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from '@/lib/constants';
 
 export const templates: Template[] = [
   // Solid color templates
   {
-    id: "solid-white",
-    name: "White",
-    description: "Clean white background",
+    id: 'solid-white',
+    name: 'White',
+    description: 'Clean white background',
+    category: 'Minimal',
+    deviceType: 'none',
+    animated: false,
     background: {
-      type: "solid",
-      color: "#ffffff",
+      type: 'solid',
+      color: '#ffffff',
     },
     dimensions: {
       width: DEFAULT_CANVAS_WIDTH,
@@ -17,12 +20,15 @@ export const templates: Template[] = [
     },
   },
   {
-    id: "solid-black",
-    name: "Black",
-    description: "Dark black background",
+    id: 'solid-black',
+    name: 'Black',
+    description: 'Dark black background',
+    category: 'Minimal',
+    deviceType: 'none',
+    animated: false,
     background: {
-      type: "solid",
-      color: "#000000",
+      type: 'solid',
+      color: '#000000',
     },
     dimensions: {
       width: DEFAULT_CANVAS_WIDTH,
@@ -30,12 +36,15 @@ export const templates: Template[] = [
     },
   },
   {
-    id: "solid-gray",
-    name: "Gray",
-    description: "Neutral gray background",
+    id: 'solid-gray',
+    name: 'Gray',
+    description: 'Neutral gray background',
+    category: 'Minimal',
+    deviceType: 'none',
+    animated: false,
     background: {
-      type: "solid",
-      color: "#f5f5f5",
+      type: 'solid',
+      color: '#f5f5f5',
     },
     dimensions: {
       width: DEFAULT_CANVAS_WIDTH,
@@ -44,14 +53,18 @@ export const templates: Template[] = [
   },
   // Gradient templates
   {
-    id: "gradient-blue",
-    name: "Ocean Breeze",
-    description: "Smooth blue gradient",
+    id: 'gradient-blue',
+    name: 'Ocean Breeze',
+    description: 'Smooth blue gradient',
+    category: 'Gradient',
+    deviceType: 'browser',
+    preview: '/demo/demo-1.png',
+    animated: false,
     background: {
-      type: "gradient",
+      type: 'gradient',
       gradient: {
-        type: "linear",
-        colors: ["#4facfe", "#00f2fe"],
+        type: 'linear',
+        colors: ['#4facfe', '#00f2fe'],
         angle: 135,
       },
     },
@@ -61,14 +74,18 @@ export const templates: Template[] = [
     },
   },
   {
-    id: "gradient-purple",
-    name: "Royal Purple",
-    description: "Vibrant purple gradient",
+    id: 'gradient-purple',
+    name: 'Royal Purple',
+    description: 'Vibrant purple gradient',
+    category: 'Gradient',
+    deviceType: 'iphone',
+    preview: '/demo/demo-3.png',
+    animated: true,
     background: {
-      type: "gradient",
+      type: 'gradient',
       gradient: {
-        type: "linear",
-        colors: ["#667eea", "#764ba2"],
+        type: 'linear',
+        colors: ['#667eea', '#764ba2'],
         angle: 45,
       },
     },
@@ -78,14 +95,18 @@ export const templates: Template[] = [
     },
   },
   {
-    id: "gradient-orange",
-    name: "Sunset Glow",
-    description: "Warm orange gradient",
+    id: 'gradient-orange',
+    name: 'Sunset Glow',
+    description: 'Warm orange gradient',
+    category: 'Gradient',
+    deviceType: 'macbook',
+    preview: '/demo/demo-6.png',
+    animated: true,
     background: {
-      type: "gradient",
+      type: 'gradient',
       gradient: {
-        type: "linear",
-        colors: ["#fa709a", "#fee140"],
+        type: 'linear',
+        colors: ['#fa709a', '#fee140'],
         angle: 90,
       },
     },
@@ -96,29 +117,32 @@ export const templates: Template[] = [
   },
   // Abstract shapes templates
   {
-    id: "shapes-circles",
-    name: "Circles",
-    description: "Abstract circular shapes",
+    id: 'shapes-circles',
+    name: 'Circles',
+    description: 'Abstract circular shapes',
+    category: 'Abstract',
+    deviceType: 'none',
+    animated: false,
     background: {
-      type: "shapes",
-      color: "#ffffff",
+      type: 'shapes',
+      color: '#ffffff',
       shapes: [
         {
-          type: "circle",
+          type: 'circle',
           x: 200,
           y: 200,
           width: 300,
           height: 300,
-          color: "#e0e0e0",
+          color: '#e0e0e0',
           opacity: 0.5,
         },
         {
-          type: "circle",
+          type: 'circle',
           x: 1500,
           y: 800,
           width: 400,
           height: 400,
-          color: "#d0d0d0",
+          color: '#d0d0d0',
           opacity: 0.3,
         },
       ],
@@ -129,29 +153,32 @@ export const templates: Template[] = [
     },
   },
   {
-    id: "shapes-squares",
-    name: "Squares",
-    description: "Geometric square patterns",
+    id: 'shapes-squares',
+    name: 'Squares',
+    description: 'Geometric square patterns',
+    category: 'Abstract',
+    deviceType: 'none',
+    animated: false,
     background: {
-      type: "shapes",
-      color: "#f8f9fa",
+      type: 'shapes',
+      color: '#f8f9fa',
       shapes: [
         {
-          type: "rect",
+          type: 'rect',
           x: 100,
           y: 100,
           width: 250,
           height: 250,
-          color: "#e9ecef",
+          color: '#e9ecef',
           opacity: 0.6,
         },
         {
-          type: "rect",
+          type: 'rect',
           x: 1600,
           y: 700,
           width: 300,
           height: 300,
-          color: "#dee2e6",
+          color: '#dee2e6',
           opacity: 0.4,
         },
       ],

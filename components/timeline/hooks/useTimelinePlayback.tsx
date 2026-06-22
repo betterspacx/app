@@ -168,12 +168,7 @@ export function useTimelinePlayback() {
 
     // Always calculate interpolated values, even if no tracks
     // This ensures we reset to defaults when clips are removed or playhead is outside clips
-    const interpolated = getClipInterpolatedProperties(
-      animationClips,
-      tracks,
-      playhead,
-      DEFAULT_ANIMATABLE_PROPERTIES
-    );
+    const interpolated = getClipInterpolatedProperties(animationClips, tracks, playhead, DEFAULT_ANIMATABLE_PROPERTIES);
 
     setPerspective3D({
       perspective: interpolated.perspective,
@@ -188,7 +183,17 @@ export function useTimelinePlayback() {
     if (interpolated.imageOpacity !== undefined) {
       setImageOpacity(interpolated.imageOpacity);
     }
-  }, [playhead, isPlaying, tracks, animationClips, slides, slideshow.defaultDuration, setActiveSlide, setPerspective3D, setImageOpacity]);
+  }, [
+    playhead,
+    isPlaying,
+    tracks,
+    animationClips,
+    slides,
+    slideshow.defaultDuration,
+    setActiveSlide,
+    setPerspective3D,
+    setImageOpacity,
+  ]);
 
   // Reset to defaults when animation clips are removed
   React.useEffect(() => {

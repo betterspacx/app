@@ -14,11 +14,5 @@ interface MockupRendererProps {
  * Supports all mockup types: iPhone, MacBook, iMac, iWatch.
  */
 export function MockupRenderer({ mockup, canvasWidth, canvasHeight }: MockupRendererProps) {
-  return (
-    <HTMLMockupRenderer
-      mockup={mockup}
-      canvasWidth={canvasWidth}
-      canvasHeight={canvasHeight}
-    />
-  );
+  return <HTMLMockupRenderer mockup={mockup} canvasWidth={canvasWidth} canvasHeight={canvasHeight} />;
 }

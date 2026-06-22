@@ -130,9 +130,7 @@ export function useLazyImage({ src, enabled = true, rootMargin = '100px' }: UseL
 // Preload images into cache in small batches, yielding between batches
 // so the main thread stays responsive for visible thumbnails.
 export function preloadImages(srcs: string[], batchSize = 6): void {
-  const remaining = srcs.filter(
-    (src) => !imageCache.has(src) && !loadingPromises.has(src)
-  );
+  const remaining = srcs.filter((src) => !imageCache.has(src) && !loadingPromises.has(src));
   let index = 0;
 
   function loadNextBatch() {

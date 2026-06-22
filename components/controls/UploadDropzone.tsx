@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { useDropzone } from "react-dropzone";
-import { Image01Icon } from "hugeicons-react";
-import { ALLOWED_MEDIA_TYPES, MAX_IMAGE_SIZE } from "@/lib/constants";
-import { useEditorStore, useImageStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { WebsiteScreenshotInput } from "./WebsiteScreenshotInput";
+import * as React from 'react';
+import { useDropzone } from 'react-dropzone';
+import { Image01Icon } from 'hugeicons-react';
+import { ALLOWED_MEDIA_TYPES, MAX_IMAGE_SIZE } from '@/lib/constants';
+import { useEditorStore, useImageStore } from '@/lib/store';
+import { cn } from '@/lib/utils';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { WebsiteScreenshotInput } from './WebsiteScreenshotInput';
 
 export function UploadDropzone() {
   const [isDragActive, setIsDragActive] = React.useState(false);
@@ -21,9 +21,7 @@ export function UploadDropzone() {
       return `File type not supported. Please use images (PNG, JPG, WEBP) or videos (MP4, WEBM, MOV)`;
     }
     if (file.size > MAX_IMAGE_SIZE) {
-      return `File size too large. Maximum size is ${
-        MAX_IMAGE_SIZE / 1024 / 1024
-      }MB`;
+      return `File size too large. Maximum size is ${MAX_IMAGE_SIZE / 1024 / 1024}MB`;
     }
     return null;
   }, []);
@@ -65,14 +63,14 @@ export function UploadDropzone() {
   } = useDropzone({
     onDrop,
     accept: {
-      "image/jpeg": [".jpg", ".jpeg"],
-      "image/png": [".png"],
-      "image/webp": [".webp"],
-      "video/webm": [".webm"],
-      "video/mp4": [".mp4"],
-      "video/quicktime": [".mov"],
-      "video/avi": [".avi"],
-      "video/x-matroska": [".mkv"],
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/webp': ['.webp'],
+      'video/webm': ['.webm'],
+      'video/mp4': ['.mp4'],
+      'video/quicktime': ['.mov'],
+      'video/avi': ['.avi'],
+      'video/x-matroska': ['.mkv'],
     },
     maxSize: MAX_IMAGE_SIZE,
     multiple: true,
@@ -84,20 +82,12 @@ export function UploadDropzone() {
     onDropRejected: (rejectedFiles) => {
       if (rejectedFiles.length > 0) {
         const rejection = rejectedFiles[0];
-        if (rejection.errors.some((e) => e.code === "file-too-large")) {
-          setError(
-            `File size too large. Maximum size is ${
-              MAX_IMAGE_SIZE / 1024 / 1024
-            }MB`
-          );
-        } else if (
-          rejection.errors.some((e) => e.code === "file-invalid-type")
-        ) {
-          setError(
-            `File type not supported. Please use images (PNG, JPG, WEBP) or videos (MP4, WEBM, MOV)`
-          );
+        if (rejection.errors.some((e) => e.code === 'file-too-large')) {
+          setError(`File size too large. Maximum size is ${MAX_IMAGE_SIZE / 1024 / 1024}MB`);
+        } else if (rejection.errors.some((e) => e.code === 'file-invalid-type')) {
+          setError(`File type not supported. Please use images (PNG, JPG, WEBP) or videos (MP4, WEBM, MOV)`);
         } else {
-          setError("Failed to upload file. Please try again.");
+          setError('Failed to upload file. Please try again.');
         }
       }
     },
@@ -108,10 +98,7 @@ export function UploadDropzone() {
     const handlePaste = async (e: ClipboardEvent) => {
       // Don't intercept paste if user is typing in an input/textarea
       const target = e.target as HTMLElement;
-      const isTyping =
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable;
+      const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
 
       if (isTyping) return;
 
@@ -121,7 +108,7 @@ export function UploadDropzone() {
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
 
-        if (item.type.startsWith("image/") || item.type.startsWith("video/")) {
+        if (item.type.startsWith('image/') || item.type.startsWith('video/')) {
           e.preventDefault();
 
           const file = item.getAsFile();
@@ -135,10 +122,10 @@ export function UploadDropzone() {
       }
     };
 
-    document.addEventListener("paste", handlePaste);
+    document.addEventListener('paste', handlePaste);
 
     return () => {
-      document.removeEventListener("paste", handlePaste);
+      document.removeEventListener('paste', handlePaste);
     };
   }, [addImages, handleFile]);
 
@@ -148,9 +135,7 @@ export function UploadDropzone() {
     <div ref={containerRef} className="w-full max-w-lg mx-auto">
       <div className="space-y-6 sm:space-y-8">
         <div className="text-center space-y-3">
-          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
-            Upload Media
-          </h2>
+          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">Upload Media</h2>
           <p className="text-xs sm:text-sm text-muted-foreground px-2">
             Drag and drop, paste, or click to upload an image or video
           </p>
@@ -176,40 +161,30 @@ export function UploadDropzone() {
             <div
               {...getRootProps()}
               className={cn(
-                "relative border-2 border-dashed rounded-lg p-8 sm:p-12 md:p-16",
-                "cursor-pointer transition-all duration-200",
-                "flex flex-col items-center justify-center",
-                "min-h-[240px] sm:min-h-[280px]",
+                'relative border-2 border-dashed rounded-lg p-8 sm:p-12 md:p-16',
+                'cursor-pointer transition-all duration-200',
+                'flex flex-col items-center justify-center',
+                'min-h-[240px] sm:min-h-[280px]',
                 active
-                  ? "border-primary bg-primary/5 scale-[1.01]"
-                  : "border-border hover:border-primary/50 hover:bg-accent/50",
-                error && "border-destructive"
+                  ? 'border-primary bg-primary/5 scale-[1.01]'
+                  : 'border-border hover:border-primary/50 hover:bg-accent/50',
+                error && 'border-destructive'
               )}
             >
               <input {...getInputProps()} />
 
-              <div
-                className={cn(
-                  "mb-4 sm:mb-6 transition-colors",
-                  active ? "text-primary" : "text-muted-foreground"
-                )}
-              >
+              <div className={cn('mb-4 sm:mb-6 transition-colors', active ? 'text-primary' : 'text-muted-foreground')}>
                 <Image01Icon className="size-12 sm:hidden" />
                 <Image01Icon className="size-14 hidden sm:block" />
               </div>
 
               {active ? (
-                <p className="text-sm sm:text-base font-medium text-primary">
-                  Drop media here...
-                </p>
+                <p className="text-sm sm:text-base font-medium text-primary">Drop media here...</p>
               ) : (
                 <div className="space-y-2 text-center px-2">
-                  <p className="text-sm sm:text-base font-medium">
-                    Drag & drop an image or video
-                  </p>
+                  <p className="text-sm sm:text-base font-medium">Drag & drop an image or video</p>
                   <p className="text-xs sm:text-sm text-muted-foreground">
-                    PNG, JPG, WEBP, MP4, WEBM up to{" "}
-                    {MAX_IMAGE_SIZE / 1024 / 1024}MB
+                    PNG, JPG, WEBP, MP4, WEBM up to {MAX_IMAGE_SIZE / 1024 / 1024}MB
                   </p>
                 </div>
               )}

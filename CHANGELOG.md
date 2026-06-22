@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 #### Critical/High Severity Vulnerabilities Fixed
 
 **Next.js**
+
 - Updated from 16.1.6 to 16.2.7
 - Fixed 13+ security vulnerabilities including:
   - WebSocket SSRF (Server-Side Request Forgery)
@@ -19,6 +20,7 @@ All notable changes to this project will be documented in this file.
   - React Server Components vulnerability (CVE-2026-23870)
 
 **eslint-config-next**
+
 - Updated from 16.1.6 to 16.2.7
 - Maintained compatibility with Next.js 16.2.7
 

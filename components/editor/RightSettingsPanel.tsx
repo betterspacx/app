@@ -4,20 +4,11 @@
 'use client';
 
 import * as React from 'react';
-import {
-  RotateSquareIcon,
-  VideoReplayIcon,
-  Delete02Icon,
-  Add01Icon,
-  LayersLogoIcon,
-} from 'hugeicons-react';
-import {
-  TransformsGallery,
-  SectionWrapper,
-  DepthSection,
-} from './sections';
+import { RotateSquareIcon, VideoReplayIcon, Delete02Icon, Add01Icon, LayersLogoIcon } from 'hugeicons-react';
+import { TransformsGallery, SectionWrapper, DepthSection } from './sections';
 import { cn } from '@/lib/utils';
 import { useImageStore, useEditorStore } from '@/lib/store';
+import { TabBar, useTabTransition, type TabItem } from './TabBar';
 import { ANIMATION_PRESETS, CATEGORY_LABELS } from '@/lib/animation/presets';
 import type { AnimationPreset } from '@/types/animation';
 import { Slider } from '@/components/ui/slider';
@@ -36,7 +27,7 @@ function useCanvasAspectRatio(): string {
 
 type RightTabType = 'transforms' | 'animate' | 'layers';
 
-const rightTabs: { id: RightTabType; icon: React.ReactNode; label: string }[] = [
+const rightTabs: TabItem<RightTabType>[] = [
   { id: 'transforms', icon: <RotateSquareIcon size={18} />, label: '3D' },
   { id: 'layers', icon: <LayersLogoIcon size={18} />, label: 'Layers' },
   { id: 'animate', icon: <VideoReplayIcon size={18} />, label: 'Motion' },
@@ -46,9 +37,15 @@ type ControlMode = 'zoom' | 'tilt';
 
 // Snap grid: 3x3 positions mapped to translateX/Y ranges
 const SNAP_POINTS = [
-  { x: -15, y: -15 }, { x: 0, y: -15 }, { x: 15, y: -15 },
-  { x: -15, y: 0 },   { x: 0, y: 0 },   { x: 15, y: 0 },
-  { x: -15, y: 15 },  { x: 0, y: 15 },  { x: 15, y: 15 },
+  { x: -15, y: -15 },
+  { x: 0, y: -15 },
+  { x: 15, y: -15 },
+  { x: -15, y: 0 },
+  { x: 0, y: 0 },
+  { x: 15, y: 0 },
+  { x: -15, y: 15 },
+  { x: 0, y: 15 },
+  { x: 15, y: 15 },
 ];
 const SNAP_THRESHOLD = 2.5; // snap when within this distance
 
@@ -92,20 +89,20 @@ function TransformPreview({ mode }: { mode: ControlMode }) {
   const snapThresholdX = maxOffsetX * 0.08;
   const snapThresholdY = maxOffsetY * 0.08;
 
-  const snapOffset = React.useCallback((rawX: number, rawY: number) => {
-    // Check each grid point (mapped to canvas pixel offsets)
-    for (const point of SNAP_POINTS) {
-      const pointOffsetX = (point.x / 15) * maxOffsetX;
-      const pointOffsetY = (point.y / 15) * maxOffsetY;
-      if (
-        Math.abs(rawX - pointOffsetX) < snapThresholdX &&
-        Math.abs(rawY - pointOffsetY) < snapThresholdY
-      ) {
-        return { x: Math.round(pointOffsetX), y: Math.round(pointOffsetY) };
+  const snapOffset = React.useCallback(
+    (rawX: number, rawY: number) => {
+      // Check each grid point (mapped to canvas pixel offsets)
+      for (const point of SNAP_POINTS) {
+        const pointOffsetX = (point.x / 15) * maxOffsetX;
+        const pointOffsetY = (point.y / 15) * maxOffsetY;
+        if (Math.abs(rawX - pointOffsetX) < snapThresholdX && Math.abs(rawY - pointOffsetY) < snapThresholdY) {
+          return { x: Math.round(pointOffsetX), y: Math.round(pointOffsetY) };
+        }
       }
-    }
-    return { x: Math.round(rawX), y: Math.round(rawY) };
-  }, [maxOffsetX, maxOffsetY, snapThresholdX, snapThresholdY]);
+      return { x: Math.round(rawX), y: Math.round(rawY) };
+    },
+    [maxOffsetX, maxOffsetY, snapThresholdX, snapThresholdY]
+  );
 
   const bind = useDrag(
     ({ first, active, movement: [mx, my] }) => {
@@ -145,12 +142,10 @@ function TransformPreview({ mode }: { mode: ControlMode }) {
   const backgroundStyle = getBackgroundCSS(backgroundConfig);
 
   // Convert pixel offset to percentage for the preview image transform
-  const offsetXPct = canvasDimensions && canvasDimensions.canvasW > 0
-    ? (screenshot.offsetX / canvasDimensions.canvasW) * 100
-    : 0;
-  const offsetYPct = canvasDimensions && canvasDimensions.canvasH > 0
-    ? (screenshot.offsetY / canvasDimensions.canvasH) * 100
-    : 0;
+  const offsetXPct =
+    canvasDimensions && canvasDimensions.canvasW > 0 ? (screenshot.offsetX / canvasDimensions.canvasW) * 100 : 0;
+  const offsetYPct =
+    canvasDimensions && canvasDimensions.canvasH > 0 ? (screenshot.offsetY / canvasDimensions.canvasH) * 100 : 0;
 
   const transformStyle: React.CSSProperties = {
     transform: `translate(${perspective3D.translateX + offsetXPct}%, ${perspective3D.translateY + offsetYPct}%) rotateX(${perspective3D.rotateX}deg) rotateY(${perspective3D.rotateY}deg) rotateZ(${perspective3D.rotateZ}deg) scale(${perspective3D.scale * (imageScale / 100)})`,
@@ -160,13 +155,9 @@ function TransformPreview({ mode }: { mode: ControlMode }) {
 
   // Handle position: zoom mode shows 2D offset, tilt mode shows rotation
   const handleX =
-    mode === 'zoom'
-      ? 50 + (screenshot.offsetX / maxOffsetX) * 50
-      : 50 + (perspective3D.rotateY / 45) * 50;
+    mode === 'zoom' ? 50 + (screenshot.offsetX / maxOffsetX) * 50 : 50 + (perspective3D.rotateY / 45) * 50;
   const handleY =
-    mode === 'zoom'
-      ? 50 + (screenshot.offsetY / maxOffsetY) * 50
-      : 50 - (perspective3D.rotateX / 45) * 50;
+    mode === 'zoom' ? 50 + (screenshot.offsetY / maxOffsetY) * 50 : 50 - (perspective3D.rotateX / 45) * 50;
 
   const previewBorderRadius = Math.round(backgroundBorderRadius * 0.15);
   const previewImageRadius = Math.round(Math.min(borderRadius, 20) * 0.3);
@@ -197,7 +188,6 @@ function TransformPreview({ mode }: { mode: ControlMode }) {
       )}
       style={{ aspectRatio: cssAspectRatio }}
     >
-      {/* Background - same as canvas */}
       <div
         className="absolute inset-0"
         style={{
@@ -205,22 +195,14 @@ function TransformPreview({ mode }: { mode: ControlMode }) {
           borderRadius: `${previewBorderRadius}px`,
         }}
       />
-
-      {/* Snap grid overlay (zoom mode only) */}
       {mode === 'zoom' && (
         <div className="absolute inset-0 pointer-events-none">
-          {/* Center crosshair lines */}
           <div className="absolute left-1/2 top-[12%] bottom-[12%] w-px bg-foreground/15" />
           <div className="absolute top-1/2 left-[12%] right-[12%] h-px bg-foreground/15" />
-
-          {/* Grid lines — horizontal thirds */}
           <div className="absolute left-[12%] right-[12%] top-[25%] h-px bg-foreground/8" />
           <div className="absolute left-[12%] right-[12%] bottom-[25%] h-px bg-foreground/8" />
-          {/* Grid lines — vertical thirds */}
           <div className="absolute top-[12%] bottom-[12%] left-[25%] w-px bg-foreground/8" />
           <div className="absolute top-[12%] bottom-[12%] right-[25%] w-px bg-foreground/8" />
-
-          {/* 3x3 snap dots */}
           {SNAP_POINTS.map((point, i) => {
             const left = 50 + (point.x / 15) * 50;
             const top = 50 + (point.y / 15) * 50;
@@ -243,8 +225,6 @@ function TransformPreview({ mode }: { mode: ControlMode }) {
           })}
         </div>
       )}
-
-      {/* Transform preview - mirrors canvas rendering */}
       <div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
         style={{ perspective: `${perspective3D.perspective}px` }}
@@ -271,8 +251,6 @@ function TransformPreview({ mode }: { mode: ControlMode }) {
           />
         )}
       </div>
-
-      {/* Position indicator handle */}
       <div
         className={cn(
           'absolute w-7 h-7 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none',
@@ -288,8 +266,6 @@ function TransformPreview({ mode }: { mode: ControlMode }) {
       >
         <div className="absolute inset-1 rounded-full border border-background/30" />
       </div>
-
-      {/* Inner border overlay */}
       <div className="absolute inset-0 rounded-xl border border-foreground/5 pointer-events-none" />
     </div>
   );
@@ -359,7 +335,6 @@ function TransformControls() {
 
   return (
     <div className="space-y-3">
-      {/* Zoom / Tilt toggle */}
       <SegmentedControl
         options={[
           { id: 'zoom', label: 'Zoom' },
@@ -369,11 +344,7 @@ function TransformControls() {
         onChange={(v) => setControlMode(v as ControlMode)}
         size="sm"
       />
-
-      {/* Interactive preview */}
       <TransformPreview mode={controlMode} />
-
-      {/* Primary slider based on mode */}
       {controlMode === 'zoom' ? (
         <Slider
           value={[imageScale / 100]}
@@ -387,9 +358,7 @@ function TransformControls() {
       ) : (
         <Slider
           value={[perspective3D.rotateZ]}
-          onValueChange={(value) =>
-            useImageStore.getState().setPerspective3D({ rotateZ: value[0] })
-          }
+          onValueChange={(value) => useImageStore.getState().setPerspective3D({ rotateZ: value[0] })}
           min={-45}
           max={45}
           step={1}
@@ -462,7 +431,6 @@ function AnimationControls() {
 
   return (
     <div className="space-y-3">
-      {/* Status bar */}
       {hasAnimation && (
         <div className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
           <span className="text-xs font-medium text-primary">
@@ -479,16 +447,12 @@ function AnimationControls() {
           </Button>
         </div>
       )}
-
-      {/* Divider */}
       <div className="flex items-center gap-2 pt-1">
         <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
           Animation Presets
         </span>
         <div className="flex-1 h-px" />
       </div>
-
-      {/* Preset categories - same pattern as TransformsGallery */}
       {Object.entries(ANIM_PRESET_BY_CATEGORY).map(([category, presets]) => {
         const isExpanded = expandedCategories.has(category);
         const categoryLabel = CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] || category;
@@ -516,7 +480,14 @@ function AnimationControls() {
                   !isExpanded && '-rotate-90'
                 )}
               >
-                <path d="M3 2L7 5L3 8" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M3 2L7 5L3 8"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
 
@@ -531,16 +502,11 @@ function AnimationControls() {
                       className={cn(
                         'relative w-full rounded-xl overflow-hidden transition-all duration-200 group/card cursor-pointer',
                         'border-2',
-                        isApplied
-                          ? 'border-primary ring-1 ring-primary/20'
-                          : 'border-border/30 hover:border-border/60'
+                        isApplied ? 'border-primary ring-1 ring-primary/20' : 'border-border/30 hover:border-border/60'
                       )}
                       style={{ aspectRatio: cssAspectRatio }}
                     >
-                      {/* Background - matches canvas */}
                       <div className="absolute inset-0" style={backgroundStyle} />
-
-                      {/* Preview */}
                       <div className="absolute inset-0 flex items-center justify-center p-2">
                         {previewImageUrl ? (
                           <div className="w-[85%] h-[85%]">
@@ -560,20 +526,14 @@ function AnimationControls() {
                           <div className="w-[85%] h-[85%] bg-muted-foreground/20 rounded-md border border-border/20" />
                         )}
                       </div>
-
-                      {/* Hover add indicator */}
                       <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center">
                         <div className="bg-foreground/20 backdrop-blur-sm rounded-full p-2">
                           <Add01Icon size={16} className="text-background" />
                         </div>
                       </div>
-
-                      {/* Duration badge */}
                       <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-foreground/60 backdrop-blur-sm rounded-md text-[9px] font-medium text-background/90">
                         {(preset.duration / 1000).toFixed(1)}s
                       </div>
-
-                      {/* Name badge */}
                       <div
                         className={cn(
                           'absolute bottom-0 inset-x-0 flex justify-center pb-1.5 transition-opacity duration-150',
@@ -583,9 +543,7 @@ function AnimationControls() {
                         <span
                           className={cn(
                             'px-2 py-0.5 rounded-full text-[10px] font-medium backdrop-blur-md',
-                            isApplied
-                              ? 'bg-primary/90 text-primary-foreground'
-                              : 'bg-foreground/60 text-background'
+                            isApplied ? 'bg-primary/90 text-primary-foreground' : 'bg-foreground/60 text-background'
                           )}
                         >
                           {preset.name}
@@ -599,13 +557,9 @@ function AnimationControls() {
           </div>
         );
       })}
-
-      {/* Info */}
       {!previewImageUrl && (
         <div className="p-3 rounded-lg bg-custom-muted border border-border text-center">
-          <p className="text-xs text-muted-foreground">
-            Upload an image to see animation previews
-          </p>
+          <p className="text-xs text-muted-foreground">Upload an image to see animation previews</p>
         </div>
       )}
     </div>
@@ -625,70 +579,23 @@ export function RightSettingsPanel() {
     }
   }, [activeRightPanelTab]);
 
-  const [contentKey, setContentKey] = React.useState<RightTabType>(activeTab);
-  const [transitioning, setTransitioning] = React.useState(false);
-
-  React.useEffect(() => {
-    if (activeTab !== contentKey) {
-      setTransitioning(true);
-      const timeout = setTimeout(() => {
-        setContentKey(activeTab);
-        setTransitioning(false);
-      }, 150);
-      return () => clearTimeout(timeout);
-    }
-  }, [activeTab, contentKey]);
+  const { contentKey, transitioning } = useTabTransition(activeTab);
 
   return (
     <div className="w-[240px] h-full bg-custom-muted flex flex-col overflow-hidden border-l border-border/40 shrink-0">
-      {/* Tab Navigation */}
-      <div className="px-2.5 py-2.5 border-b border-border/30 shrink-0">
-        <div className="flex gap-1 p-0.5 bg-custom-muted rounded-lg border border-border/20">
-          {rightTabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  'flex items-center justify-center py-2 px-2 rounded-md cursor-pointer',
-                  'transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
-                  isActive
-                    ? 'bg-background dark:bg-accent text-foreground flex-[1.8] shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground flex-1'
-                )}
-              >
-                <span className="shrink-0">{tab.icon}</span>
-                <span
-                  className={cn(
-                    'text-[11px] font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
-                    isActive
-                      ? 'max-w-[60px] opacity-100 ml-1.5'
-                      : 'max-w-0 opacity-0 ml-0'
-                  )}
-                >
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Scrollable Content */}
+      <TabBar tabs={rightTabs} activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="flex-1 overflow-y-auto scrollbar-hide">
         <div
-          className="p-3 transition-all duration-150 ease-out"
+          className="p-3"
           style={{
             opacity: transitioning ? 0 : 1,
             transform: transitioning ? 'translateY(4px)' : 'translateY(0)',
+            transition: 'opacity 150ms ease-out, transform 150ms ease-out',
           }}
         >
           {contentKey === 'transforms' && (
             <div className="space-y-3">
               <TransformControls />
-
-              {/* Divider */}
               <div className="flex items-center gap-2 pt-1">
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                   Layout Presets

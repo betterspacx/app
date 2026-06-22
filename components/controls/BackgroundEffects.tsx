@@ -5,12 +5,7 @@ import { useImageStore } from '@/lib/store';
 import { Slider } from '@/components/ui/slider';
 
 export function BackgroundEffects() {
-  const {
-    backgroundBlur,
-    backgroundNoise,
-    setBackgroundBlur,
-    setBackgroundNoise,
-  } = useImageStore();
+  const { backgroundBlur, backgroundNoise, setBackgroundBlur, setBackgroundNoise } = useImageStore();
 
   return (
     <div className="space-y-3">

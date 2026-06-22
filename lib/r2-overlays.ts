@@ -11,41 +11,41 @@ import { getR2PublicUrl } from './r2';
  * Arrow overlay paths in R2
  */
 export const ARROW_PATHS = [
-  "overlays/arrow/arrow-1.svg",
-  "overlays/arrow/arrow-2.svg",
-  "overlays/arrow/arrow-3.svg",
-  "overlays/arrow/arrow-4.svg",
-  "overlays/arrow/arrow-5.svg",
-  "overlays/arrow/arrow-6.svg",
-  "overlays/arrow/arrow-7.svg",
-  "overlays/arrow/arrow-8.svg",
-  "overlays/arrow/arrow-9.svg",
-  "overlays/arrow/arrow-10.svg",
+  'overlays/arrow/arrow-1.svg',
+  'overlays/arrow/arrow-2.svg',
+  'overlays/arrow/arrow-3.svg',
+  'overlays/arrow/arrow-4.svg',
+  'overlays/arrow/arrow-5.svg',
+  'overlays/arrow/arrow-6.svg',
+  'overlays/arrow/arrow-7.svg',
+  'overlays/arrow/arrow-8.svg',
+  'overlays/arrow/arrow-9.svg',
+  'overlays/arrow/arrow-10.svg',
 ] as const;
 
 /**
  * Shadow overlay paths in R2
  */
 export const SHADOW_OVERLAY_PATHS = [
-  "overlays/shadow/001.webp",
-  "overlays/shadow/002.webp",
-  "overlays/shadow/007.webp",
-  "overlays/shadow/017.webp",
-  "overlays/shadow/019.webp",
-  "overlays/shadow/023.webp",
-  "overlays/shadow/031.webp",
-  "overlays/shadow/037.webp",
-  "overlays/shadow/041.webp",
-  "overlays/shadow/050.webp",
-  "overlays/shadow/053.webp",
-  "overlays/shadow/057.webp",
-  "overlays/shadow/063.webp",
-  "overlays/shadow/064.webp",
-  "overlays/shadow/082.webp",
-  "overlays/shadow/083.webp",
-  "overlays/shadow/088.webp",
-  "overlays/shadow/097.webp",
-  "overlays/shadow/099.webp",
+  'overlays/shadow/001.webp',
+  'overlays/shadow/002.webp',
+  'overlays/shadow/007.webp',
+  'overlays/shadow/017.webp',
+  'overlays/shadow/019.webp',
+  'overlays/shadow/023.webp',
+  'overlays/shadow/031.webp',
+  'overlays/shadow/037.webp',
+  'overlays/shadow/041.webp',
+  'overlays/shadow/050.webp',
+  'overlays/shadow/053.webp',
+  'overlays/shadow/057.webp',
+  'overlays/shadow/063.webp',
+  'overlays/shadow/064.webp',
+  'overlays/shadow/082.webp',
+  'overlays/shadow/083.webp',
+  'overlays/shadow/088.webp',
+  'overlays/shadow/097.webp',
+  'overlays/shadow/099.webp',
 ] as const;
 
 /**
@@ -53,9 +53,9 @@ export const SHADOW_OVERLAY_PATHS = [
  */
 export const OVERLAY_PATHS = [...ARROW_PATHS, ...SHADOW_OVERLAY_PATHS] as const;
 
-export type ArrowPath = typeof ARROW_PATHS[number];
-export type ShadowOverlayPath = typeof SHADOW_OVERLAY_PATHS[number];
-export type OverlayPath = typeof OVERLAY_PATHS[number];
+export type ArrowPath = (typeof ARROW_PATHS)[number];
+export type ShadowOverlayPath = (typeof SHADOW_OVERLAY_PATHS)[number];
+export type OverlayPath = (typeof OVERLAY_PATHS)[number];
 
 /**
  * Get full R2 URL for an overlay image

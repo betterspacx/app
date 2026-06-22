@@ -1,55 +1,46 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Slider } from '@/components/ui/slider'
-import { useImageStore } from '@/lib/store'
-import { Delete02Icon, ViewIcon, ViewOffSlashIcon } from 'hugeicons-react'
-import { getMockupDefinition } from '@/lib/constants/mockups'
-import Image from 'next/image'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { useImageStore } from '@/lib/store';
+import { Delete02Icon, ViewIcon, ViewOffSlashIcon } from 'hugeicons-react';
+import { getMockupDefinition } from '@/lib/constants/mockups';
+import { CSSDeviceFrame } from './CSSDeviceFrame';
 
 export function MockupControls() {
-  const {
-    mockups,
-    updateMockup,
-    removeMockup,
-    clearMockups,
-  } = useImageStore()
+  const { mockups, updateMockup, removeMockup, clearMockups } = useImageStore();
 
-  const [selectedMockupId, setSelectedMockupId] = useState<string | null>(null)
+  const [selectedMockupId, setSelectedMockupId] = useState<string | null>(null);
 
-  const selectedMockup = mockups.find(
-    (mockup) => mockup.id === selectedMockupId
-  )
+  const selectedMockup = mockups.find((mockup) => mockup.id === selectedMockupId);
 
-  const selectedDefinition = selectedMockup
-    ? getMockupDefinition(selectedMockup.definitionId)
-    : null
+  const selectedDefinition = selectedMockup ? getMockupDefinition(selectedMockup.definitionId) : null;
 
   const handleUpdateSize = (value: number[]) => {
     if (selectedMockup) {
-      updateMockup(selectedMockup.id, { size: value[0] })
+      updateMockup(selectedMockup.id, { size: value[0] });
     }
-  }
+  };
 
   const handleUpdateRotation = (value: number[]) => {
     if (selectedMockup) {
-      updateMockup(selectedMockup.id, { rotation: value[0] })
+      updateMockup(selectedMockup.id, { rotation: value[0] });
     }
-  }
+  };
 
   const handleUpdateOpacity = (value: number[]) => {
     if (selectedMockup) {
-      updateMockup(selectedMockup.id, { opacity: value[0] })
+      updateMockup(selectedMockup.id, { opacity: value[0] });
     }
-  }
+  };
 
   const handleToggleVisibility = (id: string) => {
-    const mockup = mockups.find((m) => m.id === id)
+    const mockup = mockups.find((m) => m.id === id);
     if (mockup) {
-      updateMockup(id, { isVisible: !mockup.isVisible })
+      updateMockup(id, { isVisible: !mockup.isVisible });
     }
-  }
+  };
 
   const handleUpdatePosition = (axis: 'x' | 'y', value: number[]) => {
     if (selectedMockup) {
@@ -58,9 +49,9 @@ export function MockupControls() {
           ...selectedMockup.position,
           [axis]: value[0],
         },
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="space-y-5">
@@ -82,7 +73,7 @@ export function MockupControls() {
           <p className="text-sm font-semibold text-foreground">Manage Mockups</p>
           <div className="space-y-2 max-h-32 overflow-y-auto">
             {mockups.map((mockup) => {
-              const definition = getMockupDefinition(mockup.definitionId)
+              const definition = getMockupDefinition(mockup.definitionId);
               return (
                 <div
                   key={mockup.id}
@@ -97,39 +88,27 @@ export function MockupControls() {
                     variant="ghost"
                     size="sm"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      handleToggleVisibility(mockup.id)
+                      e.stopPropagation();
+                      handleToggleVisibility(mockup.id);
                     }}
                     className="h-6 w-6 p-0"
                   >
-                    {mockup.isVisible ? (
-                      <ViewIcon className="h-3 w-3" />
-                    ) : (
-                      <ViewOffSlashIcon className="h-3 w-3" />
-                    )}
+                    {mockup.isVisible ? <ViewIcon className="h-3 w-3" /> : <ViewOffSlashIcon className="h-3 w-3" />}
                   </Button>
-                  <div className="relative w-8 h-8 shrink-0 rounded overflow-hidden">
+                  <div className="relative w-8 h-8 shrink-0 rounded overflow-hidden flex items-center justify-center bg-muted/50">
                     {definition && (
-                      <Image
-                        src={definition.src}
-                        alt={definition.name}
-                        fill
-                        className="object-cover"
-                        sizes="32px"
-                      />
+                      <CSSDeviceFrame type={definition.type} width={24} height={24 / definition.aspectRatio} />
                     )}
                   </div>
-                  <span className="flex-1 text-xs truncate">
-                    {definition?.name || 'Mockup'}
-                  </span>
+                  <span className="flex-1 text-xs truncate">{definition?.name || 'Mockup'}</span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      removeMockup(mockup.id)
+                      e.stopPropagation();
+                      removeMockup(mockup.id);
                       if (selectedMockupId === mockup.id) {
-                        setSelectedMockupId(null)
+                        setSelectedMockupId(null);
                       }
                     }}
                     className="h-6 w-6 p-0 text-destructive hover:text-destructive"
@@ -137,7 +116,7 @@ export function MockupControls() {
                     <Delete02Icon className="h-3 w-3" />
                   </Button>
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -146,9 +125,7 @@ export function MockupControls() {
       {selectedMockup && selectedDefinition && (
         <div className="space-y-5 border-t pt-5">
           <div className="space-y-5">
-            <p className="text-sm font-semibold text-foreground">
-              Edit Mockup
-            </p>
+            <p className="text-sm font-semibold text-foreground">Edit Mockup</p>
 
             <div className="p-3 rounded-xl bg-muted border border-border">
               <Slider
@@ -217,8 +194,8 @@ export function MockupControls() {
               variant="destructive"
               size="sm"
               onClick={() => {
-                removeMockup(selectedMockup.id)
-                setSelectedMockupId(null)
+                removeMockup(selectedMockup.id);
+                setSelectedMockupId(null);
               }}
               className="w-full h-10 rounded-xl"
             >
@@ -229,6 +206,5 @@ export function MockupControls() {
         </div>
       )}
     </div>
-  )
+  );
 }
-

@@ -1,7 +1,7 @@
-import { useImageStore } from "@/lib/store";
-import { exportSlideFrame, exportSlideFrameAsCanvas } from "./export-slideFrame";
-import { getClipInterpolatedProperties } from "@/lib/animation/interpolation";
-import { DEFAULT_ANIMATABLE_PROPERTIES } from "@/types/animation";
+import { useImageStore } from '@/lib/store';
+import { exportSlideFrame, exportSlideFrameAsCanvas } from './export-slideFrame';
+import { getClipInterpolatedProperties } from '@/lib/animation/interpolation';
+import { DEFAULT_ANIMATABLE_PROPERTIES } from '@/types/animation';
 
 function wait(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -149,11 +149,7 @@ function getActiveSlideAtTime(
 /**
  * Switch active slide and wait until the DOM image is fully updated.
  */
-export async function switchToSlideAndWait(
-  slideId: string,
-  slideSrc: string,
-  settleMs: number = 50
-): Promise<void> {
+export async function switchToSlideAndWait(slideId: string, slideSrc: string, settleMs: number = 50): Promise<void> {
   const { setActiveSlide } = useImageStore.getState();
   setActiveSlide(slideId);
   forceReflow();
@@ -214,7 +210,7 @@ export async function streamSlidesToEncoder(
   let height = 0;
   let globalFrameIndex = 0;
 
-  const slideList: (typeof orderedSlides[number] | null)[] =
+  const slideList: ((typeof orderedSlides)[number] | null)[] =
     orderedSlides.length > 0 ? orderedSlides : uploadedImageUrl ? [null] : [];
 
   for (let si = 0; si < slideList.length; si++) {
@@ -232,7 +228,7 @@ export async function streamSlidesToEncoder(
       height = canvas.height;
     }
 
-    const duration = slide ? (slide.duration || slideshow.defaultDuration || 2) : (slideshow.defaultDuration || 2);
+    const duration = slide ? slide.duration || slideshow.defaultDuration || 2 : slideshow.defaultDuration || 2;
     const frameCount = Math.max(1, Math.round(duration * fps));
 
     // Stream the same canvas for the duration of this slide
@@ -246,7 +242,7 @@ export async function streamSlidesToEncoder(
       }
     }
 
-    onProgress?.((si + 1) / slideList.length * 100);
+    onProgress?.(((si + 1) / slideList.length) * 100);
   }
 
   return { width, height, totalFrames: globalFrameIndex };
@@ -256,16 +252,13 @@ export async function streamSlidesToEncoder(
  * Render animation timeline to frames at specified fps
  * Uses batched processing with UI yields to keep the interface responsive
  */
-export async function renderAnimationToFrames(
-  fps: number = 60,
-  onProgress?: (progress: number) => void
-) {
+export async function renderAnimationToFrames(fps: number = 60, onProgress?: (progress: number) => void) {
   const store = useImageStore.getState();
   const { timeline, animationClips, slides, slideshow, setActiveSlide, setPerspective3D, setImageOpacity } = store;
   const { duration, tracks } = timeline;
 
   if (tracks.length === 0 && slides.length <= 1) {
-    throw new Error("No animation tracks to render");
+    throw new Error('No animation tracks to render');
   }
 
   const frames: { img: HTMLImageElement; duration: number }[] = [];
@@ -294,7 +287,7 @@ export async function renderAnimationToFrames(
           forceReflow();
 
           // Wait for slide image to load and DOM to update
-          const slide = slides.find(s => s.id === targetSlideId);
+          const slide = slides.find((s) => s.id === targetSlideId);
           if (slide) {
             await waitForImageLoad(slide.src, 3000);
             await waitForDOMImageUpdate(slide.src, 3000);
@@ -303,12 +296,7 @@ export async function renderAnimationToFrames(
       }
 
       // Calculate interpolated properties at this time using clip-aware interpolation
-      const interpolated = getClipInterpolatedProperties(
-        animationClips,
-        tracks,
-        time,
-        DEFAULT_ANIMATABLE_PROPERTIES
-      );
+      const interpolated = getClipInterpolatedProperties(animationClips, tracks, time, DEFAULT_ANIMATABLE_PROPERTIES);
 
       // Apply interpolated properties to store
       setPerspective3D({
@@ -341,7 +329,7 @@ export async function renderAnimationToFrames(
 
       // Report progress
       if (onProgress) {
-        onProgress((frameIndex + 1) / totalFrames * 100);
+        onProgress(((frameIndex + 1) / totalFrames) * 100);
       }
 
       // Yield to main thread every BATCH_SIZE frames to keep UI responsive
@@ -370,7 +358,7 @@ export async function streamAnimationToEncoder(
   const { duration, tracks } = timeline;
 
   if (tracks.length === 0 && slides.length <= 1) {
-    throw new Error("No animation tracks to render");
+    throw new Error('No animation tracks to render');
   }
 
   const frameIntervalMs = 1000 / fps;
@@ -397,7 +385,7 @@ export async function streamAnimationToEncoder(
           forceReflow();
 
           // Wait for slide image to load and DOM to update
-          const slide = slides.find(s => s.id === targetSlideId);
+          const slide = slides.find((s) => s.id === targetSlideId);
           if (slide) {
             await waitForImageLoad(slide.src, 3000);
             await waitForDOMImageUpdate(slide.src, 3000);
@@ -406,12 +394,7 @@ export async function streamAnimationToEncoder(
       }
 
       // Calculate interpolated properties at this time using clip-aware interpolation
-      const interpolated = getClipInterpolatedProperties(
-        animationClips,
-        tracks,
-        time,
-        DEFAULT_ANIMATABLE_PROPERTIES
-      );
+      const interpolated = getClipInterpolatedProperties(animationClips, tracks, time, DEFAULT_ANIMATABLE_PROPERTIES);
 
       // Apply interpolated properties to store
       setPerspective3D({
@@ -446,7 +429,7 @@ export async function streamAnimationToEncoder(
 
       // Report progress
       if (onProgress) {
-        onProgress((frameIndex + 1) / totalFrames * 100);
+        onProgress(((frameIndex + 1) / totalFrames) * 100);
       }
 
       // Yield to main thread every BATCH_SIZE frames

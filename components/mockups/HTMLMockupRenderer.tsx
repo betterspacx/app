@@ -3,6 +3,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { useImageStore } from '@/lib/store';
 import { getMockupDefinition } from '@/lib/constants/mockups';
+import { CSSDeviceFrame } from './CSSDeviceFrame';
 import type { Mockup } from '@/types/mockup';
 
 interface HTMLMockupRendererProps {
@@ -17,38 +18,25 @@ export function HTMLMockupRenderer({ mockup, canvasWidth, canvasHeight }: HTMLMo
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [mockupSize, setMockupSize] = useState({ width: 0, height: 0 });
-  const [mockupLoaded, setMockupLoaded] = useState(false);
 
   if (!definition || !mockup.isVisible) return null;
 
-  // Calculate mockup dimensions
-  const handleMockupLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
-    const mockupAspectRatio = img.naturalWidth / img.naturalHeight;
-    const mockupWidth = mockup.size;
-    const mockupHeight = mockupWidth / mockupAspectRatio;
-    setMockupSize({ width: mockupWidth, height: mockupHeight });
-    setMockupLoaded(true);
-  }, [mockup.size]);
-
-  // Calculate screen area dimensions
-  const screenAreaX = definition.screenArea.x * mockupSize.width;
-  const screenAreaY = definition.screenArea.y * mockupSize.height;
-  const screenAreaWidth = definition.screenArea.width * mockupSize.width;
-  const screenAreaHeight = definition.screenArea.height * mockupSize.height;
-  const borderRadius = (definition.screenArea.borderRadius || 0) * mockupSize.width;
+  const mockupWidth = mockup.size;
+  const mockupHeight = mockup.size / definition.aspectRatio;
 
   // Handle drag
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX - mockup.position.x,
-      y: e.clientY - mockup.position.y,
-    });
-  }, [mockup.position.x, mockup.position.y]);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+      setDragStart({
+        x: e.clientX - mockup.position.x,
+        y: e.clientY - mockup.position.y,
+      });
+    },
+    [mockup.position.x, mockup.position.y]
+  );
 
   useEffect(() => {
     if (!isDragging) return;
@@ -81,8 +69,8 @@ export function HTMLMockupRenderer({ mockup, canvasWidth, canvasHeight }: HTMLMo
         position: 'absolute',
         left: `${mockup.position.x}px`,
         top: `${mockup.position.y}px`,
-        width: mockupLoaded ? `${mockupSize.width}px` : 'auto',
-        height: mockupLoaded ? `${mockupSize.height}px` : 'auto',
+        width: `${mockupWidth}px`,
+        height: `${mockupHeight}px`,
         transform: `rotate(${mockup.rotation}deg)`,
         transformOrigin: 'center center',
         opacity: mockup.opacity,
@@ -91,36 +79,8 @@ export function HTMLMockupRenderer({ mockup, canvasWidth, canvasHeight }: HTMLMo
         pointerEvents: 'auto',
       }}
     >
-      {/* Mockup frame image */}
-      <img
-        src={definition.src}
-        alt={definition.name}
-        draggable={false}
-        onLoad={handleMockupLoad}
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'block',
-          position: 'relative',
-          zIndex: 2,
-          pointerEvents: 'none',
-        }}
-      />
-
-      {/* User image clipped to screen area */}
-      {uploadedImageUrl && mockupLoaded && (
-        <div
-          style={{
-            position: 'absolute',
-            left: `${screenAreaX}px`,
-            top: `${screenAreaY}px`,
-            width: `${screenAreaWidth}px`,
-            height: `${screenAreaHeight}px`,
-            borderRadius: `${borderRadius}px`,
-            overflow: 'hidden',
-            zIndex: 1,
-          }}
-        >
+      <CSSDeviceFrame type={definition.type} width={mockupWidth} height={mockupHeight}>
+        {uploadedImageUrl && (
           <img
             src={uploadedImageUrl}
             alt="User content"
@@ -132,8 +92,8 @@ export function HTMLMockupRenderer({ mockup, canvasWidth, canvasHeight }: HTMLMo
               display: 'block',
             }}
           />
-        </div>
-      )}
+        )}
+      </CSSDeviceFrame>
     </div>
   );
 }

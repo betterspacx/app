@@ -79,6 +79,7 @@ next-env.d.ts
 # Project specific
 public/backgrounds
 /scripts
+/extension
 prisma/migrations
 /lib/generated/prisma
 drizzle/migrations

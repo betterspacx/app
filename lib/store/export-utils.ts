@@ -1,12 +1,10 @@
-import { domToCanvas } from "modern-screenshot";
+import { domToCanvas } from 'modern-screenshot';
 
 /**
  * Export image with gradient background from an element
  * @param elementId - The ID of the element to export
  */
-export async function exportImageWithGradient(
-  elementId: string
-): Promise<void> {
+export async function exportImageWithGradient(elementId: string): Promise<void> {
   const element = document.getElementById(elementId);
 
   if (!element) {
@@ -26,13 +24,13 @@ export async function exportImageWithGradient(
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (!blob) {
-          reject(new Error("Failed to create blob from canvas"));
+          reject(new Error('Failed to create blob from canvas'));
           return;
         }
 
         // Create download link
         const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         link.href = url;
         link.download = `image-${Date.now()}.png`;
         document.body.appendChild(link);
@@ -42,10 +40,10 @@ export async function exportImageWithGradient(
         // Clean up
         URL.revokeObjectURL(url);
         resolve();
-      }, "image/png");
+      }, 'image/png');
     });
   } catch (error) {
-    console.error("Export failed:", error);
+    console.error('Export failed:', error);
     throw error;
   }
 }

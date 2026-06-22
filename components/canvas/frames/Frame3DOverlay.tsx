@@ -4,7 +4,20 @@ import { SafariToolbar, ChromeToolbar } from './BrowserToolbar';
 
 export interface FrameConfig {
   enabled: boolean;
-  type: 'none' | 'arc-light' | 'arc-dark' | 'macos-light' | 'macos-dark' | 'windows-light' | 'windows-dark' | 'photograph' | 'glass-light' | 'glass-dark' | 'outline-light' | 'border-light' | 'border-dark';
+  type:
+    | 'none'
+    | 'arc-light'
+    | 'arc-dark'
+    | 'macos-light'
+    | 'macos-dark'
+    | 'windows-light'
+    | 'windows-dark'
+    | 'photograph'
+    | 'glass-light'
+    | 'glass-dark'
+    | 'outline-light'
+    | 'border-light'
+    | 'border-dark';
   width: number;
   color: string;
   padding?: number;
@@ -16,10 +29,7 @@ export interface FrameConfig {
  * Returns CSS styles for frames to be applied directly to the image element.
  * This ensures the border wraps the image properly with overflow:hidden.
  */
-export function getFrameImageStyle(
-  frame: FrameConfig,
-  screenshotRadius: number
-): React.CSSProperties | null {
+export function getFrameImageStyle(frame: FrameConfig, screenshotRadius: number): React.CSSProperties | null {
   const arcBorderWidth = frame.width || 8;
 
   switch (frame.type) {
@@ -73,12 +83,7 @@ interface Frame3DOverlayProps {
   screenshotRadius: number;
 }
 
-export function Frame3DOverlay({
-  frame,
-  showFrame,
-  windowHeader,
-  screenshotRadius,
-}: Frame3DOverlayProps) {
+export function Frame3DOverlay({ frame, showFrame, windowHeader, screenshotRadius }: Frame3DOverlayProps) {
   if (!showFrame || frame.type === 'none') {
     return null;
   }
@@ -101,11 +106,25 @@ export function Frame3DOverlay({
 
     case 'macos-light':
     case 'macos-dark':
-      return <SafariToolbar windowHeader={windowHeader} isDark={isDark} title={frame.title} screenshotRadius={screenshotRadius} />;
+      return (
+        <SafariToolbar
+          windowHeader={windowHeader}
+          isDark={isDark}
+          title={frame.title}
+          screenshotRadius={screenshotRadius}
+        />
+      );
 
     case 'windows-light':
     case 'windows-dark':
-      return <ChromeToolbar windowHeader={windowHeader} isDark={isDark} title={frame.title} screenshotRadius={screenshotRadius} />;
+      return (
+        <ChromeToolbar
+          windowHeader={windowHeader}
+          isDark={isDark}
+          title={frame.title}
+          screenshotRadius={screenshotRadius}
+        />
+      );
 
     default:
       return null;

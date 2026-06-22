@@ -2,13 +2,7 @@
 
 import * as React from 'react';
 import { Clock01Icon } from 'hugeicons-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
 interface ComingSoonDialogProps {
@@ -18,12 +12,7 @@ interface ComingSoonDialogProps {
   description?: string;
 }
 
-export function ComingSoonDialog({
-  open,
-  onOpenChange,
-  feature,
-  description,
-}: ComingSoonDialogProps) {
+export function ComingSoonDialog({ open, onOpenChange, feature, description }: ComingSoonDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -31,9 +20,7 @@ export function ComingSoonDialog({
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <Clock01Icon className="h-8 w-8 text-primary" />
           </div>
-          <DialogTitle className="text-xl">
-            {feature} Coming Soon
-          </DialogTitle>
+          <DialogTitle className="text-xl">{feature} Coming Soon</DialogTitle>
           <DialogDescription className="text-center">
             {description || `We're working hard to bring you ${feature.toLowerCase()}. Stay tuned for updates!`}
           </DialogDescription>

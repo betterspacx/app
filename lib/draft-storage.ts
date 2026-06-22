@@ -91,7 +91,7 @@ function getDB(): Promise<IDBDatabase> {
 
 export async function saveDraft(
   editorState: OmitFunctions<EditorState>,
-  imageState: OmitFunctions<ImageState>,
+  imageState: OmitFunctions<ImageState>
 ): Promise<void> {
   try {
     const db = await getDB();
@@ -177,7 +177,11 @@ export async function migrateFromLocalStorage(): Promise<void> {
       localStorage.removeItem('stage-draft');
     }
   } catch {
-    try { localStorage.removeItem('stage-draft'); } catch { /* ignore */ }
+    try {
+      localStorage.removeItem('stage-draft');
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -192,7 +196,9 @@ export async function getStorageUsage(): Promise<{ used: number; quota: number; 
       const percentage = quota > 0 ? Math.round((used / quota) * 100) : 0;
       return { used, quota, percentage };
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return { used: 0, quota: 0, percentage: 0 };
 }
 
@@ -215,7 +221,9 @@ export async function getDraftSize(): Promise<number> {
     if (draft) {
       return new Blob([JSON.stringify(draft)]).size;
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return 0;
 }
 
@@ -233,10 +241,7 @@ export async function getStorageInfo(): Promise<{
   quota: string;
   percentage: number;
 }> {
-  const [draftSize, storage] = await Promise.all([
-    getDraftSize(),
-    getStorageUsage(),
-  ]);
+  const [draftSize, storage] = await Promise.all([getDraftSize(), getStorageUsage()]);
 
   return {
     draftSize: formatBytes(draftSize),

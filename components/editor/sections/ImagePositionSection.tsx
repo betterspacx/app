@@ -34,7 +34,17 @@ function PositionIcon({ x, y }: { x: number; y: number }) {
 
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" className="block">
-      <rect x="0.5" y="0.5" width="17" height="17" rx="2" fill="none" stroke="currentColor" strokeWidth="0.8" opacity={0.3} />
+      <rect
+        x="0.5"
+        y="0.5"
+        width="17"
+        height="17"
+        rx="2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.8"
+        opacity={0.3}
+      />
       <rect
         x={cx - rectW / 2}
         y={cy - rectH / 2}
@@ -54,7 +64,7 @@ export function ImagePositionSection() {
 
   const [activePosition, setActivePosition] = React.useState<PositionKey>('auto');
 
-  const handlePosition = (pos: typeof positions[number]) => {
+  const handlePosition = (pos: (typeof positions)[number]) => {
     if (!canvasDimensions) return;
 
     const { canvasW, canvasH, framedW, framedH } = canvasDimensions;
@@ -94,7 +104,6 @@ export function ImagePositionSection() {
   return (
     <SectionWrapper title="Position" defaultOpen={true}>
       <div className="grid grid-cols-5 gap-1 p-1">
-        {/* AUTO button - spans first column */}
         <button
           type="button"
           onClick={() => handlePosition(positions[0])}
@@ -102,13 +111,11 @@ export function ImagePositionSection() {
             'col-span-2 flex items-center justify-center rounded-md h-8 text-[10px] font-semibold tracking-wide transition-all',
             activePosition === 'auto'
               ? 'bg-primary/15 text-primary ring-1 ring-primary/30'
-              : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
+              : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
           )}
         >
           AUTO
         </button>
-
-        {/* 3x3 position grid */}
         {positions.slice(1).map((pos) => (
           <button
             key={pos.key}
@@ -119,7 +126,7 @@ export function ImagePositionSection() {
               'flex items-center justify-center rounded-md h-8 transition-all',
               activePosition === pos.key
                 ? 'bg-primary/15 text-primary ring-1 ring-primary/30'
-                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
+                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             )}
           >
             <PositionIcon x={pos.x} y={pos.y} />

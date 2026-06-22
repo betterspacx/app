@@ -27,11 +27,7 @@ function createKeyframe(
 }
 
 // Helper to create a track
-function createTrack(
-  name: string,
-  type: 'transform' | 'opacity',
-  keyframes: Keyframe[]
-): AnimationTrack {
+function createTrack(name: string, type: 'transform' | 'opacity', keyframes: Keyframe[]): AnimationTrack {
   return {
     id: generateId('track'),
     name,

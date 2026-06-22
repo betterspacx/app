@@ -22,7 +22,7 @@ function ShadowPreview({ shadow, selected }: { shadow: string; selected: boolean
         'relative w-full aspect-square rounded-xl overflow-hidden transition-all duration-200',
         selected
           ? 'ring-2 ring-primary ring-offset-2 ring-offset-card shadow-lg shadow-primary/10'
-          : 'ring-1 ring-white/10 hover:ring-white/20',
+          : 'ring-1 ring-white/10 hover:ring-white/20'
       )}
       style={{ backgroundColor: 'rgb(45, 45, 50)' }}
     >
@@ -59,7 +59,7 @@ export function ShadowSection() {
               <span
                 className={cn(
                   'text-[10px] leading-tight transition-colors',
-                  isSelected ? 'text-foreground font-medium' : 'text-muted-foreground group-hover:text-foreground/70',
+                  isSelected ? 'text-foreground font-medium' : 'text-muted-foreground group-hover:text-foreground/70'
                 )}
               >
                 {label}

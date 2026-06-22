@@ -12,14 +12,7 @@ interface TiltJoystickProps {
   className?: string;
 }
 
-export function TiltJoystick({
-  value,
-  onChange,
-  onToggle,
-  maxTilt = 30,
-  size = 72,
-  className,
-}: TiltJoystickProps) {
+export function TiltJoystick({ value, onChange, onToggle, maxTilt = 30, size = 72, className }: TiltJoystickProps) {
   const baseRef = React.useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = React.useState(false);
 
@@ -82,7 +75,6 @@ export function TiltJoystick({
 
   return (
     <div className={cn('flex flex-col items-center gap-2', className)}>
-      {/* Tilt Toggle Button */}
       <button
         onClick={onToggle || handleReset}
         className={cn(
@@ -94,8 +86,6 @@ export function TiltJoystick({
       >
         Tilt
       </button>
-
-      {/* Joystick Base - Thick white ring with dark center */}
       <div
         ref={baseRef}
         onDoubleClick={handleReset}
@@ -106,7 +96,6 @@ export function TiltJoystick({
           padding: borderWidth,
         }}
       >
-        {/* Inner dark area */}
         <div
           className="absolute rounded-full bg-foreground dark:bg-background"
           style={{
@@ -114,8 +103,6 @@ export function TiltJoystick({
             height: size - borderWidth * 2,
           }}
         />
-
-        {/* Knob */}
         <div
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}

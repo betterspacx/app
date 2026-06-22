@@ -15,21 +15,9 @@ interface TimelineTrackProps {
   onSelectKeyframe: (keyframeId: string | null) => void;
 }
 
-export function TimelineTrack({
-  track,
-  width,
-  selectedKeyframeId,
-  onSelectKeyframe,
-}: TimelineTrackProps) {
-  const {
-    timeline,
-    updateTrack,
-    removeTrack,
-    updateKeyframe,
-    removeKeyframe,
-    addKeyframe,
-    setPlayhead,
-  } = useImageStore();
+export function TimelineTrack({ track, width, selectedKeyframeId, onSelectKeyframe }: TimelineTrackProps) {
+  const { timeline, updateTrack, removeTrack, updateKeyframe, removeKeyframe, addKeyframe, setPlayhead } =
+    useImageStore();
 
   const { duration } = timeline;
   const trackColor = track.type === 'transform' ? 'border-l-blue-500' : 'border-l-amber-500';
@@ -67,11 +55,8 @@ export function TimelineTrack({
 
   return (
     <div className="flex">
-      {/* Track label */}
       <div className="w-28 shrink-0 flex items-center gap-1 px-2 py-1 bg-card border-b border-r border-border/30">
-        <span className="text-[10px] font-medium text-foreground/70 truncate flex-1">
-          {track.name}
-        </span>
+        <span className="text-[10px] font-medium text-foreground/70 truncate flex-1">{track.name}</span>
         <Button
           variant="ghost"
           size="icon"
@@ -105,8 +90,6 @@ export function TimelineTrack({
           <Delete02Icon size={12} />
         </Button>
       </div>
-
-      {/* Track timeline area */}
       <div
         className={cn(
           'relative h-8 bg-muted/50 border-b border-border/30 border-l-2 cursor-pointer',
@@ -116,7 +99,6 @@ export function TimelineTrack({
         style={{ width }}
         onClick={handleTrackClick}
       >
-        {/* Keyframes */}
         {track.keyframes.map((keyframe) => {
           const position = (keyframe.time / duration) * width;
           return (
@@ -134,13 +116,9 @@ export function TimelineTrack({
             />
           );
         })}
-
-        {/* Double-click hint */}
         {track.keyframes.length === 0 && !track.isLocked && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span className="text-[9px] text-foreground/30 italic">
-              Double-click to add keyframe
-            </span>
+            <span className="text-[9px] text-foreground/30 italic">Double-click to add keyframe</span>
           </div>
         )}
       </div>

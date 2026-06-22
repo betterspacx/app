@@ -37,20 +37,19 @@ function shortenEnd(x1: number, y1: number, x2: number, y2: number, offset: numb
 }
 
 /** Get tangent angle at the end of a quadratic bezier */
-function quadraticEndAngle(
-  _p0x: number, _p0y: number,
-  cx: number, cy: number,
-  p1x: number, p1y: number,
-) {
+function quadraticEndAngle(_p0x: number, _p0y: number, cx: number, cy: number, p1x: number, p1y: number) {
   return Math.atan2(p1y - cy, p1x - cx);
 }
 
 /** Shorten a quadratic bezier's endpoint by `offset` along the end tangent */
 function shortenQuadEnd(
-  p0x: number, p0y: number,
-  ctrlX: number, ctrlY: number,
-  p1x: number, p1y: number,
-  offset: number,
+  p0x: number,
+  p0y: number,
+  ctrlX: number,
+  ctrlY: number,
+  p1x: number,
+  p1y: number,
+  offset: number
 ) {
   const angle = quadraticEndAngle(p0x, p0y, ctrlX, ctrlY, p1x, p1y);
   return {
@@ -61,8 +60,20 @@ function shortenQuadEnd(
 
 // ── Arrow head ───────────────────────────────────────────────────────────────
 
-function ArrowHead({ x, y, angle, color, size, strokeW }: {
-  x: number; y: number; angle: number; color: string; size: number; strokeW: number;
+function ArrowHead({
+  x,
+  y,
+  angle,
+  color,
+  size,
+  strokeW,
+}: {
+  x: number;
+  y: number;
+  angle: number;
+  color: string;
+  size: number;
+  strokeW: number;
 }) {
   const halfAngle = Math.PI / 7.2;
   const p1x = x - size * Math.cos(angle - halfAngle);
@@ -91,12 +102,12 @@ const HANDLE_STYLE: React.CSSProperties = {
   filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.18))',
 };
 
-function Handle({ cx: x, cy: y, primary, filled }: {
-  cx: number; cy: number; primary: string; filled?: boolean;
-}) {
+function Handle({ cx: x, cy: y, primary, filled }: { cx: number; cy: number; primary: string; filled?: boolean }) {
   return (
     <circle
-      cx={x} cy={y} r={5}
+      cx={x}
+      cy={y}
+      r={5}
       fill={filled ? primary : 'white'}
       stroke={filled ? 'white' : primary}
       strokeWidth={2}
@@ -105,13 +116,22 @@ function Handle({ cx: x, cy: y, primary, filled }: {
   );
 }
 
-function DraggableHandle({ cx: x, cy: y, primary, onDrag }: {
-  cx: number; cy: number; primary: string;
+function DraggableHandle({
+  cx: x,
+  cy: y,
+  primary,
+  onDrag,
+}: {
+  cx: number;
+  cy: number;
+  primary: string;
   onDrag: (e: React.PointerEvent) => void;
 }) {
   return (
     <circle
-      cx={x} cy={y} r={6}
+      cx={x}
+      cy={y}
+      r={6}
       fill={primary}
       stroke="white"
       strokeWidth={2}
@@ -130,9 +150,7 @@ function DraggableHandle({ cx: x, cy: y, primary, onDrag }: {
 
 // ── Delete button on selected annotation ────────────────────────────────────
 
-function AnnotationDeleteButton({ x, y, onDelete }: {
-  x: number; y: number; onDelete: () => void;
-}) {
+function AnnotationDeleteButton({ x, y, onDelete }: { x: number; y: number; onDelete: () => void }) {
   return (
     <g
       style={{ cursor: 'pointer', pointerEvents: 'auto' }}
@@ -142,7 +160,9 @@ function AnnotationDeleteButton({ x, y, onDelete }: {
       }}
     >
       <circle
-        cx={x} cy={y} r={12}
+        cx={x}
+        cy={y}
+        r={12}
         fill="hsl(0, 84%, 60%)"
         stroke="white"
         strokeWidth={2}
@@ -177,7 +197,16 @@ function getDeleteButtonPos(a: AnnotationShape, canvasW: number, canvasH: number
 
 const DRAG_THRESHOLD = 3; // px before drag actually starts
 
-function AnnotationElement({ annotation, isSelected, isHovered, onSelect, onDragStart, onControlDrag, onEndpointDrag, onHover }: {
+function AnnotationElement({
+  annotation,
+  isSelected,
+  isHovered,
+  onSelect,
+  onDragStart,
+  onControlDrag,
+  onEndpointDrag,
+  onHover,
+}: {
   annotation: AnnotationShape;
   isSelected: boolean;
   isHovered: boolean;
@@ -194,9 +223,8 @@ function AnnotationElement({ annotation, isSelected, isHovered, onSelect, onDrag
 
   // Hover glow — subtle brightness when hovering (not selected)
   const hoverOpacity = isHovered && !isSelected ? Math.min(1, opacity + 0.15) : opacity;
-  const groupStyle: React.CSSProperties = isHovered && !isSelected
-    ? { filter: 'drop-shadow(0 0 3px rgba(0,0,0,0.15))' }
-    : {};
+  const groupStyle: React.CSSProperties =
+    isHovered && !isSelected ? { filter: 'drop-shadow(0 0 3px rgba(0,0,0,0.15))' } : {};
 
   const commonProps = {
     stroke: strokeColor,
@@ -259,12 +287,28 @@ function AnnotationElement({ annotation, isSelected, isHovered, onSelect, onDrag
           <ArrowHead x={x2} y={y2} angle={endAngle} color={strokeColor} size={headSize} strokeW={strokeWidth} />
           {isSelected && (
             <>
-              <line x1={x1} y1={y1} x2={ctrlX} y2={ctrlY}
-                stroke={sel} strokeWidth={0.75} strokeDasharray="4 3" opacity={0.4}
-                style={{ pointerEvents: 'none' }} />
-              <line x1={ctrlX} y1={ctrlY} x2={x2} y2={y2}
-                stroke={sel} strokeWidth={0.75} strokeDasharray="4 3" opacity={0.4}
-                style={{ pointerEvents: 'none' }} />
+              <line
+                x1={x1}
+                y1={y1}
+                x2={ctrlX}
+                y2={ctrlY}
+                stroke={sel}
+                strokeWidth={0.75}
+                strokeDasharray="4 3"
+                opacity={0.4}
+                style={{ pointerEvents: 'none' }}
+              />
+              <line
+                x1={ctrlX}
+                y1={ctrlY}
+                x2={x2}
+                y2={y2}
+                stroke={sel}
+                strokeWidth={0.75}
+                strokeDasharray="4 3"
+                opacity={0.4}
+                style={{ pointerEvents: 'none' }}
+              />
               {onEndpointDrag && (
                 <>
                   <DraggableHandle cx={x1} cy={y1} primary={sel} onDrag={(e) => onEndpointDrag('p1', e)} />
@@ -302,14 +346,21 @@ function AnnotationElement({ annotation, isSelected, isHovered, onSelect, onDrag
       const rh = Math.abs(y2 - y1);
       return (
         <g style={groupStyle}>
-          {/* Wider hit area for the rectangle outline */}
           <rect x={rx} y={ry} width={rw} height={rh} {...hitProps} />
           <rect x={rx} y={ry} width={rw} height={rh} {...commonProps} />
           {isSelected && (
             <>
-              <rect x={rx} y={ry} width={rw} height={rh}
-                fill="none" stroke={sel} strokeWidth={1.5} strokeDasharray="6 3"
-                style={{ pointerEvents: 'none' }} />
+              <rect
+                x={rx}
+                y={ry}
+                width={rw}
+                height={rh}
+                fill="none"
+                stroke={sel}
+                strokeWidth={1.5}
+                strokeDasharray="6 3"
+                style={{ pointerEvents: 'none' }}
+              />
               {onEndpointDrag && (
                 <>
                   <DraggableHandle cx={x1} cy={y1} primary={sel} onDrag={(e) => onEndpointDrag('p1', e)} />
@@ -332,9 +383,17 @@ function AnnotationElement({ annotation, isSelected, isHovered, onSelect, onDrag
           <ellipse cx={ecx} cy={ecy} rx={erx} ry={ery} {...commonProps} />
           {isSelected && (
             <>
-              <ellipse cx={ecx} cy={ecy} rx={erx} ry={ery}
-                fill="none" stroke={sel} strokeWidth={1.5} strokeDasharray="6 3"
-                style={{ pointerEvents: 'none' }} />
+              <ellipse
+                cx={ecx}
+                cy={ecy}
+                rx={erx}
+                ry={ery}
+                fill="none"
+                stroke={sel}
+                strokeWidth={1.5}
+                strokeDasharray="6 3"
+                style={{ pointerEvents: 'none' }}
+              />
               {onEndpointDrag && (
                 <>
                   <DraggableHandle cx={x1} cy={y1} primary={sel} onDrag={(e) => onEndpointDrag('p1', e)} />
@@ -372,23 +431,32 @@ export function SVGAnnotationLayer({
 
   const [drawing, setDrawing] = useState<{
     type: AnnotationToolType;
-    x1: number; y1: number; x2: number; y2: number;
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
   } | null>(null);
 
   // Drag with threshold: only starts moving after DRAG_THRESHOLD px
   const [dragging, setDragging] = useState<{
     annotationId: string;
-    startX: number; startY: number;
-    origX1: number; origY1: number;
-    origX2: number; origY2: number;
-    origCx?: number; origCy?: number;
+    startX: number;
+    startY: number;
+    origX1: number;
+    origY1: number;
+    origX2: number;
+    origY2: number;
+    origCx?: number;
+    origCy?: number;
     hasMoved: boolean;
   } | null>(null);
 
   const [ctrlDragging, setCtrlDragging] = useState<{
     annotationId: string;
-    startX: number; startY: number;
-    origCx: number; origCy: number;
+    startX: number;
+    startY: number;
+    origCx: number;
+    origCy: number;
   } | null>(null);
 
   const getSVGPoint = useCallback(
@@ -463,7 +531,10 @@ export function SVGAnnotationLayer({
 
         addAnnotation({
           type,
-          x1, y1, x2, y2,
+          x1,
+          y1,
+          x2,
+          y2,
           cx: curveX,
           cy: curveY,
           strokeColor: annotationDefaults.strokeColor,
@@ -487,10 +558,14 @@ export function SVGAnnotationLayer({
       const pt = getSVGPoint(e);
       setDragging({
         annotationId,
-        startX: pt.x, startY: pt.y,
-        origX1: annotation.x1, origY1: annotation.y1,
-        origX2: annotation.x2, origY2: annotation.y2,
-        origCx: annotation.cx, origCy: annotation.cy,
+        startX: pt.x,
+        startY: pt.y,
+        origX1: annotation.x1,
+        origY1: annotation.y1,
+        origX2: annotation.x2,
+        origY2: annotation.y2,
+        origCx: annotation.cx,
+        origCy: annotation.cy,
         hasMoved: false,
       });
     },
@@ -514,12 +589,14 @@ export function SVGAnnotationLayer({
       }
 
       if (!dragging.hasMoved) {
-        setDragging((prev) => prev ? { ...prev, hasMoved: true } : null);
+        setDragging((prev) => (prev ? { ...prev, hasMoved: true } : null));
       }
 
       const updates: Partial<AnnotationShape> = {
-        x1: dragging.origX1 + dx, y1: dragging.origY1 + dy,
-        x2: dragging.origX2 + dx, y2: dragging.origY2 + dy,
+        x1: dragging.origX1 + dx,
+        y1: dragging.origY1 + dy,
+        x2: dragging.origX2 + dx,
+        y2: dragging.origY2 + dy,
       };
       if (dragging.origCx !== undefined && dragging.origCy !== undefined) {
         updates.cx = dragging.origCx + dx;
@@ -581,8 +658,10 @@ export function SVGAnnotationLayer({
   const [endpointDragging, setEndpointDragging] = useState<{
     annotationId: string;
     endpoint: 'p1' | 'p2';
-    startX: number; startY: number;
-    origX: number; origY: number;
+    startX: number;
+    startY: number;
+    origX: number;
+    origY: number;
   } | null>(null);
 
   const handleEndpointDragStart = useCallback(
@@ -614,9 +693,8 @@ export function SVGAnnotationLayer({
       const dy = py - endpointDragging.startY;
       const newX = endpointDragging.origX + dx;
       const newY = endpointDragging.origY + dy;
-      const updates: Partial<AnnotationShape> = endpointDragging.endpoint === 'p1'
-        ? { x1: newX, y1: newY }
-        : { x2: newX, y2: newY };
+      const updates: Partial<AnnotationShape> =
+        endpointDragging.endpoint === 'p1' ? { x1: newX, y1: newY } : { x2: newX, y2: newY };
       updateAnnotation(endpointDragging.annotationId, updates);
     };
     const handleUp = () => setEndpointDragging(null);
@@ -665,7 +743,10 @@ export function SVGAnnotationLayer({
       return (
         <g>
           <rect
-            x={rx} y={ry} width={rw} height={rh}
+            x={rx}
+            y={ry}
+            width={rw}
+            height={rh}
             fill="hsl(var(--primary) / 0.06)"
             stroke="hsl(var(--primary) / 0.5)"
             strokeWidth={1.5}
@@ -673,7 +754,10 @@ export function SVGAnnotationLayer({
             rx={4}
           />
           <rect
-            x={rx + 1} y={ry + 1} width={Math.max(0, rw - 2)} height={Math.max(0, rh - 2)}
+            x={rx + 1}
+            y={ry + 1}
+            width={Math.max(0, rw - 2)}
+            height={Math.max(0, rh - 2)}
             fill="none"
             stroke="hsl(var(--primary) / 0.15)"
             strokeWidth={0.5}
@@ -735,9 +819,11 @@ export function SVGAnnotationLayer({
         pointerEvents: 'none',
       }}
     >
-      {/* Background rect — captures drawing when tool active, deselects when not */}
       <rect
-        x={0} y={0} width={canvasW} height={canvasH}
+        x={0}
+        y={0}
+        width={canvasW}
+        height={canvasH}
         fill="transparent"
         style={{
           pointerEvents: isToolActive || selectedId ? 'auto' : 'none',
@@ -763,32 +849,30 @@ export function SVGAnnotationLayer({
           onSelect={() => setSelectedId(annotation.id)}
           onDragStart={(e) => handleDragStart(annotation.id, e)}
           onControlDrag={
-            annotation.type === 'curved-arrow'
-              ? (e) => handleControlDragStart(annotation.id, e)
-              : undefined
+            annotation.type === 'curved-arrow' ? (e) => handleControlDragStart(annotation.id, e) : undefined
           }
           onEndpointDrag={(endpoint, e) => handleEndpointDragStart(annotation.id, endpoint, e)}
           onHover={(h) => setHoveredId(h ? annotation.id : null)}
         />
       ))}
       {renderDrawingPreview()}
-
-      {/* Delete button on selected annotation */}
-      {selectedId && !isToolActive && (() => {
-        const selected = annotations.find(a => a.id === selectedId);
-        if (!selected) return null;
-        const pos = getDeleteButtonPos(selected, canvasW, canvasH);
-        return (
-          <AnnotationDeleteButton
-            x={pos.x}
-            y={pos.y}
-            onDelete={() => {
-              removeAnnotation(selectedId);
-              setSelectedId(null);
-            }}
-          />
-        );
-      })()}
+      {selectedId &&
+        !isToolActive &&
+        (() => {
+          const selected = annotations.find((a) => a.id === selectedId);
+          if (!selected) return null;
+          const pos = getDeleteButtonPos(selected, canvasW, canvasH);
+          return (
+            <AnnotationDeleteButton
+              x={pos.x}
+              y={pos.y}
+              onDelete={() => {
+                removeAnnotation(selectedId);
+                setSelectedId(null);
+              }}
+            />
+          );
+        })()}
     </svg>
   );
 }

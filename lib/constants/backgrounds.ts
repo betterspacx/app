@@ -45,9 +45,7 @@ export const getBackgroundStyle = (config: BackgroundConfig): string => {
   }
 };
 
-export const getBackgroundCSS = (
-  config: BackgroundConfig
-): React.CSSProperties => {
+export const getBackgroundCSS = (config: BackgroundConfig): React.CSSProperties => {
   const { type, value, opacity = 1 } = config;
 
   switch (type) {

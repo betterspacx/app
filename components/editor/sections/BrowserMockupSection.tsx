@@ -6,9 +6,14 @@ import { Slider } from '@/components/ui/slider';
 import { SectionWrapper } from './SectionWrapper';
 import { cn } from '@/lib/utils';
 
-type BrowserStyle = 'safari' | 'safari-dark' | 'chrome' | 'chrome-dark';
+type BrowserStyle = 'none' | 'safari' | 'safari-dark' | 'chrome' | 'chrome-dark';
 
-const browserStyles: { value: BrowserStyle; label: string; frameType: 'macos-light' | 'macos-dark' | 'windows-light' | 'windows-dark' }[] = [
+const browserStyles: {
+  value: BrowserStyle;
+  label: string;
+  frameType: 'none' | 'macos-light' | 'macos-dark' | 'windows-light' | 'windows-dark';
+}[] = [
+  { value: 'none', label: 'None', frameType: 'none' },
   { value: 'safari', label: 'Safari', frameType: 'macos-light' },
   { value: 'safari-dark', label: 'Safari Dark', frameType: 'macos-dark' },
   { value: 'chrome', label: 'Chrome', frameType: 'windows-light' },
@@ -16,19 +21,44 @@ const browserStyles: { value: BrowserStyle; label: string; frameType: 'macos-lig
 ];
 
 const frameToStyle: Record<string, BrowserStyle> = {
+  none: 'none',
   'macos-light': 'safari',
   'macos-dark': 'safari-dark',
   'windows-light': 'chrome',
   'windows-dark': 'chrome-dark',
 };
 
+function NonePreview({ selected }: { selected: boolean }) {
+  return (
+    <div
+      className={cn(
+        'relative w-full aspect-square rounded-lg overflow-hidden transition-all flex items-center justify-center',
+        selected ? 'ring-[1.5px] ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border/50'
+      )}
+      style={{ backgroundColor: 'rgb(40, 40, 44)' }}
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="rgba(255,255,255,0.3)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      >
+        <line x1="4" y1="4" x2="20" y2="20" />
+        <line x1="20" y1="4" x2="4" y2="20" />
+      </svg>
+    </div>
+  );
+}
+
 function BrowserPreview({ style, selected }: { style: BrowserStyle; selected: boolean }) {
+  if (style === 'none') return <NonePreview selected={selected} />;
   const isDark = style === 'safari-dark' || style === 'chrome-dark';
   const isSafari = style === 'safari' || style === 'safari-dark';
 
-  const titleBarBg = isDark
-    ? (isSafari ? '#3A3A3C' : '#202124')
-    : (isSafari ? '#F6F6F6' : '#DEE1E6');
+  const titleBarBg = isDark ? (isSafari ? '#3A3A3C' : '#202124') : isSafari ? '#F6F6F6' : '#DEE1E6';
   const activeBg = isDark ? '#292A2D' : '#FFFFFF';
   const contentBg = isDark ? '#1E1E1E' : '#FFFFFF';
   const outerBg = isDark ? 'rgb(60, 60, 65)' : 'rgb(210, 210, 214)';
@@ -37,15 +67,19 @@ function BrowserPreview({ style, selected }: { style: BrowserStyle; selected: bo
     <div
       className={cn(
         'relative w-full aspect-square rounded-lg overflow-hidden transition-all',
-        selected ? 'ring-[1.5px] ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border/50',
+        selected ? 'ring-[1.5px] ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border/50'
       )}
       style={{ backgroundColor: outerBg }}
     >
       <div
         className="absolute overflow-hidden rounded-[5px]"
         style={{
-          top: '19.5%', left: '19.5%', width: '95.5%', height: '95.5%',
-          display: 'flex', flexDirection: 'column',
+          top: '19.5%',
+          left: '19.5%',
+          width: '95.5%',
+          height: '95.5%',
+          display: 'flex',
+          flexDirection: 'column',
           boxShadow: isDark
             ? '0 2px 8px rgba(0,0,0,0.3), inset 0 0.5px 0 rgba(255,255,255,0.08)'
             : '0 2px 8px rgba(0,0,0,0.18)',
@@ -54,7 +88,6 @@ function BrowserPreview({ style, selected }: { style: BrowserStyle; selected: bo
       >
         {isSafari ? (
           <>
-            {/* Safari: single title bar */}
             <div
               style={{
                 background: titleBarBg,
@@ -73,7 +106,6 @@ function BrowserPreview({ style, selected }: { style: BrowserStyle; selected: bo
           </>
         ) : (
           <>
-            {/* Chrome: tab bar + address bar */}
             <div
               style={{
                 background: titleBarBg,
@@ -85,17 +117,33 @@ function BrowserPreview({ style, selected }: { style: BrowserStyle; selected: bo
                 paddingLeft: '8%',
               }}
             >
-              <div style={{ display: 'flex', gap: '2px', position: 'absolute', top: '50%', left: '8%', transform: 'translateY(-50%)' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '2px',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '8%',
+                  transform: 'translateY(-50%)',
+                }}
+              >
                 <div style={{ width: '3.5px', height: '3.5px', borderRadius: '50%', backgroundColor: '#ff5f57' }} />
                 <div style={{ width: '3.5px', height: '3.5px', borderRadius: '50%', backgroundColor: '#febc2e' }} />
                 <div style={{ width: '3.5px', height: '3.5px', borderRadius: '50%', backgroundColor: '#28c840' }} />
               </div>
-              <div style={{ marginLeft: '25%', height: '70%', width: '35%', background: activeBg, borderRadius: '3px 3px 0 0' }} />
+              <div
+                style={{
+                  marginLeft: '25%',
+                  height: '70%',
+                  width: '35%',
+                  background: activeBg,
+                  borderRadius: '3px 3px 0 0',
+                }}
+              />
             </div>
             <div style={{ background: activeBg, height: '9%', flexShrink: 0 }} />
           </>
         )}
-        {/* Content area */}
         <div style={{ background: contentBg, flexGrow: 1 }} />
       </div>
     </div>
@@ -103,12 +151,18 @@ function BrowserPreview({ style, selected }: { style: BrowserStyle; selected: bo
 }
 
 export function BrowserMockupSection() {
-  const { imageBorder, setImageBorder, browserUrl, setBrowserUrl, browserHeaderSize, setBrowserHeaderSize } = useImageStore();
+  const { imageBorder, setImageBorder, browserUrl, setBrowserUrl, browserHeaderSize, setBrowserHeaderSize } =
+    useImageStore();
 
-  const currentStyle = frameToStyle[imageBorder.type] || 'chrome-dark';
+  const isBrowserFrame = ['macos-light', 'macos-dark', 'windows-light', 'windows-dark'].includes(imageBorder.type);
+  const currentStyle: BrowserStyle = isBrowserFrame ? frameToStyle[imageBorder.type] || 'chrome-dark' : 'none';
 
   const handleStyleChange = (style: BrowserStyle) => {
-    const config = browserStyles.find(s => s.value === style);
+    if (style === 'none') {
+      setImageBorder({ enabled: false, type: 'none' });
+      return;
+    }
+    const config = browserStyles.find((s) => s.value === style);
     if (!config) return;
     setImageBorder({
       enabled: true,
@@ -119,7 +173,7 @@ export function BrowserMockupSection() {
 
   return (
     <>
-      <SectionWrapper title="Style" defaultOpen={true}>
+      <SectionWrapper title="Browser" defaultOpen={true}>
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-2 p-1">
             {browserStyles.map(({ value, label }) => {
@@ -135,7 +189,9 @@ export function BrowserMockupSection() {
                   <span
                     className={cn(
                       'text-[10px] leading-tight transition-colors',
-                      isSelected ? 'text-foreground font-medium' : 'text-muted-foreground group-hover:text-foreground/70',
+                      isSelected
+                        ? 'text-foreground font-medium'
+                        : 'text-muted-foreground group-hover:text-foreground/70'
                     )}
                   >
                     {label}
@@ -147,26 +203,30 @@ export function BrowserMockupSection() {
         </div>
       </SectionWrapper>
 
-      <div className="mb-4">
-        <label className="block text-xs font-medium text-muted-foreground mb-2">URL</label>
-        <input
-          type="text"
-          value={browserUrl}
-          onChange={(e) => setBrowserUrl(e.target.value)}
-          placeholder="yourapp.com"
-          className="w-full h-9 px-3 text-xs rounded-[10px] bg-muted/80 dark:bg-muted/50 shadow-[0_0_0_1px] shadow-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:shadow-[0_0_0_2px] focus:shadow-primary transition-shadow"
-        />
-      </div>
+      {currentStyle !== 'none' && (
+        <>
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-muted-foreground mb-2">URL</label>
+            <input
+              type="text"
+              value={browserUrl}
+              onChange={(e) => setBrowserUrl(e.target.value)}
+              placeholder="yourapp.com"
+              className="w-full h-9 px-3 text-xs rounded-[10px] bg-muted/80 dark:bg-muted/50 shadow-[0_0_0_1px] shadow-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:shadow-[0_0_0_2px] focus:shadow-primary transition-shadow"
+            />
+          </div>
 
-      <Slider
-        value={[browserHeaderSize]}
-        onValueChange={(value) => setBrowserHeaderSize(value[0])}
-        min={50}
-        max={200}
-        step={5}
-        label="Header size"
-        valueDisplay={`${browserHeaderSize}%`}
-      />
+          <Slider
+            value={[browserHeaderSize]}
+            onValueChange={(value) => setBrowserHeaderSize(value[0])}
+            min={50}
+            max={200}
+            step={5}
+            label="Header size"
+            valueDisplay={`${browserHeaderSize}%`}
+          />
+        </>
+      )}
     </>
   );
 }

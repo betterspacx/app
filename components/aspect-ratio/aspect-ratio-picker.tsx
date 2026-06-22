@@ -5,14 +5,7 @@ import { aspectRatios } from '@/lib/constants/aspect-ratios';
 import { useImageStore } from '@/lib/store';
 import { getStandardDimensions } from '@/lib/aspect-ratio-utils';
 import { cn } from '@/lib/utils';
-import {
-  InstagramIcon,
-  NewTwitterIcon,
-  YoutubeIcon,
-  PinterestIcon,
-  DribbbleIcon,
-  AppStoreIcon,
-} from 'hugeicons-react';
+import { InstagramIcon, NewTwitterIcon, YoutubeIcon, PinterestIcon, DribbbleIcon, AppStoreIcon } from 'hugeicons-react';
 
 interface AspectRatioPickerProps {
   onSelect?: () => void;
@@ -60,9 +53,7 @@ const socialSections = [
   {
     name: 'Dribbble',
     icon: DribbbleIcon,
-    presets: [
-      { label: 'Shot', ratio: '4:3', id: '4_3' },
-    ],
+    presets: [{ label: 'Shot', ratio: '4:3', id: '4_3' }],
   },
   {
     name: 'App Store',
@@ -101,11 +92,12 @@ export const AspectRatioPicker = ({ onSelect, className }: AspectRatioPickerProp
   const { selectedAspectRatio, setAspectRatio, customDimensions, setCustomDimensions } = useImageStore();
 
   const currentAR = aspectRatios.find((ar) => ar.id === selectedAspectRatio);
-  const currentDimensions = selectedAspectRatio === 'custom' && customDimensions
-    ? customDimensions
-    : currentAR
-      ? getStandardDimensions(currentAR.width, currentAR.height)
-      : { width: 1920, height: 1080 };
+  const currentDimensions =
+    selectedAspectRatio === 'custom' && customDimensions
+      ? customDimensions
+      : currentAR
+        ? getStandardDimensions(currentAR.width, currentAR.height)
+        : { width: 1920, height: 1080 };
 
   const [customW, setCustomW] = React.useState(currentDimensions.width.toString());
   const [customH, setCustomH] = React.useState(currentDimensions.height.toString());
@@ -127,8 +119,7 @@ export const AspectRatioPicker = ({ onSelect, className }: AspectRatioPickerProp
   };
 
   const isCustomChanged =
-    customW !== currentDimensions.width.toString() ||
-    customH !== currentDimensions.height.toString();
+    customW !== currentDimensions.width.toString() || customH !== currentDimensions.height.toString();
 
   const handleSetCustom = () => {
     const w = parseInt(customW);
@@ -140,7 +131,6 @@ export const AspectRatioPicker = ({ onSelect, className }: AspectRatioPickerProp
 
   return (
     <div className={cn('p-3 max-h-[70vh] overflow-y-auto', className)}>
-      {/* Custom Dimensions */}
       <div className="flex items-center gap-2 mb-4">
         <div className="flex items-center gap-1.5 flex-1">
           <label className="text-xs text-muted-foreground font-medium shrink-0">W</label>
@@ -174,8 +164,6 @@ export const AspectRatioPicker = ({ onSelect, className }: AspectRatioPickerProp
           Set
         </button>
       </div>
-
-      {/* Standard Ratios */}
       <div className="mb-3">
         <h4 className="text-xs font-medium text-muted-foreground mb-2">Standard</h4>
         <div className="grid grid-cols-3 gap-2">
@@ -190,9 +178,7 @@ export const AspectRatioPicker = ({ onSelect, className }: AspectRatioPickerProp
                 onClick={() => handleSelect(id)}
                 className={cn(
                   'flex flex-col items-center justify-between rounded-lg p-2 cursor-pointer transition-all',
-                  isSelected
-                    ? 'bg-primary/10 ring-2 ring-primary'
-                    : 'hover:bg-accent/50'
+                  isSelected ? 'bg-primary/10 ring-2 ring-primary' : 'hover:bg-accent/50'
                 )}
               >
                 <div className="flex items-center justify-center h-[40px]">
@@ -212,8 +198,6 @@ export const AspectRatioPicker = ({ onSelect, className }: AspectRatioPickerProp
           })}
         </div>
       </div>
-
-      {/* Social Media Sections */}
       {socialSections.map((section) => {
         const Icon = section.icon;
         return (
@@ -235,9 +219,7 @@ export const AspectRatioPicker = ({ onSelect, className }: AspectRatioPickerProp
                     onClick={() => handleSelect(preset.id)}
                     className={cn(
                       'flex flex-col items-center justify-between rounded-lg p-2 cursor-pointer transition-all',
-                      isSelected
-                        ? 'bg-primary/10 ring-2 ring-primary'
-                        : 'hover:bg-accent/50'
+                      isSelected ? 'bg-primary/10 ring-2 ring-primary' : 'hover:bg-accent/50'
                     )}
                   >
                     <div className="flex items-center justify-center h-[40px]">
@@ -260,12 +242,8 @@ export const AspectRatioPicker = ({ onSelect, className }: AspectRatioPickerProp
                       </div>
                     </div>
                     <div className="text-center mt-1">
-                      <span className="text-[10px] text-muted-foreground block leading-tight">
-                        {preset.label}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground/60 block leading-tight">
-                        {preset.ratio}
-                      </span>
+                      <span className="text-[10px] text-muted-foreground block leading-tight">{preset.label}</span>
+                      <span className="text-[10px] text-muted-foreground/60 block leading-tight">{preset.ratio}</span>
                     </div>
                   </button>
                 );

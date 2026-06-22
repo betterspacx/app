@@ -8,11 +8,13 @@ Copy these variables to your `.env` file and configure them with your values.
 ## Required Variables
 
 ### Site Configuration
+
 ```env
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 ### Cloudflare R2 Configuration
+
 ```env
 NEXT_PUBLIC_R2_PUBLIC_URL=https://your-r2-bucket-url
 NEXT_PUBLIC_R2_CUSTOM_DOMAIN=your-r2-custom-domain
@@ -25,11 +27,13 @@ R2_API_TOKEN=your_r2_api_token
 ```
 
 ### Cloudflare D1 Database Configuration
+
 ```env
 CLOUDFLARE_D1_DATABASE_ID=your_d1_database_id
 ```
 
 ### Better Auth Configuration
+
 ```env
 BETTER_AUTH_SECRET=your_better_auth_secret_key
 BETTER_AUTH_API_KEY=your_better_auth_api_key
@@ -39,22 +43,26 @@ BETTER_AUTH_URL=http://localhost:3000
 ## Optional Variables
 
 ### Google Search Console Verification
+
 ```env
 GOOGLE_SITE_VERIFICATION=your_google_site_verification_code
 ```
 
 ### Analytics (Optional)
+
 ```env
 NEXT_PUBLIC_POSTHOG_KEY=your_posthog_api_key
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
 ### Database (Optional - if using D1)
+
 ```env
 DATABASE_URL=your_database_url
 ```
 
 ### Social Media Links (Optional)
+
 ```env
 NEXT_PUBLIC_GITHUB_URL=https://github.com/konlyzx/betterflow
 NEXT_PUBLIC_TWITTER_URL=https://twitter.com/konlyzx_

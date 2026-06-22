@@ -16,7 +16,7 @@ export const fontFamilies: FontFamily[] = [
     category: 'sans-serif',
     fallback: '"SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
     availableWeights: ['100', '200', '300', 'normal', '500', '600', 'bold', '800', '900'],
-    description: 'Apple\'s premium font',
+    description: "Apple's premium font",
   },
 
   // ============ SYSTEM FONTS ============
@@ -54,7 +54,7 @@ export const fontFamilies: FontFamily[] = [
     cssVariable: '--font-geist-sans',
     fallback: 'Geist, system-ui, sans-serif',
     availableWeights: ['normal', '500', '600', 'bold'],
-    description: 'Vercel\'s modern typeface',
+    description: "Vercel's modern typeface",
   },
   {
     id: 'poppins',
@@ -310,11 +310,11 @@ export const fontFamilies: FontFamily[] = [
 // Group fonts by category for UI display
 export const fontCategories = {
   'sans-serif': 'Modern Sans-Serif',
-  'display': 'Display & Headlines',
-  'serif': 'Elegant Serif',
-  'handwriting': 'Handwriting & Script',
-  'monospace': 'Monospace & Code',
-  'system': 'System Fonts',
+  display: 'Display & Headlines',
+  serif: 'Elegant Serif',
+  handwriting: 'Handwriting & Script',
+  monospace: 'Monospace & Code',
+  system: 'System Fonts',
 } as const;
 
 export const getFontFamily = (id: string): FontFamily | undefined => {

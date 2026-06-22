@@ -309,16 +309,11 @@ export function Perspective3DControls() {
               )}
               style={getPerspectiveStyle(preset)}
             >
-              <div
-                className="w-16 h-16 bg-background"
-                style={getTransformStyle(preset)}
-              />
+              <div className="w-16 h-16 bg-background" style={getTransformStyle(preset)} />
             </button>
           );
         })}
       </div>
-
-      {/* Sliders */}
       <div className="space-y-2">
         <Slider
           value={[perspective3D.perspective]}
@@ -380,4 +375,3 @@ export function Perspective3DControls() {
     </div>
   );
 }
-

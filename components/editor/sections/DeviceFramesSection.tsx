@@ -6,7 +6,7 @@ import { MockupGallery, MockupControls } from '@/components/mockups';
 
 export function DeviceFramesSection() {
   return (
-    <SectionWrapper title="Device Frames" defaultOpen={false}>
+    <SectionWrapper title="Device Frames" defaultOpen={true}>
       <div className="space-y-4">
         <MockupGallery />
         <MockupControls />

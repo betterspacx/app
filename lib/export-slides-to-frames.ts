@@ -1,4 +1,4 @@
-import { useImageStore } from "@/lib/store";
+import { useImageStore } from '@/lib/store';
 
 export async function renderSlidesToFrames() {
   const { slides, slideshow } = useImageStore.getState();

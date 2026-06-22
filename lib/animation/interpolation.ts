@@ -1,10 +1,4 @@
-import type {
-  EasingFunction,
-  AnimatableProperties,
-  AnimationTrack,
-  AnimationClip,
-  Keyframe,
-} from '@/types/animation';
+import type { EasingFunction, AnimatableProperties, AnimationTrack, AnimationClip, Keyframe } from '@/types/animation';
 import { DEFAULT_ANIMATABLE_PROPERTIES } from '@/types/animation';
 
 // Easing functions - take progress (0-1) and return eased progress (0-1)
@@ -16,9 +10,7 @@ export const easingFunctions: Record<EasingFunction, (t: number) => number> = {
   'ease-out': (t) => 1 - (1 - t) * (1 - t),
 
   'ease-in-out': (t) => {
-    return t < 0.5
-      ? 2 * t * t
-      : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
   },
 
   'ease-in-cubic': (t) => t * t * t,
@@ -37,10 +29,7 @@ export const easingFunctions: Record<EasingFunction, (t: number) => number> = {
 /**
  * Apply easing function to get interpolated value
  */
-export function applyEasing(
-  progress: number,
-  easing: EasingFunction
-): number {
+export function applyEasing(progress: number, easing: EasingFunction): number {
   const easingFn = easingFunctions[easing] || easingFunctions.linear;
   return easingFn(Math.max(0, Math.min(1, progress)));
 }
@@ -221,9 +210,7 @@ export function getClipInterpolatedProperties(
   const result: AnimatableProperties = { ...defaults };
 
   // Find all clips that are active at the current time
-  const activeClips = clips.filter(clip =>
-    time >= clip.startTime && time < clip.startTime + clip.duration
-  );
+  const activeClips = clips.filter((clip) => time >= clip.startTime && time < clip.startTime + clip.duration);
 
   // If no active clips, return defaults (animation only plays during clip time range)
   if (activeClips.length === 0) {
@@ -239,7 +226,7 @@ export function getClipInterpolatedProperties(
   const propertyToClip = new Map<keyof AnimatableProperties, AnimationClip>();
 
   for (const clip of sortedActiveClips) {
-    const clipTracks = tracks.filter(t => t.clipId === clip.id);
+    const clipTracks = tracks.filter((t) => t.clipId === clip.id);
 
     // Find all properties this clip animates
     for (const track of clipTracks) {
@@ -255,7 +242,7 @@ export function getClipInterpolatedProperties(
 
   // Now interpolate each property from its owning clip
   for (const [property, clip] of propertyToClip) {
-    const clipTracks = tracks.filter(t => t.clipId === clip.id && t.isVisible);
+    const clipTracks = tracks.filter((t) => t.clipId === clip.id && t.isVisible);
     const localTime = time - clip.startTime;
     const originalDuration = clipTracks[0]?.originalDuration || clip.duration;
 
@@ -265,17 +252,10 @@ export function getClipInterpolatedProperties(
 
     // Find the track that animates this property and interpolate
     for (const track of clipTracks) {
-      const hasProperty = track.keyframes.some(kf =>
-        property in kf.properties
-      );
+      const hasProperty = track.keyframes.some((kf) => property in kf.properties);
 
       if (hasProperty) {
-        result[property] = getInterpolatedProperty(
-          track,
-          scaledTime,
-          property,
-          defaults[property]
-        );
+        result[property] = getInterpolatedProperty(track, scaledTime, property, defaults[property]);
         break;
       }
     }
@@ -326,11 +306,7 @@ export function isAtKeyframe(
 /**
  * Snap time to nearest keyframe if within threshold
  */
-export function snapToKeyframe(
-  keyframes: Keyframe[],
-  time: number,
-  threshold: number = 50
-): number {
+export function snapToKeyframe(keyframes: Keyframe[], time: number, threshold: number = 50): number {
   const nearestKf = isAtKeyframe(keyframes, time, threshold);
   return nearestKf ? nearestKf.time : time;
 }

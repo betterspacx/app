@@ -56,7 +56,7 @@ function convertOklchToRGB(oklchColor: string): string {
     return oklchColor;
   }
 
-  const values = oklchMatch[1].split(/\s+/).map(v => parseFloat(v.trim()));
+  const values = oklchMatch[1].split(/\s+/).map((v) => parseFloat(v.trim()));
   if (values.length < 3) {
     return oklchColor;
   }
@@ -76,10 +76,7 @@ function convertOklchToRGB(oklchColor: string): string {
 /**
  * Apply blur effect to a canvas using Canvas 2D context filter (sync version)
  */
-function applyBlurToCanvasSync(
-  canvas: HTMLCanvasElement,
-  blurAmount: number
-): HTMLCanvasElement {
+function applyBlurToCanvasSync(canvas: HTMLCanvasElement, blurAmount: number): HTMLCanvasElement {
   if (blurAmount <= 0) {
     return canvas;
   }
@@ -104,11 +101,7 @@ function applyBlurToCanvasSync(
  * Apply blur regions to the exported canvas.
  * CSS backdrop-filter doesn't render in domToCanvas, so we apply it manually.
  */
-function applyBlurRegionsToCanvas(
-  canvas: HTMLCanvasElement,
-  containerWidth: number,
-  containerHeight: number
-): void {
+function applyBlurRegionsToCanvas(canvas: HTMLCanvasElement, containerWidth: number, containerHeight: number): void {
   const { blurRegions } = useImageStore.getState();
   if (!blurRegions || blurRegions.length === 0) return;
 
@@ -150,10 +143,7 @@ function applyBlurRegionsToCanvas(
 /**
  * Apply blur effect to a canvas using Web Worker for heavy computation
  */
-async function applyBlurToCanvas(
-  canvas: HTMLCanvasElement,
-  blurAmount: number
-): Promise<HTMLCanvasElement> {
+async function applyBlurToCanvas(canvas: HTMLCanvasElement, blurAmount: number): Promise<HTMLCanvasElement> {
   if (blurAmount <= 0) {
     return canvas;
   }
@@ -187,10 +177,7 @@ async function applyBlurToCanvas(
 /**
  * Apply opacity to a canvas (sync version for fallback)
  */
-function applyOpacityToCanvasSync(
-  canvas: HTMLCanvasElement,
-  opacity: number
-): HTMLCanvasElement {
+function applyOpacityToCanvasSync(canvas: HTMLCanvasElement, opacity: number): HTMLCanvasElement {
   if (opacity >= 1) {
     return canvas;
   }
@@ -221,10 +208,7 @@ function applyOpacityToCanvasSync(
 /**
  * Apply opacity to a canvas using Web Worker
  */
-async function applyOpacityToCanvas(
-  canvas: HTMLCanvasElement,
-  opacity: number
-): Promise<HTMLCanvasElement> {
+async function applyOpacityToCanvas(canvas: HTMLCanvasElement, opacity: number): Promise<HTMLCanvasElement> {
   if (opacity >= 1) {
     return canvas;
   }
@@ -282,11 +266,13 @@ async function getNoiseTextureFromPreview(): Promise<HTMLCanvasElement | null> {
         const mixBlendMode = style.mixBlendMode;
         const pointerEvents = style.pointerEvents;
 
-        return bgImage &&
+        return (
+          bgImage &&
           bgImage.includes('data:image') &&
           bgImage.includes('base64') &&
           mixBlendMode === 'overlay' &&
-          pointerEvents === 'none';
+          pointerEvents === 'none'
+        );
       }
       return false;
     }) as HTMLElement | undefined;
@@ -396,7 +382,7 @@ async function capture3DTransformWithModernScreenshot(
 
   if (!skipDelay) {
     // Wait for styles to apply (only needed for first/single exports, not video frames)
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   }
 
   const elementRect = element.getBoundingClientRect();
@@ -455,7 +441,7 @@ async function exportHTMLCanvas(
 
   if (!skipDelay) {
     // Wait for any pending renders (only needed for first/single exports, not video frames)
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   }
 
   // Use modern-screenshot for better CSS fidelity.
@@ -489,16 +475,17 @@ async function exportHTMLCanvas(
   const finalHeight = targetHeight * scale;
 
   // Reuse canvas when dimensions match (common for video frame sequences)
-  if (skipDelay && reusableCanvas && reusableCtx &&
-      reusableCanvas.width === finalWidth && reusableCanvas.height === finalHeight) {
+  if (
+    skipDelay &&
+    reusableCanvas &&
+    reusableCtx &&
+    reusableCanvas.width === finalWidth &&
+    reusableCanvas.height === finalHeight
+  ) {
     reusableCtx.clearRect(0, 0, finalWidth, finalHeight);
     reusableCtx.imageSmoothingEnabled = true;
     reusableCtx.imageSmoothingQuality = 'high';
-    reusableCtx.drawImage(
-      canvas,
-      0, 0, canvas.width, canvas.height,
-      0, 0, finalWidth, finalHeight
-    );
+    reusableCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, finalWidth, finalHeight);
     return reusableCanvas;
   }
 
@@ -514,11 +501,7 @@ async function exportHTMLCanvas(
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  ctx.drawImage(
-    canvas,
-    0, 0, canvas.width, canvas.height,
-    0, 0, finalWidth, finalHeight
-  );
+  ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, finalWidth, finalHeight);
 
   // Cache for video frame reuse
   if (skipDelay) {
@@ -553,7 +536,7 @@ export async function exportElement(
   // Stage 1: DOM preparation (0 → 10%)
   report(5);
   // Yield to let any pending React renders flush
-  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
   const element = document.getElementById(elementId);
   if (!element) {
@@ -568,14 +551,15 @@ export async function exportElement(
   report(10);
 
   try {
-    const has3DTransform = perspective3D && imageSrc && (
-      perspective3D.rotateX !== 0 ||
-      perspective3D.rotateY !== 0 ||
-      perspective3D.rotateZ !== 0 ||
-      perspective3D.translateX !== 0 ||
-      perspective3D.translateY !== 0 ||
-      perspective3D.scale !== 1
-    );
+    const has3DTransform =
+      perspective3D &&
+      imageSrc &&
+      (perspective3D.rotateX !== 0 ||
+        perspective3D.rotateY !== 0 ||
+        perspective3D.rotateZ !== 0 ||
+        perspective3D.translateX !== 0 ||
+        perspective3D.translateY !== 0 ||
+        perspective3D.scale !== 1);
 
     let finalCanvas: HTMLCanvasElement;
 
@@ -586,16 +570,16 @@ export async function exportElement(
       try {
         finalCanvas = await capture3DTransformWithModernScreenshot(
           container,
-          options.scale * Math.max(
-            options.exportWidth / container.clientWidth,
-            options.exportHeight / container.clientHeight
-          )
+          options.scale *
+            Math.max(options.exportWidth / container.clientWidth, options.exportHeight / container.clientHeight)
         );
 
         report(50);
 
-        if (finalCanvas.width !== options.exportWidth * options.scale ||
-            finalCanvas.height !== options.exportHeight * options.scale) {
+        if (
+          finalCanvas.width !== options.exportWidth * options.scale ||
+          finalCanvas.height !== options.exportHeight * options.scale
+        ) {
           const resizedCanvas = document.createElement('canvas');
           resizedCanvas.width = options.exportWidth * options.scale;
           resizedCanvas.height = options.exportHeight * options.scale;
@@ -605,8 +589,14 @@ export async function exportElement(
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(
               finalCanvas,
-              0, 0, finalCanvas.width, finalCanvas.height,
-              0, 0, resizedCanvas.width, resizedCanvas.height
+              0,
+              0,
+              finalCanvas.width,
+              finalCanvas.height,
+              0,
+              0,
+              resizedCanvas.width,
+              resizedCanvas.height
             );
             finalCanvas = resizedCanvas;
           }
@@ -635,12 +625,10 @@ export async function exportElement(
 
     // Stage 3: Sharp processing (55 → 90%)
     report(60);
-    const sharpResult = await processWithSharp(
-      finalCanvas,
-      options.format,
-      options.qualityPreset,
-      { skipApi: options.skipSharp, onProgress: report }
-    );
+    const sharpResult = await processWithSharp(finalCanvas, options.format, options.qualityPreset, {
+      skipApi: options.skipSharp,
+      onProgress: report,
+    });
 
     report(90);
 
@@ -666,7 +654,7 @@ export async function exportElementAsCanvas(
   canvasContainer: HTMLElement | null,
   backgroundBorderRadius: number,
   perspective3D?: any,
-  imageSrc?: string,
+  imageSrc?: string
 ): Promise<HTMLCanvasElement> {
   const element = document.getElementById(elementId);
   if (!element) {
@@ -678,14 +666,15 @@ export async function exportElementAsCanvas(
     throw new Error('HTML canvas container not found');
   }
 
-  const has3DTransform = perspective3D && imageSrc && (
-    perspective3D.rotateX !== 0 ||
-    perspective3D.rotateY !== 0 ||
-    perspective3D.rotateZ !== 0 ||
-    perspective3D.translateX !== 0 ||
-    perspective3D.translateY !== 0 ||
-    perspective3D.scale !== 1
-  );
+  const has3DTransform =
+    perspective3D &&
+    imageSrc &&
+    (perspective3D.rotateX !== 0 ||
+      perspective3D.rotateY !== 0 ||
+      perspective3D.rotateZ !== 0 ||
+      perspective3D.translateX !== 0 ||
+      perspective3D.translateY !== 0 ||
+      perspective3D.scale !== 1);
 
   let finalCanvas: HTMLCanvasElement;
 
@@ -693,15 +682,15 @@ export async function exportElementAsCanvas(
     try {
       finalCanvas = await capture3DTransformWithModernScreenshot(
         container,
-        options.scale * Math.max(
-          options.exportWidth / container.clientWidth,
-          options.exportHeight / container.clientHeight
-        ),
+        options.scale *
+          Math.max(options.exportWidth / container.clientWidth, options.exportHeight / container.clientHeight),
         true // skipDelay — video frames don't need style-settle waits
       );
 
-      if (finalCanvas.width !== options.exportWidth * options.scale ||
-          finalCanvas.height !== options.exportHeight * options.scale) {
+      if (
+        finalCanvas.width !== options.exportWidth * options.scale ||
+        finalCanvas.height !== options.exportHeight * options.scale
+      ) {
         const resizedCanvas = document.createElement('canvas');
         resizedCanvas.width = options.exportWidth * options.scale;
         resizedCanvas.height = options.exportHeight * options.scale;
@@ -711,8 +700,14 @@ export async function exportElementAsCanvas(
           ctx.imageSmoothingQuality = 'high';
           ctx.drawImage(
             finalCanvas,
-            0, 0, finalCanvas.width, finalCanvas.height,
-            0, 0, resizedCanvas.width, resizedCanvas.height
+            0,
+            0,
+            finalCanvas.width,
+            finalCanvas.height,
+            0,
+            0,
+            resizedCanvas.width,
+            resizedCanvas.height
           );
           finalCanvas = resizedCanvas;
         }

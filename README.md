@@ -24,6 +24,7 @@ A free, browser-based screenshot editor. Beautiful backgrounds, device frames, 3
 ## How to Use
 
 ### Desktop
+
 1. Upload an image or drag and drop
 2. Choose a background or gradient
 3. Add device frames or borders
@@ -31,6 +32,7 @@ A free, browser-based screenshot editor. Beautiful backgrounds, device frames, 3
 5. Export as image or video
 
 ### Chrome Extension
+
 1. Install the Better Flow Chrome extension
 2. Click the extension icon while on any webpage
 3. Select capture area (full page or visible)
@@ -101,6 +103,7 @@ pnpm start
 ## Deployment
 
 This project can be deployed to:
+
 - **Vercel** - Recommended for Next.js applications
 - **Docker** - Containerized deployment
 
@@ -140,24 +143,28 @@ better-flow/
 ## Key Features Explained
 
 ### Animation System
+
 - 20+ animation presets organized by category (reveal, flip, perspective, orbit, depth)
 - Timeline editor with keyframe control
 - Real-time preview with smooth playback
 - Export animations as MP4, WebM, or GIF
 
 ### Video Export
+
 - Hardware-accelerated encoding via WebCodecs API
 - FFmpeg WASM fallback for broader browser support
 - Multiple quality presets (high, medium, low)
 - Progress tracking during export
 
 ### Storage
+
 - IndexedDB for local draft auto-save
 - Cloudflare R2 for asset storage
 - No server-side database required
 - Works offline after initial load
 
 ### Chrome Extension
+
 - One-click screen recording
 - Automatic upload to editor
 - Supports full page and visible area capture

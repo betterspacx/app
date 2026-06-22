@@ -1,7 +1,7 @@
 // Modified by konlyzx (2026) - Changed emerald green colors to brand blue for success states
 // Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
 
-"use client"
+'use client';
 
 import {
   CheckmarkCircle02Icon,
@@ -9,8 +9,8 @@ import {
   Loading03Icon,
   AlertCircleIcon,
   Alert02Icon,
-} from "hugeicons-react"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
+} from 'hugeicons-react';
+import { Toaster as Sonner, type ToasterProps } from 'sonner';
 
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
@@ -97,7 +97,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       duration={4000}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+export { Toaster };

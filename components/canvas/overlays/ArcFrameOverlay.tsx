@@ -5,7 +5,20 @@ import { type ImageFilters } from '@/lib/store';
 
 export interface FrameConfig {
   enabled: boolean;
-  type: 'none' | 'arc-light' | 'arc-dark' | 'macos-light' | 'macos-dark' | 'windows-light' | 'windows-dark' | 'photograph' | 'glass-light' | 'glass-dark' | 'outline-light' | 'border-light' | 'border-dark';
+  type:
+    | 'none'
+    | 'arc-light'
+    | 'arc-dark'
+    | 'macos-light'
+    | 'macos-dark'
+    | 'windows-light'
+    | 'windows-dark'
+    | 'photograph'
+    | 'glass-light'
+    | 'glass-dark'
+    | 'outline-light'
+    | 'border-light'
+    | 'border-dark';
   width: number;
   color: string;
   padding?: number;
@@ -42,11 +55,13 @@ function buildBoxShadow(shadow: ShadowConfig): string {
   const { elevation, softness, color, intensity, offsetX, offsetY } = shadow;
 
   // Parse shadow color
-  let r = 0, g = 0, b = 0;
+  let r = 0,
+    g = 0,
+    b = 0;
   const colorMatch = color.match(/rgba?\(([^)]+)\)/);
 
   if (colorMatch) {
-    const parts = colorMatch[1].split(',').map(s => s.trim());
+    const parts = colorMatch[1].split(',').map((s) => s.trim());
     r = parseInt(parts[0]) || 0;
     g = parseInt(parts[1]) || 0;
     b = parseInt(parts[2]) || 0;
@@ -144,9 +159,8 @@ export function ArcFrameOverlay({
   const borderWidth = frame.width || 8;
   const defaultOpacity = frame.type === 'arc-light' ? 0.5 : 0.7;
   const borderOpacity = frame.opacity ?? defaultOpacity;
-  const borderColor = frame.type === 'arc-light'
-    ? `rgba(255, 255, 255, ${borderOpacity})`
-    : `rgba(0, 0, 0, ${borderOpacity})`;
+  const borderColor =
+    frame.type === 'arc-light' ? `rgba(255, 255, 255, ${borderOpacity})` : `rgba(0, 0, 0, ${borderOpacity})`;
 
   const boxShadow = buildBoxShadow(shadow);
   const imageFilter = buildImageFilter(imageFilters);
@@ -184,7 +198,6 @@ export function ArcFrameOverlay({
           transformOrigin: 'center center',
         }}
       >
-        {/* Container with border and shadow - shadow is applied to outer container */}
         <div
           style={{
             display: 'grid',
@@ -197,7 +210,6 @@ export function ArcFrameOverlay({
             position: 'relative',
           }}
         >
-          {/* Image inside container */}
           <img
             src={image.src}
             alt="Arc framed"

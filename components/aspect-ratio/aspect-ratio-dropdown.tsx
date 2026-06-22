@@ -1,8 +1,4 @@
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from '@/components/ui/popover';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { aspectRatios } from '@/lib/constants/aspect-ratios';
 import { useImageStore } from '@/lib/store';
 import { AspectRatioPicker } from './aspect-ratio-picker';
@@ -40,9 +36,7 @@ export const AspectRatioDropdown = () => {
                 }}
               />
               <div className="flex-1 min-w-0 text-left">
-                <div className="text-sm font-medium text-foreground truncate">
-                  {current?.name || 'Aspect Ratio'}
-                </div>
+                <div className="text-sm font-medium text-foreground truncate">{current?.name || 'Aspect Ratio'}</div>
                 <div className="text-xs text-muted-foreground">
                   {current ? `${current.width}:${current.height}` : 'Select ratio'}
                 </div>
@@ -76,9 +70,7 @@ export const AspectRatioDropdown = () => {
                   }}
                   title={`${ratio.name} (${ratio.width}:${ratio.height})`}
                 >
-                  {isSelected && (
-                    <div className="absolute inset-0 bg-primary/20 rounded-md" />
-                  )}
+                  {isSelected && <div className="absolute inset-0 bg-primary/20 rounded-md" />}
                 </button>
               );
             })}
@@ -91,4 +83,3 @@ export const AspectRatioDropdown = () => {
     </Popover>
   );
 };
-

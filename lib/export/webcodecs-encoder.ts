@@ -28,9 +28,7 @@ export interface FrameData {
  */
 export function isWebCodecsSupported(): boolean {
   return (
-    typeof VideoEncoder !== 'undefined' &&
-    typeof VideoFrame !== 'undefined' &&
-    typeof EncodedVideoChunk !== 'undefined'
+    typeof VideoEncoder !== 'undefined' && typeof VideoFrame !== 'undefined' && typeof EncodedVideoChunk !== 'undefined'
   );
 }
 
@@ -221,10 +219,7 @@ export class WebCodecsVideoEncoder {
   /**
    * Encode a frame from a canvas element
    */
-  async encodeFromCanvas(
-    canvas: HTMLCanvasElement | OffscreenCanvas,
-    frameIndex: number
-  ): Promise<void> {
+  async encodeFromCanvas(canvas: HTMLCanvasElement | OffscreenCanvas, frameIndex: number): Promise<void> {
     if (!this.encoder || !this.isInitialized) {
       throw new Error('Encoder not initialized');
     }
@@ -323,7 +318,7 @@ export async function encodeFramesToMP4(
     await encoder.encodeFromCanvas(frames[i].canvas, i);
 
     // Report progress
-    options.onProgress?.((i + 1) / totalFrames * 100);
+    options.onProgress?.(((i + 1) / totalFrames) * 100);
 
     // Yield to main thread periodically
     if (i % 10 === 0) {
@@ -337,10 +332,7 @@ export async function encodeFramesToMP4(
 /**
  * Encode ImageData frames to MP4
  */
-export async function encodeImageDataToMP4(
-  frames: ImageData[],
-  options: WebCodecsEncoderOptions
-): Promise<Blob> {
+export async function encodeImageDataToMP4(frames: ImageData[], options: WebCodecsEncoderOptions): Promise<Blob> {
   const encoder = new WebCodecsVideoEncoder(options);
   await encoder.initialize();
 
@@ -349,7 +341,7 @@ export async function encodeImageDataToMP4(
   for (let i = 0; i < frames.length; i++) {
     await encoder.encodeFrame(frames[i], i);
 
-    options.onProgress?.((i + 1) / totalFrames * 100);
+    options.onProgress?.(((i + 1) / totalFrames) * 100);
 
     // Yield to main thread periodically
     if (i % 10 === 0) {

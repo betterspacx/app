@@ -13,12 +13,7 @@ interface HTMLPatternLayerProps {
  * HTML/CSS-based pattern layer that replaces Konva PatternLayer.
  * Renders repeating pattern backgrounds.
  */
-export function HTMLPatternLayer({
-  patternImage,
-  width,
-  height,
-  patternOpacity,
-}: HTMLPatternLayerProps) {
+export function HTMLPatternLayer({ patternImage, width, height, patternOpacity }: HTMLPatternLayerProps) {
   // Convert pattern canvas to data URL
   const patternDataUrl = useMemo(() => {
     if (!patternImage) return null;

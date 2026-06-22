@@ -11,7 +11,10 @@ export interface Perspective3DConfig {
   rotateZ: number;
   translateX: number;
   translateY: number;
+  translateZ?: number;
   scale: number;
+  skewX?: number;
+  skewY?: number;
 }
 
 interface Perspective3DOverlayProps {
@@ -103,22 +106,26 @@ export function Perspective3DOverlay({
   const imageFilterStyle = buildImageFilter();
 
   const perspective3DTransform = `
-    translate(${perspective3D.translateX}%, ${perspective3D.translateY}%)
-    scale(${perspective3D.scale})
+    perspective(${perspective3D.perspective}px)
+    translate3d(${perspective3D.translateX}%, ${perspective3D.translateY}%, ${perspective3D.translateZ ?? 0}px)
+    scale3d(${perspective3D.scale}, ${perspective3D.scale}, 1)
     rotateX(${perspective3D.rotateX}deg)
     rotateY(${perspective3D.rotateY}deg)
     rotateZ(${perspective3D.rotateZ + screenshot.rotation}deg)
+    skew(${perspective3D.skewX ?? 0}deg, ${perspective3D.skewY ?? 0}deg)
   `
     .replace(/\s+/g, ' ')
     .trim();
 
   // Parse shadow color and extract RGB values
-  const colorMatch = shadow.color.match(/rgba?\(([^)]+)\)/)
-  let r = 0, g = 0, b = 0;
+  const colorMatch = shadow.color.match(/rgba?\(([^)]+)\)/);
+  let r = 0,
+    g = 0,
+    b = 0;
   let shadowOpacity = shadow.intensity || 0.5;
 
   if (colorMatch) {
-    const parts = colorMatch[1].split(',').map(s => s.trim())
+    const parts = colorMatch[1].split(',').map((s) => s.trim());
     r = parseInt(parts[0]) || 0;
     g = parseInt(parts[1]) || 0;
     b = parseInt(parts[2]) || 0;
@@ -126,7 +133,7 @@ export function Perspective3DOverlay({
       shadowOpacity = parseFloat(parts[3]) || shadow.intensity;
     }
   } else if (shadow.color.startsWith('#')) {
-    const hex = shadow.color.replace('#', '')
+    const hex = shadow.color.replace('#', '');
     r = parseInt(hex.slice(0, 2), 16) || 0;
     g = parseInt(hex.slice(2, 4), 16) || 0;
     b = parseInt(hex.slice(4, 6), 16) || 0;
@@ -136,7 +143,7 @@ export function Perspective3DOverlay({
   const buildShadowFilter = () => {
     const x = shadow.enabled ? (shadow.offsetX ?? 0) : 0;
     const y = shadow.enabled ? (shadow.offsetY ?? 0) : 0;
-    const blur = shadow.enabled ? ((shadow.softness || 15) + (shadow.spread || 0)) : 15;
+    const blur = shadow.enabled ? (shadow.softness || 15) + (shadow.spread || 0) : 15;
     const opacity = shadow.enabled ? Math.min(1, shadow.intensity) : 0.5;
 
     const shadows = [
@@ -153,7 +160,9 @@ export function Perspective3DOverlay({
   const isMacFrame = frame.type === 'macos-light' || frame.type === 'macos-dark';
   const isWinFrame = frame.type === 'windows-light' || frame.type === 'windows-dark';
   const isArcFrame = frame.type === 'arc-light' || frame.type === 'arc-dark';
-  const isStyleFrame = ['glass-light', 'glass-dark', 'outline-light', 'border-light', 'border-dark'].includes(frame.type);
+  const isStyleFrame = ['glass-light', 'glass-dark', 'outline-light', 'border-light', 'border-dark'].includes(
+    frame.type
+  );
 
   const browserRadius = screenshot.radius;
 
@@ -200,12 +209,12 @@ export function Perspective3DOverlay({
         top: 0,
         width: `${canvasW}px`,
         height: `${canvasH}px`,
-        perspective: `${perspective3D.perspective}px`,
         transformStyle: 'preserve-3d',
         zIndex: 15,
         pointerEvents: 'none',
         overflow: 'hidden',
         clipPath: `inset(0 0 0 0)`,
+        contain: 'layout paint style',
       }}
     >
       <div
@@ -217,20 +226,25 @@ export function Perspective3DOverlay({
           height: `${framedH}px`,
           transform: perspective3DTransform,
           transformOrigin: 'center center',
-          willChange: 'transform',
+          willChange: 'transform, filter',
           transition: 'transform 0.125s linear',
           filter: shadowFilter,
           opacity: 1,
+          backfaceVisibility: 'hidden',
+          transformStyle: 'preserve-3d',
+          contain: 'paint',
         }}
       >
-        {/* Frame background container for macOS/Windows */}
         <div
           style={{
             position: 'relative',
             width: '100%',
             height: '100%',
-            backgroundColor: (isMacFrame || isWinFrame || isStyleFrame) ? getFrameBackground() : 'transparent',
-            borderRadius: (isMacFrame || isWinFrame || isArcFrame || isStyleFrame) ? `${isStyleFrame ? (screenshot.radius > 0 ? screenshot.radius + windowPadding : 0) : browserRadius}px` : undefined,
+            backgroundColor: isMacFrame || isWinFrame || isStyleFrame ? getFrameBackground() : 'transparent',
+            borderRadius:
+              isMacFrame || isWinFrame || isArcFrame || isStyleFrame
+                ? `${isStyleFrame ? (screenshot.radius > 0 ? screenshot.radius + windowPadding : 0) : browserRadius}px`
+                : undefined,
             overflow: 'hidden',
           }}
         >
@@ -270,4 +284,3 @@ export function Perspective3DOverlay({
     </div>
   );
 }
-

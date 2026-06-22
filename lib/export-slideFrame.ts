@@ -1,22 +1,22 @@
-import { exportElement, exportElementAsCanvas, type ExportOptions } from "@/lib/export/export-service";
+import { exportElement, exportElementAsCanvas, type ExportOptions } from '@/lib/export/export-service';
 
-import { getCanvasContainer } from "@/components/canvas/ClientCanvas";
-import { getAspectRatioPreset } from "@/lib/aspect-ratio-utils";
+import { getCanvasContainer } from '@/components/canvas/ClientCanvas';
+import { getAspectRatioPreset } from '@/lib/aspect-ratio-utils';
 
-import { useEditorStore, useImageStore } from "@/lib/store";
+import { useEditorStore, useImageStore } from '@/lib/store';
 
 export async function exportSlideFrame(): Promise<HTMLImageElement> {
   const imageStore = useImageStore.getState();
   const editorStore = useEditorStore.getState();
 
   const preset = getAspectRatioPreset(imageStore.selectedAspectRatio);
-  if (!preset) throw new Error("Invalid aspect ratio");
+  if (!preset) throw new Error('Invalid aspect ratio');
 
   const result = await exportElement(
-    "image-render-card",
+    'image-render-card',
     {
-      format: "png",
-      qualityPreset: "high",
+      format: 'png',
+      qualityPreset: 'high',
       scale: 1,
       exportWidth: preset.width,
       exportHeight: preset.height,
@@ -50,13 +50,13 @@ export async function exportSlideFrameAsCanvas(): Promise<HTMLCanvasElement> {
   const editorStore = useEditorStore.getState();
 
   const preset = getAspectRatioPreset(imageStore.selectedAspectRatio);
-  if (!preset) throw new Error("Invalid aspect ratio");
+  if (!preset) throw new Error('Invalid aspect ratio');
 
   return exportElementAsCanvas(
-    "image-render-card",
+    'image-render-card',
     {
-      format: "png",
-      qualityPreset: "high",
+      format: 'png',
+      qualityPreset: 'high',
       scale: 1,
       exportWidth: preset.width,
       exportHeight: preset.height,
@@ -64,6 +64,6 @@ export async function exportSlideFrameAsCanvas(): Promise<HTMLCanvasElement> {
     getCanvasContainer(),
     imageStore.backgroundBorderRadius,
     imageStore.perspective3D,
-    editorStore.screenshot.src || undefined,
+    editorStore.screenshot.src || undefined
   );
 }

@@ -42,25 +42,19 @@ export function ScaleSlider({ scale, onScaleChange }: ScaleSliderProps) {
               )}
             >
               <span className="shrink-0">{preset.label}</span>
-              {/* Sublabel — smooth expand/collapse */}
               <span
                 className={cn(
                   'text-xs text-muted-foreground whitespace-nowrap overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
-                  isSelected
-                    ? 'max-w-[40px] opacity-100 ml-1'
-                    : 'max-w-0 opacity-0 ml-0'
+                  isSelected ? 'max-w-[40px] opacity-100 ml-1' : 'max-w-0 opacity-0 ml-0'
                 )}
               >
                 {preset.sublabel}
               </span>
-              {/* Lock icon — smooth fade */}
               {preset.premium && (
                 <span
                   className={cn(
                     'overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]',
-                    !isSelected
-                      ? 'max-w-[20px] opacity-50 ml-1'
-                      : 'max-w-0 opacity-0 ml-0'
+                    !isSelected ? 'max-w-[20px] opacity-50 ml-1' : 'max-w-0 opacity-0 ml-0'
                   )}
                 >
                   <LockIcon size={11} />

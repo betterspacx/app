@@ -180,7 +180,7 @@ export async function invalidateCache(url: string): Promise<void> {
  * @param urls - Array of URLs to invalidate
  */
 export async function invalidateCacheBatch(urls: string[]): Promise<void> {
-  await Promise.all(urls.map(url => invalidateCache(url)));
+  await Promise.all(urls.map((url) => invalidateCache(url)));
 }
 
 /**
@@ -194,7 +194,7 @@ export async function clearOldCache(): Promise<void> {
 
   try {
     const listed = await bucket.list({ prefix: SCREENSHOT_CACHE_PREFIX });
-    
+
     for (const object of listed.objects) {
       const uploaded = object.uploaded;
       if (uploaded) {

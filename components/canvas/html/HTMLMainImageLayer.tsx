@@ -7,7 +7,20 @@ import { SafariToolbar, ChromeToolbar } from '../frames/BrowserToolbar';
 
 export interface FrameConfig {
   enabled: boolean;
-  type: 'none' | 'arc-light' | 'arc-dark' | 'macos-light' | 'macos-dark' | 'windows-light' | 'windows-dark' | 'photograph' | 'glass-light' | 'glass-dark' | 'outline-light' | 'border-light' | 'border-dark';
+  type:
+    | 'none'
+    | 'arc-light'
+    | 'arc-dark'
+    | 'macos-light'
+    | 'macos-dark'
+    | 'windows-light'
+    | 'windows-dark'
+    | 'photograph'
+    | 'glass-light'
+    | 'glass-dark'
+    | 'outline-light'
+    | 'border-light'
+    | 'border-dark';
   width: number;
   color: string;
   padding?: number;
@@ -100,11 +113,13 @@ function buildDropShadowFilter(shadow: ShadowConfig): string | undefined {
   const { softness, spread, color, intensity, offsetX, offsetY } = shadow;
 
   // Parse shadow color — use it directly
-  let r = 0, g = 0, b = 0;
+  let r = 0,
+    g = 0,
+    b = 0;
   const colorMatch = color.match(/rgba?\(([^)]+)\)/);
 
   if (colorMatch) {
-    const parts = colorMatch[1].split(',').map(s => s.trim());
+    const parts = colorMatch[1].split(',').map((s) => s.trim());
     r = parseInt(parts[0]) || 0;
     g = parseInt(parts[1]) || 0;
     b = parseInt(parts[2]) || 0;
@@ -138,11 +153,13 @@ function buildBoxShadow(shadow: ShadowConfig): string | undefined {
 
   const { softness, spread, color, intensity, offsetX, offsetY } = shadow;
 
-  let r = 0, g = 0, b = 0;
+  let r = 0,
+    g = 0,
+    b = 0;
   const colorMatch = color.match(/rgba?\(([^)]+)\)/);
 
   if (colorMatch) {
-    const parts = colorMatch[1].split(',').map(s => s.trim());
+    const parts = colorMatch[1].split(',').map((s) => s.trim());
     r = parseInt(parts[0]) || 0;
     g = parseInt(parts[1]) || 0;
     b = parseInt(parts[2]) || 0;
@@ -199,13 +216,20 @@ export function HTMLMainImageLayer({
   const [isResizing, setIsResizing] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
   const resizeStartRef = useRef<{ mouseX: number; mouseY: number; scale: number; handle: string } | null>(null);
-  const rotateStartRef = useRef<{ centerX: number; centerY: number; startAngle: number; startRotation: number } | null>(null);
+  const rotateStartRef = useRef<{ centerX: number; centerY: number; startAngle: number; startRotation: number } | null>(
+    null
+  );
 
   const imageFilter = useMemo(() => buildImageFilter(imageFilters), [imageFilters]);
-  const isStyleFrame = ['glass-light', 'glass-dark', 'outline-light', 'border-light', 'border-dark'].includes(frame.type);
+  const isStyleFrame = ['glass-light', 'glass-dark', 'outline-light', 'border-light', 'border-dark'].includes(
+    frame.type
+  );
   // Style frames use box-shadow on the frame container; others use drop-shadow filter on the outer div
-  const shadowFilter = useMemo(() => isStyleFrame ? undefined : buildDropShadowFilter(shadow), [shadow, isStyleFrame]);
-  const frameBoxShadow = useMemo(() => isStyleFrame ? buildBoxShadow(shadow) : undefined, [shadow, isStyleFrame]);
+  const shadowFilter = useMemo(
+    () => (isStyleFrame ? undefined : buildDropShadowFilter(shadow)),
+    [shadow, isStyleFrame]
+  );
+  const frameBoxShadow = useMemo(() => (isStyleFrame ? buildBoxShadow(shadow) : undefined), [shadow, isStyleFrame]);
 
   const isDark = frame.type.includes('dark');
   const isArcFrame = frame.type === 'arc-light' || frame.type === 'arc-dark';
@@ -214,20 +238,32 @@ export function HTMLMainImageLayer({
   const isPolaroid = frame.type === 'photograph';
 
   // Handle drag start
-  const handleMouseDown = useCallback((e: React.PointerEvent) => {
-    if (isResizing || isRotating) return;
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-    onDragStateChange?.(true);
-    setDragStart({
-      x: e.clientX - screenshot.offsetX,
-      y: e.clientY - screenshot.offsetY,
-    });
-    setIsMainImageSelected(true);
-    setSelectedOverlayId(null);
-    setSelectedTextId(null);
-  }, [isResizing, isRotating, screenshot.offsetX, screenshot.offsetY, setIsMainImageSelected, setSelectedOverlayId, setSelectedTextId, onDragStateChange]);
+  const handleMouseDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (isResizing || isRotating) return;
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+      onDragStateChange?.(true);
+      setDragStart({
+        x: e.clientX - screenshot.offsetX,
+        y: e.clientY - screenshot.offsetY,
+      });
+      setIsMainImageSelected(true);
+      setSelectedOverlayId(null);
+      setSelectedTextId(null);
+    },
+    [
+      isResizing,
+      isRotating,
+      screenshot.offsetX,
+      screenshot.offsetY,
+      setIsMainImageSelected,
+      setSelectedOverlayId,
+      setSelectedTextId,
+      onDragStateChange,
+    ]
+  );
 
   // Handle resize start
   const handleResizeMouseDown = useCallback((e: React.PointerEvent, handle: string) => {
@@ -284,10 +320,18 @@ export function HTMLMainImageLayer({
       const dy = e.clientY - start.mouseY;
 
       // Determine direction multiplier based on handle corner
-      let dirX = 1, dirY = 1;
-      if (start.handle === 'tl') { dirX = -1; dirY = -1; }
-      else if (start.handle === 'tr') { dirX = 1; dirY = -1; }
-      else if (start.handle === 'bl') { dirX = -1; dirY = 1; }
+      let dirX = 1,
+        dirY = 1;
+      if (start.handle === 'tl') {
+        dirX = -1;
+        dirY = -1;
+      } else if (start.handle === 'tr') {
+        dirX = 1;
+        dirY = -1;
+      } else if (start.handle === 'bl') {
+        dirX = -1;
+        dirY = 1;
+      }
       // 'br' is default (1, 1)
 
       // Project mouse movement onto diagonal direction
@@ -314,25 +358,28 @@ export function HTMLMainImageLayer({
   }, [isResizing]);
 
   // Handle rotate start
-  const handleRotateMouseDown = useCallback((e: React.PointerEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsRotating(true);
+  const handleRotateMouseDown = useCallback(
+    (e: React.PointerEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsRotating(true);
 
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
 
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const startAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const startAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
 
-    rotateStartRef.current = {
-      centerX,
-      centerY,
-      startAngle,
-      startRotation: screenshot.rotation,
-    };
-  }, [screenshot.rotation]);
+      rotateStartRef.current = {
+        centerX,
+        centerY,
+        startAngle,
+        startRotation: screenshot.rotation,
+      };
+    },
+    [screenshot.rotation]
+  );
 
   // Handle rotate move
   useEffect(() => {
@@ -363,17 +410,20 @@ export function HTMLMainImageLayer({
   }, [isRotating, setScreenshot]);
 
   // Handle remove image — only clears the image, keeps overlays/shapes/filters intact
-  const handleRemoveImage = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onRemoveImage) {
-      onRemoveImage();
-    } else {
-      const state = useImageStore.getState();
-      if (state.uploadedImageUrl) URL.revokeObjectURL(state.uploadedImageUrl);
-      state.setUploadedImageUrl(null, null);
-    }
-  }, [onRemoveImage]);
+  const handleRemoveImage = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (onRemoveImage) {
+        onRemoveImage();
+      } else {
+        const state = useImageStore.getState();
+        if (state.uploadedImageUrl) URL.revokeObjectURL(state.uploadedImageUrl);
+        state.setUploadedImageUrl(null, null);
+      }
+    },
+    [onRemoveImage]
+  );
 
   // Calculate position
   const centerX = canvasW / 2 + screenshot.offsetX;
@@ -398,19 +448,14 @@ export function HTMLMainImageLayer({
   const arcBorderWidth = frame.width || 8;
   const arcDefaultOpacity = frame.type === 'arc-light' ? 0.5 : 0.7;
   const arcOpacity = frame.opacity ?? arcDefaultOpacity;
-  const arcBorderColor = frame.type === 'arc-light'
-    ? `rgba(255, 255, 255, ${arcOpacity})`
-    : `rgba(0, 0, 0, ${arcOpacity})`;
+  const arcBorderColor =
+    frame.type === 'arc-light' ? `rgba(255, 255, 255, ${arcOpacity})` : `rgba(0, 0, 0, ${arcOpacity})`;
 
   // Safari toolbar — uses shared component
-  const renderMacOSTitleBar = () => (
-    <SafariToolbar windowHeader={windowHeader} isDark={isDark} title={frame.title} />
-  );
+  const renderMacOSTitleBar = () => <SafariToolbar windowHeader={windowHeader} isDark={isDark} title={frame.title} />;
 
   // Chrome toolbar — uses shared component
-  const renderWindowsTitleBar = () => (
-    <ChromeToolbar windowHeader={windowHeader} isDark={isDark} title={frame.title} />
-  );
+  const renderWindowsTitleBar = () => <ChromeToolbar windowHeader={windowHeader} isDark={isDark} title={frame.title} />;
 
   // Get frame container styles based on frame type
   const getFrameContainerStyle = (): React.CSSProperties => {
@@ -571,15 +616,9 @@ export function HTMLMainImageLayer({
         filter: shadowFilter,
       }}
     >
-      {/* Frame container */}
       <div style={getFrameContainerStyle()}>
-        {/* macOS title bar */}
         {showFrame && isMacFrame && renderMacOSTitleBar()}
-
-        {/* Windows title bar */}
         {showFrame && isWinFrame && renderWindowsTitleBar()}
-
-        {/* Image container */}
         <div style={getImageContainerStyle()}>
           <img
             src={image.src}
@@ -597,14 +636,12 @@ export function HTMLMainImageLayer({
           />
         </div>
       </div>
-
-      {/* Resize handles — visible when selected, excluded from export */}
       {isMainImageSelected && (
         <>
           {(['tl', 'tr', 'bl', 'br'] as const).map((handle) => {
             const isTop = handle[0] === 't';
             const isLeft = handle[1] === 'l';
-            const cursor = (handle === 'tl' || handle === 'br') ? 'nwse-resize' : 'nesw-resize';
+            const cursor = handle === 'tl' || handle === 'br' ? 'nwse-resize' : 'nesw-resize';
             return (
               <div
                 key={handle}
@@ -628,8 +665,6 @@ export function HTMLMainImageLayer({
               />
             );
           })}
-
-          {/* Connector line from image to rotate handle */}
           <div
             data-resize-handle="true"
             style={{
@@ -644,8 +679,6 @@ export function HTMLMainImageLayer({
               zIndex: 20,
             }}
           />
-
-          {/* Rotate handle */}
           <div
             data-resize-handle="true"
             onPointerDown={handleRotateMouseDown}
@@ -668,13 +701,20 @@ export function HTMLMainImageLayer({
               justifyContent: 'center',
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(201, 212, 255, 0.8)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="rgba(201, 212, 255, 0.8)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M21.5 2v6h-6" />
               <path d="M21.34 13.72A10 10 0 1 1 18.57 4.62L21.5 8" />
             </svg>
           </div>
-
-          {/* Remove button */}
           <div
             data-resize-handle="true"
             onClick={handleRemoveImage}
@@ -697,7 +737,15 @@ export function HTMLMainImageLayer({
               justifyContent: 'center',
             }}
           >
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(239, 68, 68, 0.8)" strokeWidth="3" strokeLinecap="round">
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="rgba(239, 68, 68, 0.8)"
+              strokeWidth="3"
+              strokeLinecap="round"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>

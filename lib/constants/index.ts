@@ -5,4 +5,3 @@ export * from './fonts';
 export * from './gradient-colors';
 export * from './solid-colors';
 export * from './presets';
-

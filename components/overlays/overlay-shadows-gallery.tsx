@@ -1,33 +1,48 @@
-'use client'
+'use client';
 
-import { useImageStore } from '@/lib/store'
-import { useResponsiveCanvasDimensions } from '@/hooks/useAspectRatioDimensions'
+import { useImageStore } from '@/lib/store';
+import { useResponsiveCanvasDimensions } from '@/hooks/useAspectRatioDimensions';
 
 const OVERLAY_SHADOW_IDS = [
-  '023', '001', '002', '007', '017', '019', '031', '037', '041', '050',
-  '053', '057', '063', '064', '082', '083', '088', '097', '099'
-]
+  '023',
+  '001',
+  '002',
+  '007',
+  '017',
+  '019',
+  '031',
+  '037',
+  '041',
+  '050',
+  '053',
+  '057',
+  '063',
+  '064',
+  '082',
+  '083',
+  '088',
+  '097',
+  '099',
+];
 
-const OVERLAY_SHADOW_URLS = OVERLAY_SHADOW_IDS.map(
-  (id) => `/overlay-shadow/${id}.webp`
-)
+const OVERLAY_SHADOW_URLS = OVERLAY_SHADOW_IDS.map((id) => `/overlay-shadow/${id}.webp`);
 
 export function OverlayShadowsGallery() {
-  const { addImageOverlay, imageOverlays, removeImageOverlay } = useImageStore()
-  const responsiveDimensions = useResponsiveCanvasDimensions()
+  const { addImageOverlay, imageOverlays, removeImageOverlay } = useImageStore();
+  const responsiveDimensions = useResponsiveCanvasDimensions();
 
   const getFullCanvasOverlay = () => {
-    const canvasWidth = responsiveDimensions.width || 1920
-    const canvasHeight = responsiveDimensions.height || 1080
+    const canvasWidth = responsiveDimensions.width || 1920;
+    const canvasHeight = responsiveDimensions.height || 1080;
     return {
       x: canvasWidth / 2,
       y: canvasHeight / 2,
       size: Math.max(canvasWidth, canvasHeight),
-    }
-  }
+    };
+  };
 
   const handleAddShadow = (shadowUrl: string) => {
-    const { x, y, size } = getFullCanvasOverlay()
+    const { x, y, size } = getFullCanvasOverlay();
     addImageOverlay({
       src: shadowUrl,
       position: { x, y },
@@ -37,16 +52,16 @@ export function OverlayShadowsGallery() {
       flipX: false,
       flipY: false,
       isVisible: true,
-    })
-  }
+    });
+  };
 
   const handleRemoveShadows = () => {
     imageOverlays.forEach((overlay) => {
       if (typeof overlay.src === 'string' && overlay.src.includes('overlay-shadow')) {
-        removeImageOverlay(overlay.id)
+        removeImageOverlay(overlay.id);
       }
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -55,9 +70,7 @@ export function OverlayShadowsGallery() {
       </div>
 
       <div className="overflow-y-auto scrollbar-hide p-1.5 max-h-64">
-        <div
-          className="grid grid-cols-4 gap-2"
-        >
+        <div className="grid grid-cols-4 gap-2">
           <button
             onClick={handleRemoveShadows}
             className="flex items-center justify-center w-16 h-9 text-xs text-muted-foreground cursor-pointer hover:scale-105 transition-all duration-200"
@@ -82,6 +95,5 @@ export function OverlayShadowsGallery() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

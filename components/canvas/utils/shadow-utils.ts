@@ -57,20 +57,20 @@ export function getShadowProps(shadow: ShadowConfig): ShadowProps | Record<strin
       side === 'bottom'
         ? { x: elevation * 0.3, y: elevation } // Slight right offset for natural look
         : side === 'right'
-        ? { x: elevation, y: elevation * 0.3 } // Slight bottom offset
-        : side === 'bottom-right'
-        ? { x: diag, y: diag }
-        : { x: elevation * 0.5, y: elevation * 0.8 }; // Default: more bottom, some right
+          ? { x: elevation, y: elevation * 0.3 } // Slight bottom offset
+          : side === 'bottom-right'
+            ? { x: diag, y: diag }
+            : { x: elevation * 0.5, y: elevation * 0.8 }; // Default: more bottom, some right
     x = offset.x;
     y = offset.y;
   }
 
   // Parse color and darken it for better shadow visibility
-  const colorMatch = color.match(/rgba?\(([^)]+)\)/)
-  let shadowColor = 'rgba(0, 0, 0, 1)' // Default to black for best visibility
+  const colorMatch = color.match(/rgba?\(([^)]+)\)/);
+  let shadowColor = 'rgba(0, 0, 0, 1)'; // Default to black for best visibility
 
   if (colorMatch) {
-    const parts = colorMatch[1].split(',').map(s => s.trim())
+    const parts = colorMatch[1].split(',').map((s) => s.trim());
     const r = parseInt(parts[0]) || 0;
     const g = parseInt(parts[1]) || 0;
     const b = parseInt(parts[2]) || 0;
@@ -78,9 +78,9 @@ export function getShadowProps(shadow: ShadowConfig): ShadowProps | Record<strin
     const darkR = Math.floor(r * 0.3);
     const darkG = Math.floor(g * 0.3);
     const darkB = Math.floor(b * 0.3);
-    shadowColor = `rgba(${darkR}, ${darkG}, ${darkB}, 1)`
+    shadowColor = `rgba(${darkR}, ${darkG}, ${darkB}, 1)`;
   } else if (color.startsWith('#')) {
-    const hex = color.replace('#', '')
+    const hex = color.replace('#', '');
     const r = parseInt(hex.slice(0, 2), 16) || 0;
     const g = parseInt(hex.slice(2, 4), 16) || 0;
     const b = parseInt(hex.slice(4, 6), 16) || 0;
@@ -88,7 +88,7 @@ export function getShadowProps(shadow: ShadowConfig): ShadowProps | Record<strin
     const darkR = Math.floor(r * 0.3);
     const darkG = Math.floor(g * 0.3);
     const darkB = Math.floor(b * 0.3);
-    shadowColor = `rgba(${darkR}, ${darkG}, ${darkB}, 1)`
+    shadowColor = `rgba(${darkR}, ${darkG}, ${darkB}, 1)`;
   }
 
   // Ensure minimum blur for soft shadows
@@ -104,4 +104,3 @@ export function getShadowProps(shadow: ShadowConfig): ShadowProps | Record<strin
     shadowOpacity: effectiveIntensity,
   };
 }
-

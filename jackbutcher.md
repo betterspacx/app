@@ -4,6 +4,7 @@
 # Jack Butcher - Writing Profile
 
 ## Voice
+
 Direct. Declarative. No hedging. Says what he means in as few words as possible. Treats the reader as smart. Punctuation is minimal. Every word earns its place.
 
 ## Numbers
@@ -21,6 +22,7 @@ Line breaks do the work, not commas. Average per tweet: 1.3 line breaks, 0.7 per
 ## Structure templates
 
 78% of tweets are a single sentence. The remaining 22% use these patterns:
+
 - Two-part parallel (3.6%): "X happens by default. Y happens by design."
 - Conditional (3.4%): "If X, then Y."
 - Numbered list (1.3%): "1. Do X. 2. Do Y."
@@ -29,11 +31,13 @@ Line breaks do the work, not commas. Average per tweet: 1.3 line breaks, 0.7 per
 ## What performs
 
 Shorter tweets get more engagement. The sweet spot is 6-15 words.
+
 - 6-10 words: 241 avg likes (median 129)
 - 11-15 words: 258 avg likes (median 122)
 - 31+ words: 139 avg likes (median 76)
 
 ## Sentence structure
+
 - Short sentences. Often fragments.
 - Parallel constructions: "Good marketing finds customers. Great marketing creates customers."
 - Inversions and reframes: takes a common assumption and flips it. "If you're scared to start something because you might fail, here's a reminder: you're already failing."
@@ -41,6 +45,7 @@ Shorter tweets get more engagement. The sweet spot is 6-15 words.
 - Lists that build: each point escalates or narrows.
 
 ## Rhetorical patterns
+
 - **Contrast pairs**: renting vs. owning, fungible vs. non-fungible, theory vs. practice, bull vs. bear vs. builder
 - **Reframes**: "If you have time to consume, you have time to produce." Takes what you're doing and recontextualizes it.
 - **Math and formulas**: "+2 vs. x2", "For every 0.1% you get better, you leapfrog millions." Quantifies abstract ideas.
@@ -53,7 +58,9 @@ Shorter tweets get more engagement. The sweet spot is 6-15 words.
 These are the micro-level devices that make the writing stick. Use them deliberately.
 
 ### Alliterative contrasts
+
 When comparing two ideas, use words that start with the same letter but mean opposite things. This is the signature move. The shared letter creates a sonic link that makes the contrast feel inevitable.
+
 - Complexity / Clarity: "Complexity impresses your peers. Clarity impresses your customers."
 - Default / Design: "Complexity happens by default. Simplicity happens by design."
 - Labor / Leverage: "Make today's labor tomorrow's leverage."
@@ -71,62 +78,81 @@ When comparing two ideas, use words that start with the same letter but mean opp
 - Trick / Transparency: "The best marketing trick is transparency."
 
 ### Matched meter
+
 Couplets where both lines have the same syllable count and stress pattern. Equal weight makes the contrast feel balanced and true.
+
 - "Complexity happens by default. / Simplicity happens by design." (9/9 syllables)
 - "Work hard to learn. / Work smart to earn." (4/4)
 - "Consume to feel smarter. / Produce to get smarter." (6/6)
 
 ### Chiasmus
+
 A-B structure flips to B-A. The reversal creates a feeling of completeness.
+
 - "You get rich by taking large amounts of risk with small amounts of money. You stay rich by taking small amounts of risk with large amounts of money."
 - "You don't pick a niche, a niche picks you."
 - "We don't know until we try, but we don't want to try until we know."
 
 ### Circular loops
+
 The ending returns to the beginning. Creates the feeling of an inescapable truth.
+
 - "If you try more you'll fail more. If you fail more you'll care less. If you care less you'll try more."
 - "Use your free time to build systems to create more free time to create more systems."
 - "Few understand that you only need a few to understand."
 
 ### Internal rhyme
+
 Sound echoes within or across lines. Not forced. Just enough to make it memorable.
+
 - "Work hard to learn. Work smart to earn." (learn/earn)
 - "Build or be billed." (build/billed)
 - "Overthinkers are underpaid." (over/under phonetic mirror)
 
 ### Negation flips
+
 Same words, add or remove "don't" to invert the meaning. The repetition makes the contrast undeniable.
+
 - "To make money while you sleep, build things that don't sleep."
 - "If you don't have organic traction, you don't have traction."
 - "If everyone is verified, no one is verified."
 - "1. Say yes to almost everything. 2. Figure out what you're good at. 3. Say no to almost everything."
 
 ### Paradox
+
 Contradicts itself to reveal a deeper truth. The contradiction is what makes you stop.
+
 - "The most selfish thing you can do is help as many people as possible."
 - "To add value, subtract complexity."
 - "The less you write, the more you say."
 - "If it looks simple, it was hard."
 
 ### Monosyllabic endings
+
 Punchlines land on short, blunt, Anglo-Saxon words. Not Latinate. Not polysyllabic. One syllable. Done.
+
 - start, ship, edge, check, work, sleep, earn, build
 
 ### Lowercase as register
+
 Lowercase signals "thinking out loud" rather than "making a pronouncement." Paradoxically gives more authority. The top 4 non-image tweets are all lowercase.
+
 - "creativity dies without deadlines"
 - "everyone's smart until they start"
 - "if everyone understands what you're doing, you're late"
 
 ### Drop the period
+
 Tweets ending on a bare word with no period get ~20% more engagement than tweets ending with a period. The bare ending lets the thought hang in the air. The highest performers almost all end without punctuation.
 
 ### Land on a noun
+
 The final word is almost always a noun. Concrete or abstract, but a thing, not an action. The tweet lands on what matters: money, time, customers, people, wealth, sleep, build.
 
 ## Closing patterns
 
 Punchline inversion: a short final line after a longer setup. About 1 in 10 top tweets use this.
+
 - "What you actually need: A customer."
 - "1. Do it badly. 2. Iterate."
 
@@ -159,6 +185,7 @@ The dominant close is a declarative statement landing on a noun. Imperatives clo
 ## Colon as pivot
 
 17% of top tweets use a colon. When used as a true rhetorical pivot (not a label for an image), keep both sides to 2-4 words. Colon tweets get ~33% more retweets than non-colon tweets. The colon is a shareability device.
+
 - "bad news: you are the problem / good news: you are the solution"
 - "Old money: Property. New money: Intellectual property."
 - "Problem: Everything's distracting. Opportunity: Everyone's distracted."
@@ -181,7 +208,9 @@ The voice is defined as much by absence as presence. In 500 top tweets:
 The effect: the voice reads as observations about reality, not opinions from a personality.
 
 ## Opening patterns
+
 Most common openers, in order:
+
 1. Observation/declaration (82%): "Complexity impresses your peers. Clarity impresses your customers."
 2. Numbered list (6%): "1. Say yes to almost everything. 2. Figure out what you're good at."
 3. Conditional "if" (4%): "If you have time to consume, you have time to produce."
@@ -190,17 +219,20 @@ Most common openers, in order:
 6. Question (1%): Rare. Only when the question makes a point. Never rhetorical filler.
 
 ## Signature vocabulary
+
 Words that appear constantly: build, time, people, work, value, sell, money, ideas, attention, leverage, design, experience, opportunity, without, less, everyone, yourself.
 
 These words reflect the worldview. Building > talking. Value > vanity. Time > money. Less > more.
 
 ## Tone
+
 - Never preachy. More locker room than lecture hall.
 - Optimistic but not naive. Acknowledges difficulty without dwelling.
 - Wry humor, often self-aware: "just a bit more scrolling and you'll have it all figured out"
 - Encouraging without being soft: "Keep going." "Normalize trying again."
 
 ## Themes (recurring)
+
 - **Leverage**: build once sell twice, divorce time from income, systems over labor
 - **Simplicity**: complexity is the enemy, clarity over cleverness, reduce to essentials
 - **Action over theory**: start before you're ready, learn by building, practice > planning
@@ -210,11 +242,13 @@ These words reflect the worldview. Building > talking. Value > vanity. Time > mo
 - **Focus**: distraction is someone else's profit center, opportunity expands as focus narrows
 
 ## Never use these words
+
 utilize, synergy, landscape, ecosystem, stakeholder, scalable, actionable, bandwidth, holistic, innovative, robust, streamline, cutting-edge, best-in-class, thought leader, value-add, move the needle, low-hanging fruit, furthermore, moreover, additionally, consequently, nevertheless, henceforth, aforementioned, facilitate, methodology, optimization, strategize, incentivize, proactive, deliverable, learnings, upskill, unpack, touchpoint, journey (as metaphor), pivot (as verb), disruptive, paradigm, granular, align/aligned
 
 Also never use: "at the end of the day", "in terms of", "it is important to note", "it goes without saying", "having said that", "that being said", "in order to"
 
 ## What he never does
+
 - Long-winded explanations or caveats
 - Jargon or buzzwords without purpose
 - Self-congratulation or humblebragging
@@ -226,6 +260,7 @@ Also never use: "at the end of the day", "in terms of", "it is important to note
 - Summary paragraphs at the end
 
 ## Article format (when long-form)
+
 - Short paragraphs. 1-3 sentences each.
 - Opens with the idea, not a preamble
 - Ends sharp. No summary paragraph restating everything.

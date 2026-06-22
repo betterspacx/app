@@ -7,11 +7,7 @@ import type { ImageOverlay } from '@/lib/store';
 const MAX_RETRIES = 2;
 const RETRY_DELAY = 800;
 
-function loadImageWithRetry(
-  url: string,
-  retries: number = 0,
-  signal?: AbortSignal
-): Promise<HTMLImageElement> {
+function loadImageWithRetry(url: string, retries: number = 0, signal?: AbortSignal): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
       reject(new DOMException('Aborted', 'AbortError'));
@@ -28,9 +24,7 @@ function loadImageWithRetry(
       }
       if (retries < MAX_RETRIES) {
         setTimeout(() => {
-          const bustUrl = url.includes('?')
-            ? `${url}&_r=${Date.now()}`
-            : `${url}?_r=${Date.now()}`;
+          const bustUrl = url.includes('?') ? `${url}&_r=${Date.now()}` : `${url}?_r=${Date.now()}`;
           loadImageWithRetry(bustUrl, retries + 1, signal)
             .then(resolve)
             .catch(reject);
@@ -85,16 +79,14 @@ export function useBackgroundImage(
 }
 
 export function useOverlayImages(imageOverlays: ImageOverlay[]) {
-  const [loadedOverlayImages, setLoadedOverlayImages] = useState<
-    Record<string, HTMLImageElement>
-  >({});
+  const [loadedOverlayImages, setLoadedOverlayImages] = useState<Record<string, HTMLImageElement>>({});
 
   useEffect(() => {
     // Create AbortController for cleanup
     const abortController = new AbortController();
 
     const loadOverlays = async () => {
-      const visibleOverlays = imageOverlays.filter(overlay => overlay.isVisible);
+      const visibleOverlays = imageOverlays.filter((overlay) => overlay.isVisible);
 
       if (visibleOverlays.length === 0) {
         setLoadedOverlayImages({});
@@ -102,7 +94,7 @@ export function useOverlayImages(imageOverlays: ImageOverlay[]) {
       }
 
       // Create loading promises for all overlays in parallel
-      const loadPromises = visibleOverlays.map(overlay => {
+      const loadPromises = visibleOverlays.map((overlay) => {
         return new Promise<{ id: string; img: HTMLImageElement } | null>((resolve) => {
           // Check if aborted before starting
           if (abortController.signal.aborted) {
@@ -111,14 +103,9 @@ export function useOverlayImages(imageOverlays: ImageOverlay[]) {
           }
 
           const isR2Overlay =
-            isOverlayPath(overlay.src) ||
-            (typeof overlay.src === 'string' &&
-              overlay.src.startsWith('overlays/'));
+            isOverlayPath(overlay.src) || (typeof overlay.src === 'string' && overlay.src.startsWith('overlays/'));
 
-          const imageUrl =
-            isR2Overlay && !overlay.isCustom
-              ? getR2ImageUrl({ src: overlay.src })
-              : overlay.src;
+          const imageUrl = isR2Overlay && !overlay.isCustom ? getR2ImageUrl({ src: overlay.src }) : overlay.src;
 
           const isR2Asset = imageUrl.startsWith('/backgrounds/');
 

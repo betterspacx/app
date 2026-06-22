@@ -3,12 +3,7 @@
 
 import * as React from 'react';
 import { useDropzone } from 'react-dropzone';
-import {
-  Camera01Icon,
-  CommandIcon,
-  Globe02Icon,
-  Loading03Icon,
-} from 'hugeicons-react';
+import { Camera01Icon, CommandIcon, Globe02Icon, Loading03Icon } from 'hugeicons-react';
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from '@/lib/constants';
 import { useEditorStore, useImageStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
@@ -46,10 +41,7 @@ export function CleanUploadState() {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   // Crossfade state
-  const backgroundStyle = React.useMemo(
-    () => getBackgroundCSS(backgroundConfig),
-    [backgroundConfig]
-  );
+  const backgroundStyle = React.useMemo(() => getBackgroundCSS(backgroundConfig), [backgroundConfig]);
   const [activeLayer, setActiveLayer] = React.useState<'a' | 'b'>('a');
   const [layerAStyle, setLayerAStyle] = React.useState<React.CSSProperties>(backgroundStyle);
   const [layerBStyle, setLayerBStyle] = React.useState<React.CSSProperties>(backgroundStyle);
@@ -67,9 +59,7 @@ export function CleanUploadState() {
     }
 
     const prev = prevConfigRef.current;
-    const changed =
-      prev.type !== backgroundConfig.type ||
-      prev.value !== backgroundConfig.value;
+    const changed = prev.type !== backgroundConfig.type || prev.value !== backgroundConfig.value;
 
     if (!changed) {
       if (activeLayer === 'a') setLayerAStyle(backgroundStyle);
@@ -85,11 +75,15 @@ export function CleanUploadState() {
       if (activeLayer === 'a') {
         setLayerBStyle(style);
         setShowTransition(true);
-        requestAnimationFrame(() => { if (!cancelled) setActiveLayer('b'); });
+        requestAnimationFrame(() => {
+          if (!cancelled) setActiveLayer('b');
+        });
       } else {
         setLayerAStyle(style);
         setShowTransition(true);
-        requestAnimationFrame(() => { if (!cancelled) setActiveLayer('a'); });
+        requestAnimationFrame(() => {
+          if (!cancelled) setActiveLayer('a');
+        });
       }
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => setShowTransition(false), TRANSITION_DURATION + 50);
@@ -103,12 +97,18 @@ export function CleanUploadState() {
             applyNewBackground({ ...backgroundStyle, backgroundImage: `url(${loadedUrl})` });
           })
           .catch(() => applyNewBackground(backgroundStyle));
-        return () => { cancelled = true; if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+        return () => {
+          cancelled = true;
+          if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
       }
     }
 
     applyNewBackground(backgroundStyle);
-    return () => { cancelled = true; if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+    return () => {
+      cancelled = true;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [backgroundConfig, backgroundStyle, activeLayer]);
 
   const validateFile = React.useCallback((file: File): string | null => {
@@ -159,7 +159,10 @@ export function CleanUploadState() {
     maxSize: MAX_IMAGE_SIZE,
     multiple: true,
     noClick: true,
-    onDragEnter: () => { setIsDragActive(true); setError(null); },
+    onDragEnter: () => {
+      setIsDragActive(true);
+      setError(null);
+    },
     onDragLeave: () => setIsDragActive(false),
     onDropRejected: (rejectedFiles) => {
       if (rejectedFiles.length > 0) {
@@ -261,7 +264,6 @@ export function CleanUploadState() {
       onPaste={handlePaste}
       className="relative w-full h-full flex items-center justify-center outline-none overflow-hidden"
     >
-      {/* Default Background Layer */}
       <div
         style={{
           position: 'absolute',
@@ -270,7 +272,6 @@ export function CleanUploadState() {
           zIndex: -1,
         }}
       />
-      {/* Background Layer A */}
       <div
         style={{
           position: 'absolute',
@@ -281,7 +282,6 @@ export function CleanUploadState() {
           zIndex: 0,
         }}
       />
-      {/* Background Layer B */}
       <div
         style={{
           position: 'absolute',
@@ -293,8 +293,6 @@ export function CleanUploadState() {
         }}
       />
       <input {...getInputProps()} />
-
-      {/* Upload area with plus icon */}
       <div
         className={cn(
           'relative z-10 flex flex-col items-center justify-center cursor-pointer',
@@ -303,24 +301,24 @@ export function CleanUploadState() {
           'border border-foreground/10',
           'transition-all duration-300 ease-out',
           'hover:bg-foreground/8 hover:border-foreground/15',
-          active && 'bg-primary/10 border-primary/30 scale-[1.01]',
+          active && 'bg-primary/10 border-primary/30 scale-[1.01]'
         )}
         onClick={open}
       >
-        {/* Plus icon */}
         <svg
           width="48"
           height="48"
           viewBox="0 0 48 48"
           fill="none"
           className="transition-colors duration-200 mb-4"
-          style={{ color: active ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.45)', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.3))' }}
+          style={{
+            color: active ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.45)',
+            filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.3))',
+          }}
         >
           <line x1="24" y1="8" x2="24" y2="40" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
           <line x1="8" y1="24" x2="40" y2="24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
         </svg>
-
-        {/* Placeholder text */}
         <p
           className="text-sm font-medium mb-1"
           style={{ color: 'rgba(255,255,255,0.7)', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}
@@ -332,7 +330,11 @@ export function CleanUploadState() {
           <div className="hidden sm:flex items-center gap-1.5 text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
             <kbd
               className="px-1.5 py-0.5 rounded font-medium text-xs"
-              style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)' }}
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                color: 'rgba(255,255,255,0.7)',
+              }}
             >
               <span className="flex items-center gap-0.5">
                 <CommandIcon size={10} />V
@@ -341,18 +343,25 @@ export function CleanUploadState() {
             <span>to paste</span>
           </div>
         )}
-
-        {/* Screenshot URL input */}
         {!active && (
-          <div className="hidden lg:flex flex-col items-center gap-2 mt-4 w-full max-w-[280px]" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="hidden lg:flex flex-col items-center gap-2 mt-4 w-full max-w-[280px]"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center gap-2 w-full max-w-[140px]">
               <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.15)' }} />
-              <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.4)' }}>or</span>
+              <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                or
+              </span>
               <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.15)' }} />
             </div>
             <div className="flex gap-1.5 w-full">
               <div className="relative flex-1">
-                <Globe02Icon size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'rgba(255,255,255,0.45)' }} />
+                <Globe02Icon
+                  size={14}
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2"
+                  style={{ color: 'rgba(255,255,255,0.45)' }}
+                />
                 <Input
                   type="url"
                   placeholder="Enter website URL..."

@@ -2,17 +2,17 @@
 
 ## Commands
 
-| Command | Action |
-|---------|--------|
-| `pnpm run dev` | Start dev server (forced webpack, not Turbopack) |
-| `pnpm run build` | DB codegen → Next build |
-| `pnpm run lint` | ESLint 9 flat config |
-| `pnpm run lint:fix` | Auto-fix |
-| `pnpm run db:generate` | Drizzle schema → migration |
-| `pnpm run db:push` | Drizzle push to dev.db |
-| `pnpm run db:migrate` | Drizzle migration (for D1 deployment) |
-| `pnpm run db:studio` | Drizzle Studio UI |
-| `pnpm start` | Production server |
+| Command                | Action                                           |
+| ---------------------- | ------------------------------------------------ |
+| `pnpm run dev`         | Start dev server (forced webpack, not Turbopack) |
+| `pnpm run build`       | DB codegen → Next build                          |
+| `pnpm run lint`        | ESLint 9 flat config                             |
+| `pnpm run lint:fix`    | Auto-fix                                         |
+| `pnpm run db:generate` | Drizzle schema → migration                       |
+| `pnpm run db:push`     | Drizzle push to dev.db                           |
+| `pnpm run db:migrate`  | Drizzle migration (for D1 deployment)            |
+| `pnpm run db:studio`   | Drizzle Studio UI                                |
+| `pnpm start`           | Production server                                |
 
 `pnpm install` enforced via `only-allow pnpm` preinstall hook.
 

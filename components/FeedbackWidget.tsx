@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import Script from 'next/script'
+import Script from 'next/script';
 
 export function FeedbackWidget() {
   return (
@@ -8,5 +8,5 @@ export function FeedbackWidget() {
       <Script src="https://cdn.palmframe.com/embed.js" strategy="lazyOnload" />
       <palmframe-widget project="qNssccWO4DzG" />
     </>
-  )
+  );
 }

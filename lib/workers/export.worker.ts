@@ -1,12 +1,12 @@
 /**
  * Export Web Worker
- * 
+ *
  * Handles heavy image processing operations off the main thread:
  * - Noise texture generation (Gaussian noise)
  * - Canvas blur operations
  * - Canvas opacity operations
  * - Image compositing
- * 
+ *
  * Uses OffscreenCanvas for canvas operations in the worker context.
  */
 
@@ -91,7 +91,8 @@ const ctx: Worker = self as unknown as Worker;
  * Generate Gaussian (normal) distributed random number using Box-Muller transform
  */
 function gaussianRandom(mean: number = 0, stdDev: number = 1): number {
-  let u = 0, v = 0;
+  let u = 0,
+    v = 0;
   while (u === 0) u = Math.random();
   while (v === 0) v = Math.random();
   const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
@@ -104,19 +105,19 @@ function gaussianRandom(mean: number = 0, stdDev: number = 1): number {
 function generateNoiseTexture(width: number, height: number, intensity: number): ImageData {
   const imageData = new ImageData(width, height);
   const data = imageData.data;
-  
+
   const stdDev = intensity * 50;
-  
+
   for (let i = 0; i < data.length; i += 4) {
     const noise = gaussianRandom(128, stdDev);
     const value = Math.max(0, Math.min(255, Math.round(noise)));
-    
-    data[i] = value;     // R
+
+    data[i] = value; // R
     data[i + 1] = value; // G
     data[i + 2] = value; // B
-    data[i + 3] = 255;   // A
+    data[i + 3] = 255; // A
   }
-  
+
   return imageData;
 }
 
@@ -124,12 +125,7 @@ function generateNoiseTexture(width: number, height: number, intensity: number):
  * Apply blur using OffscreenCanvas
  * Note: OffscreenCanvas filter support varies by browser
  */
-function applyBlur(
-  imageData: ImageData,
-  blurAmount: number,
-  width: number,
-  height: number
-): ImageData {
+function applyBlur(imageData: ImageData, blurAmount: number, width: number, height: number): ImageData {
   if (blurAmount <= 0) {
     return imageData;
   }
@@ -143,18 +139,18 @@ function applyBlur(
 
   const canvas = new OffscreenCanvas(width, height);
   const canvasCtx = canvas.getContext('2d');
-  
+
   if (!canvasCtx) {
     return imageData;
   }
 
   // Put the image data
   canvasCtx.putImageData(imageData, 0, 0);
-  
+
   // Create a temporary canvas to draw blurred result
   const blurredCanvas = new OffscreenCanvas(width, height);
   const blurredCtx = blurredCanvas.getContext('2d');
-  
+
   if (!blurredCtx) {
     return imageData;
   }
@@ -171,12 +167,7 @@ function applyBlur(
 /**
  * Apply opacity to image data
  */
-function applyOpacity(
-  imageData: ImageData,
-  opacity: number,
-  width: number,
-  height: number
-): ImageData {
+function applyOpacity(imageData: ImageData, opacity: number, width: number, height: number): ImageData {
   if (opacity >= 1) {
     return imageData;
   }
@@ -192,7 +183,7 @@ function applyOpacity(
 
   // Apply opacity to alpha channel
   for (let i = 0; i < srcData.length; i += 4) {
-    destData[i] = srcData[i];         // R
+    destData[i] = srcData[i]; // R
     destData[i + 1] = srcData[i + 1]; // G
     destData[i + 2] = srcData[i + 2]; // B
     destData[i + 3] = Math.round(srcData[i + 3] * opacity); // A
@@ -205,14 +196,20 @@ function applyOpacity(
  * Blend two pixels based on blend mode
  */
 function blendPixel(
-  baseR: number, baseG: number, baseB: number, baseA: number,
-  overlayR: number, overlayG: number, overlayB: number, overlayA: number,
+  baseR: number,
+  baseG: number,
+  baseB: number,
+  baseA: number,
+  overlayR: number,
+  overlayG: number,
+  overlayB: number,
+  overlayA: number,
   blendMode: string,
   overlayOpacity: number
 ): [number, number, number, number] {
   // Apply overlay opacity
   overlayA = overlayA * overlayOpacity;
-  
+
   if (overlayA === 0) {
     return [baseR, baseG, baseB, baseA];
   }
@@ -253,7 +250,7 @@ function blendPixel(
     Math.max(0, Math.min(255, outR)),
     Math.max(0, Math.min(255, outG)),
     Math.max(0, Math.min(255, outB)),
-    Math.max(0, Math.min(255, outA))
+    Math.max(0, Math.min(255, outA)),
   ];
 }
 
@@ -280,15 +277,21 @@ function compositeImageData(
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const i = (y * width + x) * 4;
-      
+
       // Tile the overlay
       const overlayX = x % overlayWidth;
       const overlayY = y % overlayHeight;
       const overlayI = (overlayY * overlayWidth + overlayX) * 4;
 
       const [r, g, b, a] = blendPixel(
-        baseData[i], baseData[i + 1], baseData[i + 2], baseData[i + 3],
-        overlayData[overlayI], overlayData[overlayI + 1], overlayData[overlayI + 2], overlayData[overlayI + 3],
+        baseData[i],
+        baseData[i + 1],
+        baseData[i + 2],
+        baseData[i + 3],
+        overlayData[overlayI],
+        overlayData[overlayI + 1],
+        overlayData[overlayI + 2],
+        overlayData[overlayI + 3],
         blendMode,
         overlayOpacity
       );
@@ -329,8 +332,7 @@ async function convertFormat(
   canvasCtx.putImageData(imageData, 0, 0);
 
   // Determine MIME type
-  const mimeType = format === 'png' ? 'image/png' :
-                   format === 'webp' ? 'image/webp' : 'image/jpeg';
+  const mimeType = format === 'png' ? 'image/png' : format === 'webp' ? 'image/webp' : 'image/jpeg';
 
   // Convert to blob with quality setting
   const blob = await canvas.convertToBlob({
@@ -377,7 +379,8 @@ ctx.onmessage = async (event: MessageEvent<ExportWorkerRequest>) => {
       }
 
       case 'composite': {
-        const { baseImageData, overlayImageData, blendMode, overlayOpacity, width, height } = payload as CompositePayload;
+        const { baseImageData, overlayImageData, blendMode, overlayOpacity, width, height } =
+          payload as CompositePayload;
         result = compositeImageData(baseImageData, overlayImageData, blendMode, overlayOpacity, width, height);
         break;
       }
@@ -389,7 +392,11 @@ ctx.onmessage = async (event: MessageEvent<ExportWorkerRequest>) => {
         if (imageData instanceof ImageData) {
           imgData = imageData;
         } else {
-          const { data, width: w, height: h } = imageData as unknown as { data: Uint8ClampedArray; width: number; height: number };
+          const {
+            data,
+            width: w,
+            height: h,
+          } = imageData as unknown as { data: Uint8ClampedArray; width: number; height: number };
           imgData = new ImageData(new Uint8ClampedArray(data), w, h);
         }
         result = await convertFormat(imgData, format, quality, width, height);
@@ -405,7 +412,7 @@ ctx.onmessage = async (event: MessageEvent<ExportWorkerRequest>) => {
       id,
       type,
       success: true,
-      result
+      result,
     };
 
     // Transfer buffers for performance
@@ -422,7 +429,7 @@ ctx.onmessage = async (event: MessageEvent<ExportWorkerRequest>) => {
       id,
       type,
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
     ctx.postMessage(response);
   }

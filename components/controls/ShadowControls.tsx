@@ -25,9 +25,7 @@ export function ShadowControls({ shadow, onShadowChange }: ShadowControlsProps) 
   return (
     <div className="space-y-5">
       <div className="space-y-4">
-        <Label className="text-sm font-semibold text-foreground">
-          Shadow
-        </Label>
+        <Label className="text-sm font-semibold text-foreground">Shadow</Label>
 
         <div className="space-y-4">
           <Label className="text-sm font-semibold text-foreground">Preset Shadows</Label>
@@ -104,7 +102,7 @@ export function ShadowControls({ shadow, onShadowChange }: ShadowControlsProps) 
                   const r = parseInt(rgbMatch[1]);
                   const g = parseInt(rgbMatch[2]);
                   const b = parseInt(rgbMatch[3]);
-                  return `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
+                  return `#${[r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('')}`;
                 }
                 if (shadow.color.startsWith('#')) {
                   return shadow.color;
@@ -164,4 +162,3 @@ export function ShadowControls({ shadow, onShadowChange }: ShadowControlsProps) 
     </div>
   );
 }
-

@@ -1,18 +1,15 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
 }
 
-export class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  ErrorBoundaryState
-> {
+export class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
   constructor(props: { children: React.ReactNode }) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -23,7 +20,7 @@ export class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("Error caught by boundary:", error, errorInfo);
+    console.error('Error caught by boundary:', error, errorInfo);
   }
 
   render() {
@@ -33,9 +30,7 @@ export class ErrorBoundary extends React.Component<
           <Card className="max-w-md w-full">
             <CardHeader>
               <CardTitle>Something went wrong</CardTitle>
-              <CardDescription>
-                An error occurred while loading the editor.
-              </CardDescription>
+              <CardDescription>An error occurred while loading the editor.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {this.state.error && (

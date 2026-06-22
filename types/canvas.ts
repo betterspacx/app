@@ -23,10 +23,15 @@ export interface TemplateBackground {
   }>;
 }
 
+export type TemplateCategory = 'Minimal' | 'Gradient' | 'Abstract' | 'Product' | 'Editorial';
+
+export type TemplateDeviceType = 'macbook' | 'imac' | 'iphone' | 'browser' | 'none';
+
 export interface Template {
   id: string;
   name: string;
   description?: string;
+  category: TemplateCategory;
   background: TemplateBackground;
   dimensions: {
     width: number;
@@ -39,6 +44,9 @@ export interface Template {
     height: number;
   };
   preview?: string; // URL or data URL for preview image
+  deviceType: TemplateDeviceType;
+  animated: boolean;
+  isNew?: boolean;
 }
 
 // Canvas object types

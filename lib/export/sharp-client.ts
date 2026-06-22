@@ -24,33 +24,28 @@ const API_TIMEOUT_MS = 30_000;
 
 // Fallback quality values for canvas.toBlob() if Sharp API is unavailable
 const FALLBACK_QUALITY: Record<'jpeg' | 'webp' | 'png', Record<QualityPreset, number>> = {
-  jpeg: { high: 0.85, medium: 0.75, low: 0.60 },
+  jpeg: { high: 0.85, medium: 0.75, low: 0.6 },
   webp: { high: 0.82, medium: 0.72, low: 0.55 },
-  png:  { high: 1, medium: 1, low: 1 },
+  png: { high: 1, medium: 1, low: 1 },
 };
 
 function getMimeType(format: ExportFormat): string {
   switch (format) {
-    case 'jpeg': return 'image/jpeg';
-    case 'webp': return 'image/webp';
-    default: return 'image/png';
+    case 'jpeg':
+      return 'image/jpeg';
+    case 'webp':
+      return 'image/webp';
+    default:
+      return 'image/png';
   }
 }
 
 /**
  * Convert canvas to blob using native API
  */
-function canvasToBlob(
-  canvas: HTMLCanvasElement,
-  mimeType: string,
-  quality?: number
-): Promise<Blob> {
+function canvasToBlob(canvas: HTMLCanvasElement, mimeType: string, quality?: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error('Failed to create blob'))),
-      mimeType,
-      quality
-    );
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Failed to create blob'))), mimeType, quality);
   });
 }
 
@@ -59,10 +54,7 @@ function canvasToBlob(
  * - For PNG output: always send lossless PNG (Sharp needs full quality)
  * - For JPEG/WebP output: send PNG if <4MB, otherwise JPEG q=0.95 to stay under Vercel's limit
  */
-async function getSourceBlob(
-  canvas: HTMLCanvasElement,
-  targetFormat: ExportFormat
-): Promise<Blob> {
+async function getSourceBlob(canvas: HTMLCanvasElement, targetFormat: ExportFormat): Promise<Blob> {
   const pngBlob = await canvasToBlob(canvas, 'image/png');
 
   // PNG output needs lossless source — no choice
@@ -94,7 +86,7 @@ export async function processWithSharp(
 
   // Skip API for clipboard or when explicitly requested — just use browser encoding
   if (skipApi) {
-    const quality = (format === 'jpeg' || format === 'webp') ? FALLBACK_QUALITY[format][qualityPreset] : undefined;
+    const quality = format === 'jpeg' || format === 'webp' ? FALLBACK_QUALITY[format][qualityPreset] : undefined;
     const blob = await canvasToBlob(canvas, getMimeType(format), quality);
     const dataURL = URL.createObjectURL(blob);
     return { blob, dataURL, fileSize: blob.size };
@@ -153,7 +145,7 @@ export async function processWithSharp(
       isAbort ? 'Sharp API timed out, using browser fallback' : 'Sharp API unavailable, using browser fallback:',
       error
     );
-    const quality = (format === 'jpeg' || format === 'webp') ? FALLBACK_QUALITY[format][qualityPreset] : undefined;
+    const quality = format === 'jpeg' || format === 'webp' ? FALLBACK_QUALITY[format][qualityPreset] : undefined;
     blob = await canvasToBlob(canvas, getMimeType(format), quality);
     onProgress?.(90);
   }
