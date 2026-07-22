@@ -29,8 +29,7 @@ import { AuthModal } from '@/components/auth/AuthModal';
 import { SaveDialog } from '@/components/projects/SaveDialog';
 import { ProjectsSidebar } from '@/components/projects/ProjectsSidebar';
 import { saveProject, listProjects, loadProject, deleteProject, ProjectMeta } from '@/lib/project-manager';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { useAuth } from '@/hooks/useAuth';
 
 function serializeState(): { editorState: OmitFunctions<EditorState>; imageState: OmitFunctions<ImageState> } {
   const { screenshot, background, shadow, pattern, frame, canvas, noise } = useEditorStore.getState();
@@ -186,14 +185,7 @@ export function EditorHeader() {
   const [projectsOpen, setProjectsOpen] = React.useState(false);
   const [projects, setProjects] = React.useState<ProjectMeta[]>([]);
   const [projectsLoading, setProjectsLoading] = React.useState(false);
-  const [authenticated, setAuthenticated] = React.useState(false);
-
-  React.useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setAuthenticated(!!u);
-    });
-    return unsub;
-  }, []);
+  const { authenticated, getCurrentUser } = useAuth();
 
   const { screenshot } = useEditorStore();
   const {
@@ -282,7 +274,8 @@ export function EditorHeader() {
 
   const handleSave = async (name: string) => {
     const { editorState, imageState } = serializeState();
-    if (!auth.currentUser) throw new Error('Not authenticated');
+    const user = await getCurrentUser();
+    if (!user) throw new Error('Not authenticated');
     await saveProject(name, editorState, imageState);
   };
 
@@ -374,6 +367,7 @@ export function EditorHeader() {
               <button
                 onClick={handleUndo}
                 disabled={!canUndo}
+                aria-label="Undo"
                 className={cn(
                   'flex items-center justify-center w-8 h-8 rounded-xl',
                   'text-muted-foreground transition-all duration-150',
@@ -388,6 +382,7 @@ export function EditorHeader() {
               <button
                 onClick={handleRedo}
                 disabled={!canRedo}
+                aria-label="Redo"
                 className={cn(
                   'flex items-center justify-center w-8 h-8 rounded-xl',
                   'text-muted-foreground transition-all duration-150',
@@ -441,6 +436,7 @@ export function EditorHeader() {
 
           <button
             onClick={() => setAuthOpen(true)}
+            aria-label={authenticated ? 'Account' : 'Sign in'}
             className="flex items-center justify-center w-8 h-8 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground hover:bg-muted transition-all hover:shadow-sm active:scale-95 cursor-pointer ml-1"
             title={authenticated ? 'Account' : 'Sign in'}
           >
@@ -489,7 +485,7 @@ export function EditorHeader() {
                 disabled={!hasImage}
                 className="flex-1 flex items-center justify-between px-4 h-10 rounded-2xl text-black text-xs font-medium transition-all cursor-pointer"
               >
-                <h6 className="font-semibold">Export</h6>
+                <span className="font-semibold">Export</span>
                 <span className="opacity-90">
                   {exportSettings.scale}x · {formatLabel}
                 </span>

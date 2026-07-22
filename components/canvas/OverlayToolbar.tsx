@@ -99,6 +99,7 @@ export function OverlayToolbar({
           'text-muted-foreground hover:text-foreground',
           'hover:bg-accent transition-colors duration-150'
         )}
+        aria-label="Rotate -45°"
         title="Rotate -45°"
       >
         <RotateLeft01Icon size={16} />
@@ -113,6 +114,7 @@ export function OverlayToolbar({
           'text-muted-foreground hover:text-foreground',
           'hover:bg-accent transition-colors duration-150'
         )}
+        aria-label="Rotate +45°"
         title="Rotate +45°"
       >
         <RotateRight01Icon size={16} />
@@ -129,6 +131,7 @@ export function OverlayToolbar({
           'text-muted-foreground hover:text-foreground',
           'hover:bg-accent transition-colors duration-150'
         )}
+        aria-label="Decrease size"
         title="Decrease size"
       >
         <MinusSignIcon size={16} />
@@ -143,6 +146,7 @@ export function OverlayToolbar({
           'text-muted-foreground hover:text-foreground',
           'hover:bg-accent transition-colors duration-150'
         )}
+        aria-label="Increase size"
         title="Increase size"
       >
         <PlusSignIcon size={16} />
@@ -159,6 +163,7 @@ export function OverlayToolbar({
           'text-muted-foreground hover:text-foreground',
           'hover:bg-accent transition-colors duration-150'
         )}
+        aria-label="Duplicate"
         title="Duplicate"
       >
         <Copy01Icon size={16} />
@@ -175,6 +180,7 @@ export function OverlayToolbar({
           'text-muted-foreground hover:text-red-500',
           'hover:bg-red-500/10 transition-colors duration-150'
         )}
+        aria-label="Delete"
         title="Delete"
       >
         <Delete02Icon size={16} />

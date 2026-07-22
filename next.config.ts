@@ -19,8 +19,10 @@ const nextConfig: NextConfig = {
         hostname: process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace('https://', '') || 'localhost',
       },
     ],
-    // Disable image optimization for R2 backgrounds to avoid validation errors
-    unoptimized: true,
+  },
+
+  experimental: {
+    optimizePackageImports: ['hugeicons-react'],
   },
 
   // Enable SharedArrayBuffer for multi-threaded FFmpeg WASM

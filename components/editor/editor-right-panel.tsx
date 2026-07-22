@@ -274,6 +274,7 @@ export function EditorRightPanel() {
                               background: gradientColors[key],
                             }}
                             title={key.replace(/_/g, ' ')}
+                            aria-label={key.replace(/_/g, ' ')}
                           />
                         ))}
                       </div>
@@ -297,6 +298,7 @@ export function EditorRightPanel() {
                               backgroundColor: solidColors[key],
                             }}
                             title={key.replace(/_/g, ' ')}
+                            aria-label={key.replace(/_/g, ' ')}
                           />
                         ))}
                       </div>

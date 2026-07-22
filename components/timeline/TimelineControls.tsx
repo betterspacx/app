@@ -46,6 +46,7 @@ export function TimelineControls({ onAddAnimation, onClose }: TimelineControlsPr
             isLooping ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-accent'
           )}
           onClick={handleToggleLoop}
+          aria-label={isLooping ? 'Loop enabled' : 'Loop disabled'}
           title={isLooping ? 'Loop enabled' : 'Loop disabled'}
         >
           {isLooping ? <RepeatIcon size={16} /> : <RepeatOffIcon size={16} />}
@@ -55,6 +56,7 @@ export function TimelineControls({ onAddAnimation, onClose }: TimelineControlsPr
         <button
           className="h-10 min-w-[100px] flex items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer"
           onClick={togglePlayback}
+          aria-label={isPlaying ? 'Pause' : 'Play'}
         >
           {isPlaying ? <PauseIcon size={18} /> : <PlayIcon size={18} />}
         </button>
@@ -89,6 +91,7 @@ export function TimelineControls({ onAddAnimation, onClose }: TimelineControlsPr
           <button
             onClick={clearAnimationClips}
             className="relative h-8 w-8 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors "
+            aria-label="Turn off all Animations"
             title="Turn off all Animations"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4">
@@ -107,6 +110,7 @@ export function TimelineControls({ onAddAnimation, onClose }: TimelineControlsPr
         <button
           onClick={onClose}
           className="h-8 w-8 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
+          aria-label="Close timeline"
           title="Close timeline"
         >
           <Cancel01Icon size={16} />
