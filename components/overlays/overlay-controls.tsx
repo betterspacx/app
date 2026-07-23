@@ -117,6 +117,7 @@ export function OverlayControls() {
                 <Button
                   variant="ghost"
                   size="sm"
+                  aria-label={overlay.isVisible ? 'Hide overlay' : 'Show overlay'}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleToggleVisibility(overlay.id);
@@ -150,6 +151,7 @@ export function OverlayControls() {
                 <Button
                   variant="ghost"
                   size="sm"
+                  aria-label="Delete overlay"
                   onClick={(e) => {
                     e.stopPropagation();
                     removeImageOverlay(overlay.id);

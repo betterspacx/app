@@ -229,6 +229,7 @@ export function AnnotateSection() {
                   type="color"
                   value={currentColor}
                   onChange={(e) => handleColorChange(e.target.value)}
+                  aria-label="Pick any color"
                   title="Pick any color"
                   className="w-7 h-7 rounded-full cursor-pointer border border-border/50 appearance-none bg-transparent [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
                 />

@@ -544,6 +544,7 @@ export function EditorHeader() {
             href="https://x.com/konlyzx_"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Follow on X"
             className="flex items-center justify-center w-8 h-8 rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-foreground hover:shadow-sm active:scale-95"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -555,6 +556,7 @@ export function EditorHeader() {
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="View on GitHub"
             className="flex items-center justify-center w-8 h-8 rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-foreground hover:shadow-sm active:scale-95"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">

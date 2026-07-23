@@ -83,10 +83,11 @@ function EditorMain() {
         )}
       >
         <MobileBanner />
+        <h1 className="sr-only">Better Flow Editor</h1>
         <EditorHeader />
         {isMobile && (
           <div className="bg-background border-b border-border flex items-center justify-end px-4 py-2 z-10">
-            <Button variant="ghost" size="icon" onClick={() => setMobileSheetOpen(true)} className="h-9 w-9">
+            <Button variant="ghost" size="icon" aria-label="Open settings" onClick={() => setMobileSheetOpen(true)} className="h-9 w-9">
               <Settings02Icon size={20} />
             </Button>
           </div>

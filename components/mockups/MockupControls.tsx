@@ -87,6 +87,7 @@ export function MockupControls() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    aria-label={mockup.isVisible ? 'Hide mockup' : 'Show mockup'}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleToggleVisibility(mockup.id);
@@ -104,6 +105,7 @@ export function MockupControls() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    aria-label="Delete mockup"
                     onClick={(e) => {
                       e.stopPropagation();
                       removeMockup(mockup.id);

@@ -133,7 +133,7 @@ export function EditorCanvas() {
                       : 'border-border/30 hover:border-border'
                   }`}
                 >
-                  <button onClick={() => setActiveSlide(slide.id)} className="h-full w-full">
+                  <button onClick={() => setActiveSlide(slide.id)} aria-label="Select slide" className="h-full w-full">
                     <img src={slide.src} className="h-full w-full object-cover" draggable={false} />
                   </button>
 

@@ -73,6 +73,7 @@ export function TimelineControls({ onAddAnimation, onClose }: TimelineControlsPr
             max={30}
             step={1}
             value={durationSeconds}
+            aria-label="Animation duration"
             onChange={(e) => setTimelineDuration(Number(e.target.value) * 1000)}
             className="w-[100px] h-1 appearance-none bg-border/40 rounded-full outline-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-foreground [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
           />

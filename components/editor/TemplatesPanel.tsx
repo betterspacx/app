@@ -78,6 +78,7 @@ export function TemplatesPanel() {
           </div>
           <button
             onClick={() => setShowTemplates(false)}
+            aria-label="Close templates"
             className="flex items-center justify-center w-7 h-7 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
           >
             <Cancel01Icon size={16} className="text-white/50" />

@@ -61,6 +61,7 @@ export function TimelineTrack({ track, width, selectedKeyframeId, onSelectKeyfra
           variant="ghost"
           size="icon"
           className="h-5 w-5"
+          aria-label={track.isVisible ? 'Hide track' : 'Show track'}
           onClick={() => updateTrack(track.id, { isVisible: !track.isVisible })}
         >
           {track.isVisible ? (
@@ -73,6 +74,7 @@ export function TimelineTrack({ track, width, selectedKeyframeId, onSelectKeyfra
           variant="ghost"
           size="icon"
           className="h-5 w-5"
+          aria-label={track.isLocked ? 'Unlock track' : 'Lock track'}
           onClick={() => updateTrack(track.id, { isLocked: !track.isLocked })}
         >
           {track.isLocked ? (
@@ -85,6 +87,7 @@ export function TimelineTrack({ track, width, selectedKeyframeId, onSelectKeyfra
           variant="ghost"
           size="icon"
           className="h-5 w-5 text-red-500/60 hover:text-red-500"
+          aria-label="Delete track"
           onClick={() => removeTrack(track.id)}
         >
           <Delete02Icon size={12} />

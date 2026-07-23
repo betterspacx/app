@@ -111,6 +111,7 @@ export const TextOverlayControls = () => {
                     e.stopPropagation();
                     updateTextOverlay(overlay.id, { isVisible: !overlay.isVisible });
                   }}
+                  aria-label={overlay.isVisible ? 'Hide text overlay' : 'Show text overlay'}
                   className="p-1 rounded-md text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {overlay.isVisible ? <ViewIcon size={13} /> : <ViewOffSlashIcon size={13} />}
@@ -121,6 +122,7 @@ export const TextOverlayControls = () => {
                     removeTextOverlay(overlay.id);
                     if (selectedOverlayId === overlay.id) setSelectedOverlayId(null);
                   }}
+                  aria-label="Delete text overlay"
                   className="p-1 rounded-md text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-all"
                 >
                   <Delete02Icon size={13} />
@@ -148,6 +150,7 @@ export const TextOverlayControls = () => {
               value={selectedOverlay.text}
               onChange={(e) => updateTextOverlay(selectedOverlay.id, { text: e.target.value })}
               placeholder="Type your text..."
+              aria-label="Text content"
               rows={2}
               className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
             />
@@ -176,6 +179,7 @@ export const TextOverlayControls = () => {
                 type="color"
                 value={selectedOverlay.color}
                 onChange={(e) => updateTextOverlay(selectedOverlay.id, { color: e.target.value })}
+                aria-label="Text color"
                 className="w-5 h-5 rounded-full cursor-pointer border border-border/50 appearance-none bg-transparent [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
               />
             </div>
@@ -184,6 +188,7 @@ export const TextOverlayControls = () => {
             <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Typography</label>
             <select
               value={selectedOverlay.fontFamily}
+              aria-label="Font family"
               onChange={(e) => {
                 const fontFamily = e.target.value;
                 const weights = getAvailableFontWeights(fontFamily);
@@ -202,6 +207,7 @@ export const TextOverlayControls = () => {
             </select>
             <select
               value={selectedOverlay.fontWeight}
+              aria-label="Font weight"
               onChange={(e) => updateTextOverlay(selectedOverlay.id, { fontWeight: e.target.value })}
               className="w-full h-9 px-2.5 text-xs rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
             >

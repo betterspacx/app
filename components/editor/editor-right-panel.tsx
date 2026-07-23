@@ -95,6 +95,7 @@ export function EditorRightPanel() {
           <h3 className="text-sm font-semibold text-foreground min-w-0 flex-1 truncate">Canvas Settings</h3>
           <button
             onClick={() => setExpanded(!expanded)}
+            aria-label={expanded ? 'Collapse section' : 'Expand section'}
             className="p-1 rounded-lg hover:bg-accent transition-colors border border-border/50 hover:border-border shrink-0"
           >
             {expanded ? <ArrowUp01Icon className="size-4" /> : <ArrowDown01Icon className="size-4" />}
