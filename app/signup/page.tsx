@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { signUpWithEmail } from '@/lib/supabase/auth-service';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,16 +32,13 @@ export default function SignupPage() {
 
     setLoading(true);
 
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      if (name) {
-        await updateProfile(cred.user, { displayName: name });
-      }
-      window.location.href = '/';
-    } catch {
-      setError('Failed to create account. Email may already be in use.');
+    const result = await signUpWithEmail(email, password, name);
+    if (!result.ok) {
+      setError(result.error);
       setLoading(false);
+      return;
     }
+    window.location.href = '/';
   };
 
   return (

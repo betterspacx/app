@@ -1,7 +1,7 @@
 'use client';
 
 import { storageService } from '@/lib/storage-service';
-import { auth } from '@/lib/firebase';
+import { supabase } from '@/lib/supabase/client';
 
 export interface ProjectMeta {
   id: string;
@@ -34,8 +34,9 @@ function generateId(): string {
   return crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-function getUid(): string | null {
-  return auth.currentUser?.uid ?? null;
+async function getUid(): Promise<string | null> {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.user?.id ?? null;
 }
 
 async function updateIndex(uid: string, meta: ProjectMeta): Promise<void> {
@@ -65,7 +66,7 @@ export async function saveProject(
   imageState: unknown,
   existingId?: string
 ): Promise<ProjectMeta> {
-  const uid = getUid();
+  const uid = await getUid();
   if (!uid) throw new Error('Not authenticated');
 
   const id = existingId || generateId();
@@ -92,7 +93,7 @@ export async function saveProject(
 }
 
 export async function loadProject(projectId: string): Promise<ProjectData | null> {
-  const uid = getUid();
+  const uid = await getUid();
   if (!uid) return null;
 
   const raw = await storageService.read(projectKey(uid, projectId));
@@ -102,7 +103,7 @@ export async function loadProject(projectId: string): Promise<ProjectData | null
 }
 
 export async function listProjects(): Promise<ProjectMeta[]> {
-  const uid = getUid();
+  const uid = await getUid();
   if (!uid) return [];
 
   const raw = await storageService.read(indexKey(uid));
@@ -116,7 +117,7 @@ export async function listProjects(): Promise<ProjectMeta[]> {
 }
 
 export async function deleteProject(projectId: string): Promise<void> {
-  const uid = getUid();
+  const uid = await getUid();
   if (!uid) return;
 
   await storageService.remove(projectKey(uid, projectId));

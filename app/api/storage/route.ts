@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 import { createR2Client } from '@/lib/r2-storage';
 
 export const config = {
@@ -11,7 +12,7 @@ export const config = {
 
 const r2 = createR2Client();
 
-interface FirebaseUser {
+interface AuthUser {
   uid: string;
   email?: string;
   displayName?: string;
@@ -19,27 +20,26 @@ interface FirebaseUser {
   providerId?: string;
 }
 
-async function verifyToken(idToken: string): Promise<FirebaseUser | null> {
+async function verifyToken(token: string): Promise<AuthUser | null> {
   try {
-    const res = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      }
-    );
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!data.users?.length) return null;
-    const u = data.users[0];
-    const providerInfo = u.providerUserInfo?.[0];
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll: () => [],
+        setAll: () => {},
+      },
+    });
+
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data.user) return null;
+
     return {
-      uid: u.localId as string,
-      email: u.email,
-      displayName: u.displayName || providerInfo?.displayName,
-      photoUrl: u.photoUrl || providerInfo?.photoUrl,
-      providerId: providerInfo?.providerId,
+      uid: data.user.id,
+      email: data.user.email ?? undefined,
+      displayName: data.user.user_metadata?.display_name as string ?? undefined,
+      providerId: data.user.app_metadata?.provider ?? undefined,
     };
   } catch {
     return null;
@@ -58,8 +58,8 @@ function isProjectsIndexKey(key: string): boolean {
   return key.endsWith('/projects-index.json');
 }
 
-function createDefaultProfile(user: FirebaseUser): string {
-  const provider = user.providerId === 'github.com' ? 'github' : 'email';
+function createDefaultProfile(user: AuthUser): string {
+  const provider = user.providerId === 'github' ? 'github' : 'email';
   const username = user.displayName || user.email?.split('@')[0] || `user_${user.uid.slice(0, 6)}`;
   const profile = {
     uid: user.uid,

@@ -1,6 +1,6 @@
 'use client';
 
-import { auth } from '@/lib/firebase';
+import { supabase } from '@/lib/supabase/client';
 
 const STORAGE_PREFIX = 'betterflow_local_';
 const API_BASE = '/api/storage';
@@ -9,21 +9,9 @@ function getLocalKey(key: string): string {
   return `${STORAGE_PREFIX}${key}`;
 }
 
-function getToken(): Promise<string | null> {
-  const user = auth.currentUser;
-  if (user) {
-    return user.getIdToken();
-  }
-  return new Promise((resolve) => {
-    const unsub = auth.onAuthStateChanged((user) => {
-      unsub();
-      if (user) {
-        user.getIdToken().then(resolve);
-      } else {
-        resolve(null);
-      }
-    });
-  });
+async function getToken(): Promise<string | null> {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? null;
 }
 
 async function withToken(): Promise<{ Authorization: string } | Record<string, never>> {
@@ -54,7 +42,7 @@ export const storageService = {
     try {
       localStorage.setItem(getLocalKey(key), data);
     } catch {
-      // localStorage quota exceeded — skip local fallback
+      // localStorage quota exceeded
     }
 
     const headers = await withToken();
@@ -70,8 +58,6 @@ export const storageService = {
         return false;
       }
     }
-    // when unauthenticated and localStorage failed, return true
-    // because the data was intended as a local fallback anyway
     return true;
   },
 
@@ -103,7 +89,7 @@ export const storageService = {
           return json.keys as string[];
         }
       } catch {
-        // fallback — return empty list
+        // fallback
       }
     }
     return [];

@@ -22,7 +22,7 @@
 
 - **`app/page.tsx`** — editor entrypoint (single-page app at `/`). No `/editor` route.
 - **`app/api/`** — 8 routes: `upload-url`, `upload-video`, `image-proxy`, `screenshot`, `cleanup-cache`, `export`, `storage`, `tweet`.
-- **`app/login/`**, **`app/signup/`** — Firebase auth pages. Init in `lib/firebase.ts`, service in `lib/auth-service.ts`.
+- **`app/login/`**, **`app/signup/`** — Supabase auth pages. Client in `lib/supabase/client.ts`, service in `lib/supabase/auth-service.ts`. Auth callback at `app/auth/callback/route.ts`.
 - **`lib/store/index.ts`** — dual Zustand stores: `useImageStore` (design state + zundo undo/redo) and `useEditorStore` (canvas rendering). Synced by `EditorStoreSync`.
 - **`lib/schema.ts`** vs **`drizzle/schema.ts`** — two similar Drizzle SQLite schemas. `drizzle/schema.ts` used by `lib/db.ts` (D1 factory) and `drizzle.config.ts`. `lib/schema.ts` is standalone (for D1 Workers).
 - **`lib/export/`** — image export (`export-service.ts`), video pipeline (FFmpeg WASM, WebCodecs, MediaRecorder). Web Workers in `lib/workers/`.

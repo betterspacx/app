@@ -1,51 +1,41 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/lib/supabase/client';
 
 interface AuthState {
   authenticated: boolean;
   loading: boolean;
+  userId: string | null;
 }
 
-export function useAuth(): AuthState & { getCurrentUser: () => Promise<{ uid: string } | null> } {
-  const [state, setState] = useState<AuthState>({ authenticated: false, loading: true });
+export function useAuth(): AuthState & { getCurrentUser: () => Promise<{ id: string } | null> } {
+  const [state, setState] = useState<AuthState>({ authenticated: false, loading: true, userId: null });
 
   useEffect(() => {
-    let cancelled = false;
-    let unsubscribe: (() => void) | undefined;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setState({
+        authenticated: !!session?.user,
+        loading: false,
+        userId: session?.user?.id ?? null,
+      });
+    });
 
-    async function init() {
-      try {
-        const { onAuthStateChanged } = await import('firebase/auth');
-        const { auth } = await import('@/lib/firebase');
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setState({
+        authenticated: !!session?.user,
+        loading: false,
+        userId: session?.user?.id ?? null,
+      });
+    });
 
-        unsubscribe = onAuthStateChanged(auth, (user) => {
-          if (!cancelled) {
-            setState({ authenticated: !!user, loading: false });
-          }
-        });
-      } catch {
-        if (!cancelled) {
-          setState({ authenticated: false, loading: false });
-        }
-      }
-    }
-
-    init();
-
-    return () => {
-      cancelled = true;
-      unsubscribe?.();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   const getCurrentUser = useCallback(async () => {
-    try {
-      const { auth } = await import('@/lib/firebase');
-      return auth.currentUser;
-    } catch {
-      return null;
-    }
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return null;
+    return { id: session.user.id };
   }, []);
 
   return { ...state, getCurrentUser };
