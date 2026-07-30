@@ -1,11 +1,10 @@
-// Created by konlyzx (2026) - Hook for lazy image loading with global in-memory cache
-// Base project structure under Apache License 2.0 (Copyright 2025 Kartik Labhshetwar)
+'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 // Global in-memory cache for images so they survive tab switches
-const imageCache = new Map<string, HTMLImageElement>();
-const loadingPromises = new Map<string, Promise<HTMLImageElement>>();
+export const imageCache = new Map<string, HTMLImageElement>();
+export const loadingPromises = new Map<string, Promise<HTMLImageElement>>();
 
 export function loadImage(src: string): Promise<HTMLImageElement> {
   // Return cached promise if already loading
@@ -49,10 +48,8 @@ export function useLazyImage({ src, enabled = true, rootMargin = '100px' }: UseL
   const [hasError, setHasError] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
-  // Check if already cached
   const isCached = imageCache.has(src);
 
-  // Intersection Observer - only start loading when near viewport
   useEffect(() => {
     if (!enabled) return;
     if (isCached) {
@@ -78,7 +75,6 @@ export function useLazyImage({ src, enabled = true, rootMargin = '100px' }: UseL
     return () => observer.disconnect();
   }, [src, enabled, rootMargin, isCached]);
 
-  // Load image when visible
   useEffect(() => {
     if (!isVisible || !src) return;
 
@@ -111,7 +107,6 @@ export function useLazyImage({ src, enabled = true, rootMargin = '100px' }: UseL
   const retry = useCallback(() => {
     setHasError(false);
     setIsLoaded(false);
-    // Force reload by removing from cache
     imageCache.delete(src);
     loadingPromises.delete(src);
     setIsVisible(true);
@@ -127,8 +122,7 @@ export function useLazyImage({ src, enabled = true, rootMargin = '100px' }: UseL
   };
 }
 
-// Preload images into cache in small batches, yielding between batches
-// so the main thread stays responsive for visible thumbnails.
+// Preload images into cache in small batches
 export function preloadImages(srcs: string[], batchSize = 6): void {
   const remaining = srcs.filter((src) => !imageCache.has(src) && !loadingPromises.has(src));
   let index = 0;
@@ -144,11 +138,9 @@ export function preloadImages(srcs: string[], batchSize = 6): void {
     }
   }
 
-  // Start first batch on microtask to let current render cycle finish
-  queueMicrotask(loadNextBatch);
+  loadNextBatch();
 }
 
-// Clear cache if needed (e.g., for memory management)
 export function clearImageCache(): void {
   imageCache.clear();
   loadingPromises.clear();

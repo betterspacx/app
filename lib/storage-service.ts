@@ -26,11 +26,18 @@ export async function getStorageQuota(): Promise<{ used: number; limit: number }
   const plan = getEffectivePlan(sub);
   const limit = STORAGE_LIMIT_BYTES[plan];
   let used = 0;
-  const keys = await storageService.list('');
-  for (const key of keys) {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}${key}`);
-    if (raw) used += new Blob([raw]).size;
+
+  // Measure all relevant localStorage items (cache + stored data)
+  const prefixes = ['betterflow_projects_cache_', 'betterflow_collections_cache', 'betterflow_local_', 'betterflow_draft_'];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key) continue;
+    if (prefixes.some((p) => key.startsWith(p))) {
+      const raw = localStorage.getItem(key);
+      if (raw) used += new Blob([raw]).size;
+    }
   }
+
   return { used, limit };
 }
 

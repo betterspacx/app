@@ -272,18 +272,30 @@ export function EditorHeader() {
     }
   };
 
+  const savedProjectId = React.useRef<string | null>(null);
+  const savedProjectName = React.useRef<string | null>(null);
+
   const handleSave = async (name: string) => {
     const { editorState, imageState } = serializeState();
     const user = await getCurrentUser();
     if (!user) throw new Error('Not authenticated');
-    await saveProject(name, editorState, imageState);
+    const meta = await saveProject(name, editorState, imageState, savedProjectId.current ?? undefined);
+    savedProjectId.current = meta.id;
+    savedProjectName.current = name;
   };
 
   const handleLoadProject = async (projectId: string) => {
     const data = await loadProject(projectId);
     if (!data) return;
+    savedProjectId.current = projectId;
+    savedProjectName.current = data.meta.name;
     restoreProject(data.imageState as OmitFunctions<ImageState>, data.editorState as OmitFunctions<EditorState>);
     setProjectsOpen(false);
+  };
+
+  const handleQuickSave = async () => {
+    if (!savedProjectName.current) { setSaveOpen(true); return; }
+    await handleSave(savedProjectName.current);
   };
 
   const handleDeleteProject = async (projectId: string) => {
@@ -305,7 +317,8 @@ export function EditorHeader() {
   const handleStartOver = async () => {
     if (authenticated && uploadedImageUrl) {
       const { editorState, imageState } = serializeState();
-      await saveProject('Auto-save before Start Over', editorState, imageState, '__presave__').catch(() => {});
+      const meta = await saveProject('Auto-save before Start Over', editorState, imageState, savedProjectId.current ?? undefined).catch(() => null);
+      if (meta) savedProjectId.current = meta.id;
     }
     clearImage();
     resetCanvasSettings();
@@ -412,7 +425,7 @@ export function EditorHeader() {
             <>
               <div className="w-px h-5 bg-border/40 mx-1" />
               <button
-                onClick={() => setSaveOpen(true)}
+                onClick={handleQuickSave}
                 className="flex items-center gap-1.5 px-3 h-8 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all text-xs font-medium hover:shadow-sm active:scale-95 cursor-pointer"
               >
                 <svg
@@ -581,6 +594,7 @@ export function EditorHeader() {
         loading={projectsLoading}
         onLoad={handleLoadProject}
         onDelete={handleDeleteProject}
+        onUpdateProject={(id, updates) => setProjects((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)))}
       />
     </>
   );

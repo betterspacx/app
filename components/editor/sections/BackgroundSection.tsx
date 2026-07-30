@@ -18,6 +18,7 @@ import { Cancel01Icon, Image01Icon, ShuffleIcon } from 'hugeicons-react';
 import { cn } from '@/lib/utils';
 import { CanvasThumbnail } from '@/components/ui/canvas-thumbnail';
 import { preloadImages } from '@/hooks/useLazyImage';
+import { scheduleBgPreload, batchCacheImages } from '@/lib/background-cache';
 
 function SectionLabel({ children, action }: { children: React.ReactNode; action?: React.ReactNode }) {
   return (
@@ -83,10 +84,16 @@ export function BackgroundSection() {
   const GRADIENT_DEFAULT_ROWS = 2;
   const GRADIENT_DEFAULT_COUNT = GRADIENT_COLS * GRADIENT_DEFAULT_ROWS;
 
-  // Preload visible images on mount so the first paint of thumbnails is instant.
+  // Preload visible images after app is idle, cache persistently for future sessions
   React.useEffect(() => {
-    const visible = CATEGORY_ORDER.flatMap((cat) => backgroundCategories[cat]?.slice(0, 4) ?? []);
+    const allBgUrls = CATEGORY_ORDER.flatMap((cat) => backgroundCategories[cat] ?? []);
+    const visible = allBgUrls.slice(0, 4);
+
+    // Instant in-memory cache for first 4 thumbnails (fast tab switching)
     preloadImages(visible);
+
+    // Persistent Cache API + full preload, deferred until app is idle
+    scheduleBgPreload(allBgUrls);
   }, []);
 
   const toggleCategory = (category: string) => {
@@ -96,6 +103,7 @@ export function BackgroundSection() {
       const remaining = allImages.slice(4);
       if (remaining.length > 0) {
         preloadImages(remaining, 8);
+        batchCacheImages(remaining);
       }
     }
     setExpandedCategories((prev) => {
