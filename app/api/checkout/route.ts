@@ -42,8 +42,7 @@ export const GET = async (request: NextRequest) => {
 
   const handler = Checkout({
     accessToken: process.env.POLAR_ACCESS_TOKEN!,
-    successUrl: `${process.env.NEXT_PUBLIC_SITE_URL || `${origin}`}?checkout=success`,
-    returnUrl: process.env.NEXT_PUBLIC_SITE_URL || origin,
+    successUrl: `${origin}/?checkout=success`,
     server: 'production',
   });
 

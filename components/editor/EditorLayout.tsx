@@ -17,6 +17,7 @@ import { Settings02Icon } from 'hugeicons-react';
 import { useAutosaveDraft } from '@/hooks/useAutosaveDraft';
 import { MobileBanner } from './MobileBanner';
 import { AnnouncementModal } from './AnnouncementModal';
+import { CheckoutSuccessHandler } from './CheckoutSuccessHandler';
 import { TimelineEditor } from '@/components/timeline';
 import { useImageStore } from '@/lib/store';
 import { trackEditorOpen } from '@/lib/analytics';
@@ -131,6 +132,7 @@ function EditorMain() {
       </div>
 
       <AnnouncementModal />
+      <CheckoutSuccessHandler />
     </div>
   );
 }

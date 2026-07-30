@@ -2,13 +2,30 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { getSubscription, type Subscription } from '@/lib/supabase/auth-service';
+import { getSubscription, clearAuthCache, type Subscription } from '@/lib/supabase/auth-service';
 import { getEffectivePlan, isCloud, getLimit, hasFeature, PLAN_LIMITS, type PlanTier } from '@/lib/plans';
 
 export function useSubscription() {
   const { authenticated, loading: authLoading } = useAuth();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    if (!authenticated) {
+      setSubscription(null);
+      setLoading(false);
+      return;
+    }
+
+    const onSuccess = () => {
+      clearAuthCache();
+      setRefreshKey((k) => k + 1);
+    };
+
+    window.addEventListener('checkout-success', onSuccess);
+    return () => window.removeEventListener('checkout-success', onSuccess);
+  }, [authenticated]);
 
   useEffect(() => {
     if (!authenticated) {
@@ -21,7 +38,7 @@ export function useSubscription() {
       setSubscription(sub);
       setLoading(false);
     });
-  }, [authenticated]);
+  }, [authenticated, refreshKey]);
 
   const plan: PlanTier = getEffectivePlan(subscription);
 
