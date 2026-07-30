@@ -44,7 +44,7 @@ export function getLimit<K extends keyof (typeof PLAN_LIMITS)['free']>(
   limit: K
 ): (typeof PLAN_LIMITS)['free'][K] {
   const plan = getEffectivePlan(subscription);
-  return PLAN_LIMITS[plan][limit];
+  return PLAN_LIMITS[plan][limit] as (typeof PLAN_LIMITS)['free'][K];
 }
 
 export function hasFeature<K extends keyof (typeof PLAN_LIMITS)['free']>(

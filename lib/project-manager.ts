@@ -76,7 +76,7 @@ export async function saveProject(
   if (!existingId) {
     const sub = await getSubscription();
     const maxProjects = getLimit(sub, 'maxProjects');
-    if (maxProjects !== -1) {
+    if (maxProjects > 0) {
       const projects = await listProjects();
       if (projects.length >= maxProjects) {
         throw new Error(`Free plan limited to ${maxProjects} projects. Upgrade to Cloud for unlimited.`);
