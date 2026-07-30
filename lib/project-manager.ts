@@ -72,9 +72,13 @@ function generateId(): string {
   return crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
+let cachedUid: string | null = null;
+
 async function getUid(): Promise<string | null> {
+  if (cachedUid) return cachedUid;
   const { data } = await supabase.auth.getSession();
-  return data.session?.user?.id ?? null;
+  cachedUid = data.session?.user?.id ?? null;
+  return cachedUid;
 }
 
 async function blobUrlToBase64(blobUrl: string): Promise<string> {

@@ -4,9 +4,19 @@ import { supabase } from './supabase/client';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-async function getAuthHeaders(): Promise<Record<string, string>> {
+let cachedSession: { token: string | null; time: number } | null = null;
+const SESSION_TTL = 300_000; // 5 min
+
+async function getSession(): Promise<string | null> {
+  if (cachedSession && Date.now() - cachedSession.time < SESSION_TTL) return cachedSession.token;
   const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
+  const token = data.session?.access_token ?? null;
+  cachedSession = { token, time: Date.now() };
+  return token;
+}
+
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const token = await getSession();
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
   return headers;
@@ -24,8 +34,7 @@ async function handleResponse<T>(res: Response): Promise<{ ok: boolean; data?: T
 }
 
 async function getAccessToken(): Promise<string | null> {
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token ?? null;
+  return getSession();
 }
 
 export const api = {

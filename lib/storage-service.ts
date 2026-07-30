@@ -11,9 +11,13 @@ function getLocalKey(key: string): string {
   return `${STORAGE_PREFIX}${key}`;
 }
 
+let cachedToken: string | null = null;
+
 async function getToken(): Promise<string | null> {
+  if (cachedToken) return cachedToken;
   const { data } = await supabase.auth.getSession();
-  return data.session?.access_token ?? null;
+  cachedToken = data.session?.access_token ?? null;
+  return cachedToken;
 }
 
 async function withToken(): Promise<{ Authorization: string } | Record<string, never>> {

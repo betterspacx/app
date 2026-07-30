@@ -81,6 +81,7 @@ export async function signInWithGithub(redirect?: string): Promise<AuthResult> {
 }
 
 export async function signOut(): Promise<void> {
+  cachedSub = null;
   await supabase.auth.signOut();
 }
 
@@ -119,17 +120,29 @@ export async function updateProfile(updates: Partial<Pick<UserProfile, 'display_
   return data as UserProfile | null;
 }
 
+let cachedSub: { sub: Subscription | null; time: number } | null = null;
+const SUB_TTL = 60_000;
+
 export async function getSubscription(): Promise<Subscription | null> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (cachedSub && Date.now() - cachedSub.time < SUB_TTL) return cachedSub.sub;
+
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
+  if (!userId) return null;
 
   const { data } = await supabase
     .from('subscriptions')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .single();
 
-  return data as Subscription | null;
+  const sub = data as Subscription | null;
+  cachedSub = { sub, time: Date.now() };
+  return sub;
+}
+
+export function clearAuthCache(): void {
+  cachedSub = null;
 }
 
 export async function createCheckout(plan: 'cloud', dev?: boolean): Promise<{ url: string } | null> {
