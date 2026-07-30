@@ -2,6 +2,8 @@
 
 import { storageService } from '@/lib/storage-service';
 import { supabase } from '@/lib/supabase/client';
+import { getSubscription } from '@/lib/supabase/auth-service';
+import { getLimit, getEffectivePlan } from '@/lib/plans';
 
 export interface ProjectMeta {
   id: string;
@@ -70,6 +72,17 @@ export async function saveProject(
   if (!uid) throw new Error('Not authenticated');
 
   const id = existingId || generateId();
+
+  if (!existingId) {
+    const sub = await getSubscription();
+    const maxProjects = getLimit(sub, 'maxProjects');
+    if (maxProjects !== -1) {
+      const projects = await listProjects();
+      if (projects.length >= maxProjects) {
+        throw new Error(`Free plan limited to ${maxProjects} projects. Upgrade to Cloud for unlimited.`);
+      }
+    }
+  }
   const now = new Date().toISOString();
   const imgState = imageState as Record<string, unknown>;
   const imageName = (imgState?.imageName as string) ?? null;

@@ -11,6 +11,8 @@ import { toast } from 'sonner';
 import { getAspectRatioPreset } from '@/lib/aspect-ratio-utils';
 import { exportElement, type ExportOptions } from '@/lib/export/export-service';
 import { saveExportPreferences, getExportPreferences, saveExportedImage } from '@/lib/export-storage';
+import { getEffectivePlan } from '@/lib/plans';
+import { getSubscription } from '@/lib/supabase/auth-service';
 import { useImageStore, useEditorStore } from '@/lib/store';
 import { getCanvasContainer } from '@/components/canvas/ClientCanvas';
 import { trackExportStart, trackExportComplete, trackExportError, trackCopyToClipboard } from '@/lib/analytics';
@@ -186,7 +188,10 @@ export function useExport(selectedAspectRatio: string) {
 
   const updateScale = useCallback(
     async (scale: number) => {
-      const newSettings = { ...settings, scale };
+      const sub = await getSubscription();
+      const maxScale = getEffectivePlan(sub) === 'cloud' ? 5 : 2;
+      const clamped = Math.min(scale, maxScale);
+      const newSettings = { ...settings, scale: clamped };
       setSettings(newSettings);
       await savePreferences(newSettings);
     },
@@ -194,6 +199,9 @@ export function useExport(selectedAspectRatio: string) {
   );
 
   const exportImage = useCallback(async (): Promise<void> => {
+    const sub = await getSubscription();
+    const plan = getEffectivePlan(sub);
+    const isCloud = plan === 'cloud';
     const anim = progressAnimator.current;
     setIsExporting(true);
     anim.snap(0);
@@ -205,6 +213,9 @@ export function useExport(selectedAspectRatio: string) {
       const isVideo = isVideoFormat(settings.format);
 
       if (isVideo) {
+        if (!isCloud) {
+          throw new Error('Video export requires the Cloud plan.');
+        }
         if (!hasAnimation) {
           throw new Error('No animation to export. Add motion or animation first.');
         }

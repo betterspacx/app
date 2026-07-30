@@ -1,6 +1,8 @@
 'use client';
 
 import { supabase } from '@/lib/supabase/client';
+import { getSubscription } from '@/lib/supabase/auth-service';
+import { STORAGE_LIMIT_BYTES, getEffectivePlan } from '@/lib/plans';
 
 const STORAGE_PREFIX = 'betterflow_local_';
 const API_BASE = '/api/storage';
@@ -17,6 +19,19 @@ async function getToken(): Promise<string | null> {
 async function withToken(): Promise<{ Authorization: string } | Record<string, never>> {
   const token = await getToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+export async function getStorageQuota(): Promise<{ used: number; limit: number }> {
+  const sub = await getSubscription();
+  const plan = getEffectivePlan(sub);
+  const limit = STORAGE_LIMIT_BYTES[plan];
+  let used = 0;
+  const keys = await storageService.list('');
+  for (const key of keys) {
+    const raw = localStorage.getItem(`${STORAGE_PREFIX}${key}`);
+    if (raw) used += new Blob([raw]).size;
+  }
+  return { used, limit };
 }
 
 export const storageService = {
@@ -47,6 +62,12 @@ export const storageService = {
 
     const headers = await withToken();
     if (Object.keys(headers).length > 0) {
+      const quota = await getStorageQuota();
+      const size = new Blob([data]).size;
+      if (quota.used + size > quota.limit) {
+        console.warn(`Storage quota exceeded (${quota.used}/${quota.limit} bytes)`);
+        return false;
+      }
       try {
         const res = await fetch(API_BASE, {
           method: 'POST',

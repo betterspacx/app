@@ -10,6 +10,8 @@ export async function GET(request: NextRequest) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
+    const response = NextResponse.redirect(`${origin}${next}`);
+
     const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
@@ -17,7 +19,7 @@ export async function GET(request: NextRequest) {
         },
         setAll(cookies) {
           cookies.forEach(({ name, value, options }) => {
-            request.cookies.set(name, value);
+            response.cookies.set(name, value, options);
           });
         },
       },
@@ -25,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      return response;
     }
   }
 

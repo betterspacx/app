@@ -59,10 +59,13 @@ export async function signUpWithEmail(email: string, password: string, displayNa
   return { ok: true, user: { id: data.user!.id, email: data.user!.email } };
 }
 
-export async function signInWithGithub(): Promise<AuthResult> {
+export async function signInWithGithub(redirect?: string): Promise<AuthResult> {
+  const callbackUrl = redirect
+    ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirect)}`
+    : `${window.location.origin}/auth/callback`;
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'github',
-    options: { redirectTo: `${window.location.origin}/auth/callback` },
+    options: { redirectTo: callbackUrl },
   });
   if (error) {
     if (error.message.includes('popup')) {
@@ -90,32 +93,59 @@ export async function sendPasswordReset(email: string): Promise<{ ok: boolean; e
 }
 
 export async function getProfile(): Promise<UserProfile | null> {
-  const result = await api.get<UserProfile>('/api/user/profile');
-  if (!result.ok || !result.data) return null;
-  return result.data;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  return data as UserProfile | null;
 }
 
 export async function updateProfile(updates: Partial<Pick<UserProfile, 'display_name' | 'username' | 'photo_url'>>): Promise<UserProfile | null> {
-  const result = await api.put<UserProfile>('/api/user/profile', updates);
-  if (!result.ok || !result.data) return null;
-  return result.data;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data } = await supabase
+    .from('profiles')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', user.id)
+    .select()
+    .single();
+
+  return data as UserProfile | null;
 }
 
 export async function getSubscription(): Promise<Subscription | null> {
-  const result = await api.get<Subscription>('/api/user/subscription');
-  if (!result.ok || !result.data) return null;
-  return result.data;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('user_id', user.id)
+    .single();
+
+  return data as Subscription | null;
 }
 
-export async function createCheckout(plan: 'cloud', successUrl?: string): Promise<{ url: string } | null> {
+export async function createCheckout(plan: 'cloud', dev?: boolean): Promise<{ url: string } | null> {
   const session = await supabase.auth.getSession();
   const token = session.data.session?.access_token;
   const email = session.data.session?.user?.email;
 
   const params = new URLSearchParams();
-  params.set('products', CLOUD_PRICE_ID);
-  if (email) params.set('customerEmail', email);
-  if (token) params.set('metadata', JSON.stringify({ user_id: session.data.session!.user.id }));
+  if (dev) {
+    params.set('dev', 'true');
+    if (token) params.set('token', token);
+  } else {
+    params.set('products', CLOUD_PRICE_ID);
+    if (email) params.set('customerEmail', email);
+    if (token) params.set('metadata', JSON.stringify({ user_id: session.data.session!.user.id }));
+  }
 
   const checkoutUrl = `/api/checkout?${params.toString()}`;
   return { url: checkoutUrl };

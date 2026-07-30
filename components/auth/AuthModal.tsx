@@ -10,8 +10,11 @@ import {
   signOut,
   getProfile,
   updateProfile,
+  createCheckout,
+  getCustomerPortalUrl,
 } from '@/lib/supabase/auth-service';
 import type { UserProfile } from '@/lib/supabase/auth-service';
+import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -98,6 +101,8 @@ function ProfileCard({
   const [photoURL, setPhotoURL] = React.useState(user.photoUrl || '');
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [upgrading, setUpgrading] = React.useState(false);
+  const { plan, loading: subLoading, refresh } = useSubscription();
 
   const handleSave = async () => {
     setError('');
@@ -117,6 +122,27 @@ function ProfileCard({
       setSaving(false);
     }
   };
+
+  const handleUpgrade = async () => {
+    setUpgrading(true);
+    try {
+      const result = await createCheckout('cloud');
+      if (result?.url) {
+        window.location.href = result.url;
+      }
+    } finally {
+      setUpgrading(false);
+    }
+  };
+
+  const handleManage = async () => {
+    const url = await getCustomerPortalUrl();
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
+
+  const isCloudPlan = plan === 'cloud';
 
   if (editing) {
     return (
@@ -208,7 +234,34 @@ function ProfileCard({
           </div>
         </div>
 
+        {!subLoading && (
+          <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-muted/20 border border-border/30">
+            <span className="text-xs text-muted-foreground">Plan</span>
+            <span className={cn('text-xs font-semibold', isCloudPlan ? 'text-emerald-400' : 'text-zinc-400')}>
+              {isCloudPlan ? 'Cloud' : 'Free'}
+            </span>
+          </div>
+        )}
+
         <div className="space-y-2">
+          {!isCloudPlan && !subLoading && (
+            <button onClick={handleUpgrade} disabled={upgrading}
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[linear-gradient(110deg,#c9d4ff_0%,#e0d4ff_45%,#f5d4e8_100%)] hover:opacity-90 transition-all text-sm font-semibold text-black cursor-pointer disabled:opacity-50">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" />
+              </svg>
+              {upgrading ? 'Redirecting...' : 'Upgrade to Cloud — $10/mo'}
+            </button>
+          )}
+          {isCloudPlan && (
+            <button onClick={handleManage}
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-border/40 bg-muted/30 hover:bg-muted/60 transition-all text-sm text-left cursor-pointer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+              <span className="text-foreground">Manage Subscription</span>
+            </button>
+          )}
           <button onClick={() => setEditing(true)}
             className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-border/40 bg-muted/30 hover:bg-muted/60 transition-all text-sm text-left cursor-pointer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
